@@ -7,21 +7,25 @@ import AppRoutes from "./routes/AppRoutes";
 import { store } from "./app/store";
 import AuthListener from "./components/auth/AuthListener";
 
+import ErrorBoundary from "./components/common/ErrorBoundary";
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Provider store={store}>
-      <AuthListener />
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        containerStyle={{
-          top: 40,
-        }}
-        toastOptions={{
-          duration: 5000,
-        }}
-      />
-      <AppRoutes />
-    </Provider>
-  </StrictMode>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <AuthListener />
+        <Toaster
+          position="top-right"
+          reverseOrder={false}
+          containerStyle={{
+            top: 40,
+          }}
+          toastOptions={{
+            duration: 5000,
+          }}
+        />
+        <AppRoutes />
+      </Provider>
+    </ErrorBoundary>
+  </StrictMode>,
 );

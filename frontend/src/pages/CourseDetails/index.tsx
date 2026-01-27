@@ -1,5 +1,5 @@
 import React from "react";
-import LoggedHeader from "../../components/layout/LoggedHeader";
+import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
 import CourseHero from "./components/CourseHero";
 import CourseInfoBar from "./components/CourseInfoBar";
@@ -16,7 +16,7 @@ import Sidebar from "./components/Sidebar";
 const CourseDetails: React.FC = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
-      <LoggedHeader />
+      <Header />
 
       {/* Breadcrumbs */}
       <div className="bg-[#f2f4f6]/30">

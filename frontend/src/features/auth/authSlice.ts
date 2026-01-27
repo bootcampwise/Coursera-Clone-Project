@@ -1,10 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as authApi from "./authApi";
 import type { LoginPayload, RegisterPayload } from "./types";
+import { supabase } from "../../lib/supabase";
 
 interface AuthState {
   token: string | null;
-  user: { id: string; name: string; email: string; avatarUrl?: string } | null;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl?: string;
+    role: "student" | "instructor" | "admin";
+  } | null;
   isLoading: boolean;
   error: string | null;
 }
@@ -25,7 +32,7 @@ export const loginUser = createAsyncThunk(
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || "Login failed");
     }
-  }
+  },
 );
 
 export const registerUser = createAsyncThunk(
@@ -36,10 +43,10 @@ export const registerUser = createAsyncThunk(
       return response;
     } catch (err: any) {
       return rejectWithValue(
-        err.response?.data?.message || "Registration failed"
+        err.response?.data?.message || "Registration failed",
       );
     }
-  }
+  },
 );
 
 interface GoogleUserPayload {
@@ -57,11 +64,20 @@ export const syncGoogleUser = createAsyncThunk(
       return response;
     } catch (err: any) {
       return rejectWithValue(
-        err.response?.data?.message || "Failed to sync user"
+        err.response?.data?.message || "Failed to sync user",
       );
     }
-  }
+  },
 );
+
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  // Sign out from Supabase
+  await supabase.auth.signOut();
+  // Clear local storage
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  return null;
+});
 
 const authSlice = createSlice({
   name: "auth",
@@ -120,6 +136,7 @@ const authSlice = createSlice({
           name: action.payload.user.name,
           email: action.payload.user.email,
           avatarUrl: action.payload.user.avatarUrl,
+          role: action.payload.user.role, // Store role
         };
         state.user = user;
         localStorage.setItem("user", JSON.stringify(user));
@@ -127,6 +144,12 @@ const authSlice = createSlice({
       .addCase(syncGoogleUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      // Logout User
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.token = null;
+        state.user = null;
+        state.error = null;
       });
   },
 });

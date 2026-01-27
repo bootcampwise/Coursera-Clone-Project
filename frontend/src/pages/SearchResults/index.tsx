@@ -1,5 +1,5 @@
 import React from "react";
-import LoggedHeader from "../../components/layout/LoggedHeader";
+import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
 import FilterSidebar from "../../components/search/FilterSidebar";
 import SearchCourseCard from "../../components/search/SearchCourseCard";
@@ -93,7 +93,7 @@ const SearchResults: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F7F8] font-sans">
-      <LoggedHeader />
+      <Header />
 
       <main className="w-full max-w-[1440px] mx-auto px-4 md:px-8 py-4">
         {/* Breadcrumbs Row */}

@@ -28,7 +28,7 @@ const FilterCategory: React.FC<FilterCategoryProps> = ({
                 className="w-[18px] h-[18px] border-2 border-gray-300 rounded-[2px] text-[#0056D2] focus:ring-0 focus:ring-offset-0 cursor-pointer appearance-none checked:bg-[#0056D2] checked:border-[#0056D2] transition-all"
               />
               <svg
-                className="absolute w-3 h-3 text-white pointer-events-none hidden group-has-[:checked]:block"
+                className="absolute w-3 h-3 text-white pointer-events-none hidden group-has-checked:block"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

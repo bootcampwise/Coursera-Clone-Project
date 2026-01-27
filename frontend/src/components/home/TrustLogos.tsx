@@ -4,7 +4,7 @@ import { IMAGES } from "../../constants/images"; // Keeping this import if user 
 const TrustLogos: React.FC = () => (
   <section className="bg-white py-12 md:py-16 border-b border-border-muted overflow-hidden">
     <div className="container mx-auto px-4 md:px-8">
-      <h2 className="text-[16px] md:text-[20px] font-normal text-text-secondary mb-8 text-center md:text-left">
+      <h2 className="text-[20px] md:text-[31px] font-normal text-text-primary mb-8 text-center md:text-left">
         Learn from 350+ top universities and companies
       </h2>
 

@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { upsertGoogleUser } from "../services/user.service";
+import {
+  upsertGoogleUser,
+  getAllUsers,
+  getUserById,
+  updateUserRole,
+  updateUserProfile,
+} from "../services/user.service";
 import asyncHandler from "../utils/asyncHandler";
 
 export const syncGoogleUser = asyncHandler(
@@ -23,5 +29,60 @@ export const syncGoogleUser = asyncHandler(
         role: user.role,
       },
     });
+  },
+);
+
+export const getUsers = asyncHandler(async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const role = req.query.role as string;
+
+  const result = await getAllUsers(page, limit, role);
+  res.json(result);
+});
+
+export const getUser = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const user = await getUserById(id as string);
+  res.json(user);
+});
+
+export const getMe = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const user = await getUserById(userId);
+    res.json(user);
+  },
+);
+
+export const updateRole = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!role) {
+    res.status(400).json({ message: "Role is required" });
+    return;
   }
+
+  const user = await updateUserRole(id as string, role);
+  res.json(user);
+});
+
+export const updateProfile = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { name, avatarUrl } = req.body;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const user = await updateUserProfile(userId, { name, avatarUrl });
+    res.json(user);
+  },
 );

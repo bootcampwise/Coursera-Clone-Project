@@ -1,0 +1,76 @@
+import { Request, Response } from "express";
+import asyncHandler from "../utils/asyncHandler";
+import * as enrollmentService from "../services/enrollment.service";
+
+export const enrollUser = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const { courseId } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const enrollment = await enrollmentService.enrollUser(
+      userId,
+      courseId as string,
+    );
+    res.status(201).json(enrollment);
+  },
+);
+
+export const getUserEnrollments = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const enrollments = await enrollmentService.getUserEnrollments(userId);
+    res.json(enrollments);
+  },
+);
+
+export const updateProgress = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const { id } = req.params;
+    const { progress, completed } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const updatedEnrollment = await enrollmentService.updateProgress(
+      id as string,
+      userId,
+      progress,
+      completed,
+    );
+    res.json(updatedEnrollment);
+  },
+);
+
+export const getCourseEnrollments = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const { courseId } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role || "";
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const enrollments = await enrollmentService.getCourseEnrollments(
+      courseId as string,
+      userId,
+      userRole,
+    );
+    res.json(enrollments);
+  },
+);

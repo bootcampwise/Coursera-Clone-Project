@@ -39,3 +39,94 @@ export const upsertGoogleUser = async (userData: GoogleUserData) => {
 
   return newUser;
 };
+
+export const getAllUsers = async (
+  page: number = 1,
+  limit: number = 10,
+  role?: string,
+) => {
+  const skip = (page - 1) * limit;
+  const where: any = {};
+
+  if (role) {
+    where.role = { equals: role, mode: "insensitive" };
+  }
+
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      skip,
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+        createdAt: true,
+        _count: {
+          select: { courses: true, enrollments: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.user.count({ where }),
+  ]);
+
+  return {
+    users,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+export const getUserById = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      courses: { select: { id: true, title: true } },
+      enrollments: {
+        include: { course: { select: { id: true, title: true } } },
+      },
+    },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  // Exclude password hash
+  const { passwordHash, ...userWithoutPassword } = user;
+  return userWithoutPassword;
+};
+
+export const updateUserRole = async (id: string, role: string) => {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new Error("User not found");
+
+  const normalizedRole = role.toLowerCase();
+  const validRoles = ["student", "instructor", "admin"];
+
+  if (!validRoles.includes(normalizedRole)) {
+    throw new Error("Invalid role");
+  }
+
+  return await prisma.user.update({
+    where: { id },
+    data: { role: normalizedRole },
+    select: { id: true, name: true, email: true, role: true },
+  });
+};
+
+export const updateUserProfile = async (
+  id: string,
+  data: { name?: string; avatarUrl?: string },
+) => {
+  return await prisma.user.update({
+    where: { id },
+    data,
+    select: { id: true, name: true, email: true, role: true, avatarUrl: true },
+  });
+};

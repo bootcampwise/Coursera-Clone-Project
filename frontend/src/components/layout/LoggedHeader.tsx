@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
 import type { RootState } from "../../app/store";
+import { IMAGES } from "../../constants/images";
 
 const LoggedHeader: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { signOut } = useGoogleAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isUpdatesPage = location.pathname === "/updates";
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -55,14 +58,18 @@ const LoggedHeader: React.FC = () => {
               </svg>
             </button>
 
-            {/* 2. "P" Logo/Avatar (Dark Blue Circle) */}
+            {/* 2. Logo Logic */}
             <Link to="/" className="no-underline shrink-0">
-              <div
-                className="w-9 h-9 rounded-full text-white flex items-center justify-center font-sans text-[18px] font-bold"
-                style={{ backgroundColor: "#1a4f88" }}
-              >
-                P
-              </div>
+              {isUpdatesPage ? (
+                <img src={IMAGES.LOGO} alt="Coursera" className="h-[24px]" />
+              ) : (
+                <div
+                  className="w-9 h-9 rounded-full text-white flex items-center justify-center font-sans text-[18px] font-bold"
+                  style={{ backgroundColor: "#1a4f88" }}
+                >
+                  P
+                </div>
+              )}
             </Link>
 
             {/* 3. Explore & My Learning */}
@@ -146,6 +153,29 @@ const LoggedHeader: React.FC = () => {
 
           {/* ================= RIGHT SECTION: GLOBE, D, PROFILE ================= */}
           <div className="flex items-center gap-5 shrink-0">
+            {/* Cart Icon (Updates Page Only) */}
+            {isUpdatesPage && (
+              <button className="text-[#5b5b5b] hover:text-[#0056D2] p-1 hidden md:block transition-colors bg-transparent border-none cursor-pointer relative">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                {/* Cart Badge */}
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-[#C20E0E] text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+                  1
+                </span>
+              </button>
+            )}
             {/* Globe Icon */}
             <button className="text-[#5b5b5b] hover:text-[#0056D2] p-1 hidden md:block transition-colors bg-transparent border-none cursor-pointer">
               <svg
@@ -169,6 +199,32 @@ const LoggedHeader: React.FC = () => {
               D
             </button>
 
+            {/* Updates Bell Icon */}
+            <div className="relative">
+              <Link
+                to="/updates"
+                className="text-[#5b5b5b] hover:text-[#0056D2] p-1 transition-colors bg-transparent border-none cursor-pointer relative block no-underline"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                {/* Notification Badge */}
+                <span className="absolute top-0 right-0 h-4 w-4 bg-[#C20E0E] text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+                  2
+                </span>
+              </Link>
+            </div>
+
             {/* Profile Avatar */}
             <div className="relative">
               <button
@@ -184,7 +240,9 @@ const LoggedHeader: React.FC = () => {
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <span className="leading-none">{getInitials(displayName)}</span>
+                  <span className="leading-none">
+                    {getInitials(displayName)}
+                  </span>
                 )}
               </button>
 
@@ -192,7 +250,10 @@ const LoggedHeader: React.FC = () => {
                 <>
                   <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[28px] shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-[#f0f0f0] py-6 z-50">
                     {[
-                      { label: "My Courses", action: () => navigate("/my-learning") },
+                      {
+                        label: "My Courses",
+                        action: () => navigate("/my-learning"),
+                      },
                       { label: "Profile", action: () => navigate("/profile") },
                       { label: "Setting" },
                       { label: "Updates" },

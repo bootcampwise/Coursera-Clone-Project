@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../../components/home/HomeMainHeader";
+import Header from "../../components/layout/Header";
 import Hero from "../../components/home/Hero";
 import TrustLogos from "../../components/home/TrustLogos";
 import Pricing from "../../components/home/Pricing";
@@ -11,6 +11,7 @@ import CareerSkills from "../../components/home/CareerSkills";
 import ProgramSearch from "../../components/home/ProgramSearch";
 import Testimonials from "../../components/home/Testimonials";
 import PlusBanner from "../../components/home/PlusBanner";
+import InvestInCareer from "../../components/home/InvestCareer";
 
 const Home: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const Home: React.FC = () => {
       <main className="grow">
         <Hero />
         <TrustLogos />
+        <InvestInCareer />
         <LearnerOutcomes />
         <CareerSkills />
         <ProgramSearch />

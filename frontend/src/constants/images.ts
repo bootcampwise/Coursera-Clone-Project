@@ -9,11 +9,17 @@ import UMICH from "../assets/icons/michigan_uni.png";
 import IBM from "../assets/icons/ibm_icon.png";
 import VANDERBILT from "../assets/icons/vanderbilt_icon.png";
 import PENN from "../assets/icons/jhons_icon.png";
+import EARN from "../assets/icons/earn.png";
+import GOAL from "../assets/icons/goal.png";
+import STAR from "../assets/icons/star.png";
 
 export const IMAGES = {
   HERO: HERO,
   HERO2: HERO2,
   LOGO: LOGO,
+  EARN: EARN,
+  GOAL: GOAL,
+  STAR: STAR,
   LEARNER_OUTCOMES: LEARNER_OUTCOMES,
   LOGOS: {
     ILLINOIS: ILLINOIS,

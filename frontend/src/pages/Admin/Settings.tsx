@@ -1,8 +1,23 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logoutAdmin } from "../../features/auth/adminAuthSlice";
+import type { AppDispatch } from "../../app/store";
 
 const Settings: React.FC = () => {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const confirmed = window.confirm("Are you sure you want to log out?");
+    if (confirmed) {
+      await dispatch(logoutAdmin());
+      navigate("/admin-login");
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -15,7 +30,9 @@ const Settings: React.FC = () => {
 
       <div className="max-w-3xl space-y-6">
         <section className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-base font-semibold text-gray-900 mb-6">Profile Information</h3>
+          <h3 className="text-base font-semibold text-gray-900 mb-6">
+            Profile Information
+          </h3>
 
           <div className="flex items-center gap-6 pb-6 mb-6 border-b border-gray-100">
             <div className="w-16 h-16 rounded-xl bg-black flex items-center justify-center text-white font-semibold text-lg shadow-md">
@@ -25,7 +42,9 @@ const Settings: React.FC = () => {
               <button className="px-4 py-2 border border-gray-200 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all">
                 Change Avatar
               </button>
-              <p className="text-xs text-gray-500 mt-1">JPG, PNG or GIF. Max size 2MB</p>
+              <p className="text-xs text-gray-500 mt-1">
+                JPG, PNG or GIF. Max size 2MB
+              </p>
             </div>
           </div>
 
@@ -54,7 +73,9 @@ const Settings: React.FC = () => {
         </section>
 
         <section className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-base font-semibold text-gray-900 mb-6">Security Settings</h3>
+          <h3 className="text-base font-semibold text-gray-900 mb-6">
+            Security Settings
+          </h3>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
@@ -120,7 +141,9 @@ const Settings: React.FC = () => {
         </section>
 
         <section className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-base font-semibold text-gray-900 mb-6">System Preferences</h3>
+          <h3 className="text-base font-semibold text-gray-900 mb-6">
+            System Preferences
+          </h3>
 
           <div className="space-y-4">
             <div>
@@ -144,6 +167,28 @@ const Settings: React.FC = () => {
                 <option>PST (Pacific Standard Time)</option>
               </select>
             </div>
+          </div>
+        </section>
+
+        <section className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <h3 className="text-base font-semibold text-gray-900 mb-6">
+            Account Actions
+          </h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-900 mb-1">
+                Sign Out
+              </p>
+              <p className="text-xs text-gray-500">
+                Sign out of your account on this device
+              </p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-50 border border-red-200 text-sm font-medium text-red-700 rounded-lg hover:bg-red-100 transition-all"
+            >
+              Log Out
+            </button>
           </div>
         </section>
 

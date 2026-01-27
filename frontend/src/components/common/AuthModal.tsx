@@ -1,23 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import type { AppDispatch, RootState } from "../../app/store";
-import { loginUser, clearError } from "../../features/auth/authSlice";
+import {
+  loginUser,
+  registerUser,
+  clearError,
+} from "../../features/auth/authSlice";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import Button from "./Button";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSwitchToRegister?: () => void;
+  initialMode?: "login" | "signup";
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
-  onSwitchToRegister,
+  initialMode = "login",
 }) => {
-  const [step, setStep] = useState<"email" | "password">("email");
+  const [mode, setMode] = useState<"login" | "signup">(initialMode);
+  const [step, setStep] = useState<"email" | "password" | "signup-form">(
+    "email",
+  );
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -25,9 +33,17 @@ const AuthModal: React.FC<AuthModalProps> = ({
   const { isLoading } = useSelector((state: RootState) => state.auth);
   const { signInWithGoogle } = useGoogleAuth();
 
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setStep(initialMode === "signup" ? "signup-form" : "email");
+    }
+  }, [isOpen, initialMode]);
+
   if (!isOpen) return null;
 
-  const handleNext = async (e: React.FormEvent) => {
+  const handleLoginNext = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step === "email" && email) {
       setStep("password");
@@ -37,21 +53,52 @@ const AuthModal: React.FC<AuthModalProps> = ({
         toast.success(`Welcome back, ${result.payload.user.name || "User"}!`);
         resetAndClose();
       } else if (loginUser.rejected.match(result)) {
-        toast.error((result.payload as string) || "Login failed line 28");
+        toast.error((result.payload as string) || "Login failed");
       }
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !password) return;
+
+    const result = await dispatch(registerUser({ name, email, password }));
+    if (registerUser.fulfilled.match(result)) {
+      toast.success("Account created successfully! Please log in.");
+      // Switch to login mode after successful registration
+      setMode("login");
+      setStep("email");
+      setName("");
+      setPassword("");
+    } else if (registerUser.rejected.match(result)) {
+      toast.error((result.payload as string) || "Registration failed");
     }
   };
 
   const resetAndClose = () => {
     setStep("email");
+    setMode("login");
+    setName("");
     setEmail("");
     setPassword("");
     dispatch(clearError());
     onClose();
   };
 
+  const switchToSignup = () => {
+    setMode("signup");
+    setStep("signup-form");
+    setPassword("");
+  };
+
+  const switchToLogin = () => {
+    setMode("login");
+    setStep("email");
+    setPassword("");
+  };
+
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/50 backdrop-blur-[2px] flex items-start justify-center p-4 sm:p-6 md:items-center">
+    <div className="fixed inset-0 z-100 overflow-y-auto bg-black/50 backdrop-blur-[2px] flex items-start justify-center p-4 sm:p-6 md:items-center">
       {/* Overlay Click Area (transparent) */}
       <div className="fixed inset-0" onClick={resetAndClose} />
 
@@ -81,30 +128,148 @@ const AuthModal: React.FC<AuthModalProps> = ({
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-[28px] font-semibold text-text-primary mb-2 font-sans tracking-tight">
-            {step === "email"
-              ? "Log in or create account"
-              : "Enter your password"}
+            {mode === "signup"
+              ? "Create your account"
+              : step === "email"
+                ? "Log in or create account"
+                : "Enter your password"}
           </h2>
           <p className="text-[16px] text-text-secondary font-normal leading-relaxed">
-            {step === "email"
-              ? "Learn on your own time from top universities and businesses."
-              : `Welcome back, ${email}`}
+            {mode === "signup"
+              ? "Join millions of learners from around the world."
+              : step === "email"
+                ? "Learn on your own time from top universities and businesses."
+                : `Welcome back, ${email}`}
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleNext} className="space-y-4">
-          {step === "email" ? (
+        {/* LOGIN FORM */}
+        {mode === "login" && (
+          <form onSubmit={handleLoginNext} className="space-y-4">
+            {step === "email" ? (
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-bold text-text-primary"
+                >
+                  Email <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="name@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full h-[44px] px-4 border border-gray-300 rounded-[4px] focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-gray-400 text-text-primary"
+                  required
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-bold text-text-primary"
+                >
+                  Password <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-[44px] px-4 border border-gray-300 rounded-[4px] focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-gray-400 text-text-primary"
+                  required
+                />
+                <div className="flex justify-start">
+                  <button
+                    type="button"
+                    className="text-primary text-[14px] font-medium hover:underline"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <Button
+              className="w-full h-[44px] bg-primary! text-white! font-bold! rounded-[4px] hover:bg-primary-hover! shadow-sm"
+              type="submit"
+              disabled={(step === "email" ? !email : !password) || isLoading}
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  {step === "email" ? "Continuing..." : "Logging in..."}
+                </span>
+              ) : step === "email" ? (
+                "Continue"
+              ) : (
+                "Login"
+              )}
+            </Button>
+
+            {step === "password" && (
+              <button
+                type="button"
+                onClick={() => setStep("email")}
+                className="w-full text-primary font-medium text-[14px] hover:underline"
+              >
+                Back to email
+              </button>
+            )}
+          </form>
+        )}
+
+        {/* SIGNUP FORM */}
+        {mode === "signup" && (
+          <form onSubmit={handleSignup} className="space-y-4">
             <div className="space-y-2">
               <label
-                htmlFor="email"
+                htmlFor="name"
+                className="block text-sm font-bold text-text-primary"
+              >
+                Full Name <span className="text-red-600">*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full h-[44px] px-4 border border-gray-300 rounded-[4px] focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-gray-400 text-text-primary"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="signup-email"
                 className="block text-sm font-bold text-text-primary"
               >
                 Email <span className="text-red-600">*</span>
               </label>
               <input
                 type="email"
-                id="email"
+                id="signup-email"
                 placeholder="name@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -112,82 +277,75 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 required
               />
             </div>
-          ) : (
             <div className="space-y-2">
               <label
-                htmlFor="password"
+                htmlFor="signup-password"
                 className="block text-sm font-bold text-text-primary"
               >
                 Password <span className="text-red-600">*</span>
               </label>
               <input
                 type="password"
-                id="password"
-                placeholder="Enter password"
+                id="signup-password"
+                placeholder="Create a password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full h-[44px] px-4 border border-gray-300 rounded-[4px] focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-gray-400 text-text-primary"
                 required
               />
-              <div className="flex justify-start">
-                <button
-                  type="button"
-                  className="text-primary text-[14px] font-medium hover:underline"
-                >
-                  Forgot password?
-                </button>
-              </div>
             </div>
-          )}
 
-          <Button
-            className="w-full h-[44px] bg-primary! text-white! font-bold! rounded-[4px] hover:bg-primary-hover! shadow-sm"
-            type="submit"
-            disabled={(step === "email" ? !email : !password) || isLoading}
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                {step === "email" ? "Continuing..." : "Logging in..."}
-              </span>
-            ) : step === "email" ? (
-              "Continue"
-            ) : (
-              "Login"
-            )}
-          </Button>
-
-          {step === "password" && (
-            <button
-              type="button"
-              onClick={() => setStep("email")}
-              className="w-full text-primary font-medium text-[14px] hover:underline"
+            <Button
+              className="w-full h-[44px] bg-primary! text-white! font-bold! rounded-[4px] hover:bg-primary-hover! shadow-sm"
+              type="submit"
+              disabled={!name || !email || !password || isLoading}
             >
-              Back to email
-            </button>
-          )}
-        </form>
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Creating account...
+                </span>
+              ) : (
+                "Create Account"
+              )}
+            </Button>
 
-        {step === "email" && (
+            <div className="text-center">
+              <span className="text-text-secondary text-sm">
+                Already have an account?{" "}
+              </span>
+              <button
+                type="button"
+                onClick={switchToLogin}
+                className="text-primary font-medium text-sm hover:underline"
+              >
+                Log in
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Social logins and switch to signup - only show on login email step */}
+        {mode === "login" && step === "email" && (
           <>
             {/* Separator */}
             <div className="relative my-6 flex items-center justify-center">
@@ -245,7 +403,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
             {/* Sign up with Org */}
             <div className="mt-6 text-left">
               <button
-                onClick={onSwitchToRegister}
+                onClick={switchToSignup}
                 className="text-primary font-medium text-[14px] hover:underline"
               >
                 Sign up with your organization

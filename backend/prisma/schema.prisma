@@ -16,6 +16,8 @@ model User {
   providerId   String?
   avatarUrl    String?
   role         String       @default("student")
+  createdAt    DateTime?     @default(now())
+  updatedAt    DateTime?     @updatedAt
   courses      Course[]     @relation("InstructorCourses")
   enrollments  Enrollment[]
   reviews      Review[]
@@ -27,6 +29,11 @@ model Course {
   description  String
   category     String?
   difficulty   String?
+  thumbnail    String?
+  price        Float        @default(0)
+  published    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   instructor   User         @relation(fields: [instructorId], references: [id], name: "InstructorCourses")
   instructorId String       @db.ObjectId
   enrollments  Enrollment[]
@@ -41,6 +48,8 @@ model Enrollment {
   courseId  String   @db.ObjectId
   progress  Int      @default(0)
   completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Review {

@@ -1,5 +1,5 @@
 import React from "react";
-import LoggedHeader from "../../components/layout/LoggedHeader";
+import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
 import WelcomeHeader from "./components/WelcomeHeader";
 import ContinueLearning from "./components/ContinueLearning";
@@ -113,7 +113,7 @@ const PERSONALIZED = [
 const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-white font-sans">
-      <LoggedHeader />
+      <Header />
 
       <main className="container mx-auto px-4 md:px-8 py-10 max-w-[1440px]">
         <div className="flex flex-col lg:flex-row gap-12">

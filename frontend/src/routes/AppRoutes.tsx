@@ -21,8 +21,19 @@ import Users from "../pages/Admin/Users";
 import Courses from "../pages/Admin/Courses";
 import Instructors from "../pages/Admin/Instructors";
 import Settings from "../pages/Admin/Settings";
-import Profile from "../pages/Profile";
-import CourseLearning from "../pages/CourseLearning";
+import Profile from "../pages/Profile/index";
+import CourseLearning from "../pages/CourseLearning/index";
+import CourseContent from "../pages/CourseContent/index";
+import CourseAssessment from "../pages/CourseAssessment/index";
+import CourseAssessmentResult from "../pages/CourseAssessmentResult/index";
+import AccountSettings from "../pages/AccountSettings/index";
+import CourseCertificate from "../pages/CourseCertificate/index";
+import UpdatesPage from "../pages/Updates/UpdatesPage";
+import Accomplishments from "../pages/Accomplishments/index";
+
+import AdminInstructorLogin from "../pages/Auth/AdminInstructorLogin";
+import AdminProtectedRoute from "../components/auth/AdminProtectedRoute";
+import InstructorProtectedRoute from "../components/auth/InstructorProtectedRoute";
 
 const AppRoutes: React.FC = () => (
   <BrowserRouter>
@@ -31,28 +42,66 @@ const AppRoutes: React.FC = () => (
       <Route path="/search" element={<SearchResults />} />
       <Route path="/course/:id" element={<CourseDetails />} />
       <Route path="/learn/:courseId" element={<CourseLearning />} />
+      <Route
+        path="/learn/:courseId/lecture/:lessonId"
+        element={<CourseContent />}
+      />
+      <Route
+        path="/learn/:courseId/assessment/:assessmentId"
+        element={<CourseAssessment />}
+      />
+      <Route
+        path="/learn/:courseId/assessment/:assessmentId/result"
+        element={<CourseAssessmentResult />}
+      />
+      <Route path="/accomplishments" element={<Accomplishments />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/account/settings" element={<AccountSettings />} />
+      <Route
+        path="/accomplishments/certificate/:id"
+        element={<CourseCertificate />}
+      />
+      <Route path="/updates" element={<UpdatesPage />} />
       <Route path="/my-learning" element={<MyLearning />} />
-      <Route path="/instructor" element={<InstructorLayout />}>
-        <Route index element={<InstructorOverview />} />
-        <Route path="courses" element={<InstructorCourses />} />
-        <Route path="courses/new" element={<InstructorCreateCourse />} />
-        <Route path="videos" element={<InstructorVideos />} />
-        <Route path="analytics" element={<InstructorAnalytics />} />
-        <Route path="settings" element={<InstructorSettings />} />
-      </Route>
+
+      {/* Public Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/portal-login" element={<AdminInstructorLogin />} />
+      <Route
+        path="/admin-login"
+        element={<AdminInstructorLogin expectedRole="admin" />}
+      />
+      <Route
+        path="/instructor-login"
+        element={<AdminInstructorLogin expectedRole="instructor" />}
+      />
       <Route path="/checkout" element={<Checkout />} />
 
-      {/* Admin Routes */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Overview />} />
-        <Route path="users" element={<Users />} />
-        <Route path="instructors" element={<Instructors />} />
-        <Route path="courses" element={<Courses />} />
-        <Route path="settings" element={<Settings />} />
+      {/* Protected Instructor Routes */}
+      <Route
+        element={<InstructorProtectedRoute loginPath="/instructor-login" />}
+      >
+        <Route path="/instructor" element={<InstructorLayout />}>
+          <Route index element={<InstructorOverview />} />
+          <Route path="courses" element={<InstructorCourses />} />
+          <Route path="courses/new" element={<InstructorCreateCourse />} />
+          <Route path="videos" element={<InstructorVideos />} />
+          <Route path="analytics" element={<InstructorAnalytics />} />
+          <Route path="settings" element={<InstructorSettings />} />
+        </Route>
+      </Route>
+
+      {/* Protected Admin Routes */}
+      <Route element={<AdminProtectedRoute loginPath="/admin-login" />}>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Overview />} />
+          <Route path="users" element={<Users />} />
+          <Route path="instructors" element={<Instructors />} />
+          <Route path="courses" element={<Courses />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
       </Route>
     </Routes>
   </BrowserRouter>
