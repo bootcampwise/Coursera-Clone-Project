@@ -15,6 +15,8 @@ import { courseApi } from "../../services/courseApi";
 
 import Sidebar from "./components/Sidebar";
 
+import CourseDetailsSkeleton from "./components/CourseDetailsSkeleton";
+
 const CourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [course, setCourse] = useState<any>(null);
@@ -39,9 +41,9 @@ const CourseDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
+      <div className="min-h-screen bg-white font-sans">
         <Header />
-        <div className="text-xl">Loading course details...</div>
+        <CourseDetailsSkeleton />
       </div>
     );
   }
