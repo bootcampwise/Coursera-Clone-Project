@@ -16,11 +16,12 @@ model User {
   providerId   String?
   avatarUrl    String?
   role         String       @default("student")
-  createdAt    DateTime?     @default(now())
-  updatedAt    DateTime?     @updatedAt
+  createdAt    DateTime?    @default(now())
+  updatedAt    DateTime?    @updatedAt
   courses      Course[]     @relation("InstructorCourses")
   enrollments  Enrollment[]
   reviews      Review[]
+  submissions  Submission[]
 }
 
 model Course {
@@ -36,28 +37,87 @@ model Course {
   updatedAt    DateTime     @updatedAt
   instructor   User         @relation(fields: [instructorId], references: [id], name: "InstructorCourses")
   instructorId String       @db.ObjectId
+  modules      Module[]
   enrollments  Enrollment[]
   reviews      Review[]
+  assessments  Assessment[]
+}
+
+model Module {
+  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  title     String
+  order     Int
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  String   @db.ObjectId
+  lessons   Lesson[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lesson {
+  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  title     String
+  content   String?
+  videoUrl  String?
+  duration  Int?     // in seconds
+  order     Int
+  module    Module   @relation(fields: [moduleId], references: [id])
+  moduleId  String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Enrollment {
+  id          String   @id @map("_id") @default(auto()) @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String   @db.ObjectId
+  course      Course   @relation(fields: [courseId], references: [id])
+  courseId    String   @db.ObjectId
+  progress    Int      @default(0) // Percentage or count of lessons completed
+  completed   Boolean  @default(false)
+  lastAccessed DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
   id        String   @id @map("_id") @default(auto()) @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @db.ObjectId
   course    Course   @relation(fields: [courseId], references: [id])
   courseId  String   @db.ObjectId
-  progress  Int      @default(0)
-  completed Boolean  @default(false)
+  rating    Int
+  comment   String?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
-model Review {
-  id       String   @id @map("_id") @default(auto()) @db.ObjectId
-  user     User     @relation(fields: [userId], references: [id])
-  userId   String   @db.ObjectId
-  course   Course   @relation(fields: [courseId], references: [id])
-  courseId String   @db.ObjectId
-  rating   Int
-  comment  String?
+model Assessment {
+  id        String     @id @map("_id") @default(auto()) @db.ObjectId
+  title     String
+  course    Course     @relation(fields: [courseId], references: [id])
+  courseId  String     @db.ObjectId
+  questions Question[]
+  submissions Submission[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Question {
+  id           String     @id @map("_id") @default(auto()) @db.ObjectId
+  text         String
+  options      String[]
+  correctIndex Int
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+  assessmentId String     @db.ObjectId
+}
+
+model Submission {
+  id           String     @id @map("_id") @default(auto()) @db.ObjectId
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String     @db.ObjectId
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+  assessmentId String     @db.ObjectId
+  score        Int
+  passed       Boolean
+  createdAt    DateTime   @default(now())
 }

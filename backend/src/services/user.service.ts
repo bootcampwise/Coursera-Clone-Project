@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import bcrypt from "bcryptjs";
 
 interface GoogleUserData {
   email: string;
@@ -128,5 +129,58 @@ export const updateUserProfile = async (
     where: { id },
     data,
     select: { id: true, name: true, email: true, role: true, avatarUrl: true },
+  });
+};
+
+export const deleteUser = async (id: string) => {
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new Error("User not found");
+
+  return await prisma.user.delete({
+    where: { id },
+    select: { id: true, name: true, email: true },
+  });
+};
+
+export const adminCreateUser = async (userData: {
+  name: string;
+  email: string;
+  password?: string;
+  role: string;
+}) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { email: userData.email },
+  });
+
+  if (existingUser) {
+    throw new Error("User with this email already exists");
+  }
+
+  const normalizedRole = userData.role.toLowerCase();
+  const validRoles = ["student", "instructor", "admin"];
+  if (!validRoles.includes(normalizedRole)) {
+    throw new Error("Invalid role");
+  }
+
+  let passwordHash = null;
+  if (userData.password) {
+    passwordHash = await bcrypt.hash(userData.password, 10);
+  }
+
+  return await prisma.user.create({
+    data: {
+      name: userData.name,
+      email: userData.email,
+      passwordHash,
+      role: normalizedRole,
+      provider: "email",
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    },
   });
 };

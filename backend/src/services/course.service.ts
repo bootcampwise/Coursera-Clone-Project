@@ -91,6 +91,14 @@ export const getCourseById = async (id: string) => {
       instructor: {
         select: { id: true, name: true, avatarUrl: true, email: true },
       },
+      modules: {
+        include: {
+          lessons: {
+            orderBy: { order: "asc" },
+          },
+        },
+        orderBy: { order: "asc" },
+      },
       reviews: {
         include: {
           user: { select: { id: true, name: true, avatarUrl: true } },
@@ -190,4 +198,57 @@ export const getInstructorCourses = async (instructorId: string) => {
   });
 
   return courses;
+};
+
+// --- Module & Lesson Services ---
+
+export const createModule = async (
+  courseId: string,
+  title: string,
+  order: number,
+) => {
+  return await prisma.module.create({
+    data: {
+      title,
+      order,
+      courseId,
+    },
+  });
+};
+
+export const createLesson = async (
+  moduleId: string,
+  data: {
+    title: string;
+    order: number;
+    videoUrl?: string;
+    content?: string;
+    duration?: number;
+  },
+) => {
+  return await prisma.lesson.create({
+    data: {
+      ...data,
+      moduleId,
+    },
+  });
+};
+
+export const getCourseContent = async (courseId: string) => {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    include: {
+      modules: {
+        include: {
+          lessons: {
+            orderBy: { order: "asc" },
+          },
+        },
+        orderBy: { order: "asc" },
+      },
+    },
+  });
+
+  if (!course) throw new Error("Course not found");
+  return course.modules;
 };

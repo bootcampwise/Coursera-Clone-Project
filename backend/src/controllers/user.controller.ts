@@ -5,6 +5,8 @@ import {
   getUserById,
   updateUserRole,
   updateUserProfile,
+  deleteUser,
+  adminCreateUser,
 } from "../services/user.service";
 import asyncHandler from "../utils/asyncHandler";
 
@@ -84,5 +86,25 @@ export const updateProfile = asyncHandler(
 
     const user = await updateUserProfile(userId, { name, avatarUrl });
     res.json(user);
+  },
+);
+
+export const createUser = asyncHandler(async (req: Request, res: Response) => {
+  const { name, email, password, role } = req.body;
+
+  if (!name || !email || !role) {
+    res.status(400).json({ message: "Missing required fields" });
+    return;
+  }
+
+  const user = await adminCreateUser({ name, email, password, role });
+  res.status(201).json(user);
+});
+
+export const deleteUserById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = await deleteUser(id as string);
+    res.json({ message: "User deleted successfully", user });
   },
 );

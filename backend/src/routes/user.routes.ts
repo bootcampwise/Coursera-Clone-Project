@@ -6,6 +6,8 @@ import {
   getMe,
   updateRole,
   updateProfile,
+  deleteUserById,
+  createUser,
 } from "../controllers/user.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { requireRole } from "../middlewares/role.middleware";
@@ -21,20 +23,9 @@ router.patch("/me", authMiddleware, updateProfile);
 
 // Admin routes
 router.get("/", authMiddleware, requireRole(["admin"]), getUsers);
+router.post("/", authMiddleware, requireRole(["admin"]), createUser);
 router.get("/:id", authMiddleware, requireRole(["admin"]), getUser);
 router.patch("/:id/role", authMiddleware, requireRole(["admin"]), updateRole);
-router.delete(
-  "/:id",
-  authMiddleware,
-  requireRole(["admin"]),
-  async (req, res) => {
-    // TODO: Implement delete user in service/controller properly if needed.
-    // For now, redirecting to user service handling or keep simple.
-    // This was in the plan but I missed adding delete logic in service.
-    // I will add it or leave it as TODO based on current scope.
-    // Let's stick to update role and list for now as per immediate needs.
-    res.status(501).json({ message: "Not implemented yet" });
-  },
-);
+router.delete("/:id", authMiddleware, requireRole(["admin"]), deleteUserById);
 
 export default router;
