@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
+import { toast } from "react-hot-toast";
 
 interface Course {
   id: string;
@@ -42,9 +43,10 @@ const Courses: React.FC = () => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
       await adminApi.delete(ENDPOINTS.COURSES_BY_ID(id));
+      toast.success("Course deleted successfully");
       fetchCourses();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to delete course");
+      toast.error(err.response?.data?.message || "Failed to delete course");
     }
   };
 
@@ -62,7 +64,7 @@ const Courses: React.FC = () => {
         <div className="flex gap-3">
           <button
             onClick={fetchCourses}
-            className="px-4 py-2 border border-gray-200 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center gap-2"
+            className="px-4 py-2 border border-gray-200 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center gap-2 cursor-pointer"
           >
             <svg
               className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
@@ -166,7 +168,7 @@ const Courses: React.FC = () => {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleDeleteCourse(course.id)}
-                        className="text-xs font-medium text-red-600 hover:text-red-700 transition-colors px-3 py-1 rounded-lg hover:bg-red-50"
+                        className="text-xs font-medium text-red-600 hover:text-red-700 transition-colors px-3 py-1 rounded-lg hover:bg-red-50 cursor-pointer"
                       >
                         Delete
                       </button>

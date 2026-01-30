@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
+import { toast } from "react-hot-toast";
 
 interface User {
   id: string;
@@ -71,10 +72,11 @@ const Users: React.FC = () => {
     e.preventDefault();
     try {
       await adminApi.post(ENDPOINTS.USERS_LIST, formData);
+      toast.success("User created successfully");
       handleCloseModal();
       fetchUsers();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to create user");
+      toast.error(err.response?.data?.message || "Failed to create user");
     }
   };
 
@@ -83,9 +85,10 @@ const Users: React.FC = () => {
       await adminApi.patch(ENDPOINTS.USERS_UPDATE_ROLE(userId), {
         role: newRole,
       });
+      toast.success(`Role updated to ${newRole}`);
       fetchUsers();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to update role");
+      toast.error(err.response?.data?.message || "Failed to update role");
     }
   };
 
@@ -101,9 +104,10 @@ const Users: React.FC = () => {
     try {
       setIsDeleting(userId);
       await adminApi.delete(ENDPOINTS.USERS_BY_ID(userId));
+      toast.success("User deleted successfully");
       fetchUsers();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to delete user");
+      toast.error(err.response?.data?.message || "Failed to delete user");
     } finally {
       setIsDeleting(null);
     }
@@ -123,7 +127,7 @@ const Users: React.FC = () => {
         <div className="flex gap-3">
           <button
             onClick={fetchUsers}
-            className="px-4 py-2 border border-gray-200 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center gap-2"
+            className="px-4 py-2 border border-gray-200 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center gap-2 cursor-pointer"
           >
             <svg
               className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
@@ -142,7 +146,7 @@ const Users: React.FC = () => {
           </button>
           <button
             onClick={handleOpenModal}
-            className="px-4 py-2 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm"
+            className="px-4 py-2 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm cursor-pointer"
           >
             + Add User
           </button>
@@ -284,7 +288,7 @@ const Users: React.FC = () => {
                       <button
                         onClick={() => handleDeleteUser(user.id)}
                         disabled={isDeleting === user.id}
-                        className={`text-xs font-medium text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all ${isDeleting === user.id ? "opacity-50 cursor-not-allowed" : ""}`}
+                        className={`text-xs font-medium text-red-600 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all cursor-pointer ${isDeleting === user.id ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
                         {isDeleting === user.id ? "Deleting..." : "Delete"}
                       </button>
@@ -315,7 +319,7 @@ const Users: React.FC = () => {
               </div>
               <button
                 onClick={handleCloseModal}
-                className="w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all"
+                className="w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all cursor-pointer"
               >
                 <svg
                   className="w-5 h-5"
@@ -388,7 +392,7 @@ const Users: React.FC = () => {
                       name="role"
                       value={formData.role}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
                     >
                       <option value="student">Student</option>
                       <option value="instructor">Instructor</option>
@@ -402,13 +406,13 @@ const Users: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-50 transition-all"
+                  className="flex-1 px-4 py-3 border border-gray-200 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-50 transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm"
+                  className="flex-1 px-4 py-3 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm cursor-pointer"
                 >
                   Create User
                 </button>

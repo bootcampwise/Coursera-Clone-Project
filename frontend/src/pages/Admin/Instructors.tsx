@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
+import { toast } from "react-hot-toast";
 
 interface Instructor {
   id: string;
@@ -46,9 +47,10 @@ const Instructors: React.FC = () => {
       return;
     try {
       await adminApi.delete(ENDPOINTS.USERS_BY_ID(id));
+      toast.success("Instructor removed successfully");
       fetchInstructors();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to remove instructor");
+      toast.error(err.response?.data?.message || "Failed to remove instructor");
     }
   };
 
@@ -63,7 +65,7 @@ const Instructors: React.FC = () => {
             Manage faculty and content creators
           </p>
         </div>
-        <button className="px-4 py-2 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm">
+        <button className="px-4 py-2 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm cursor-pointer">
           + Add Instructor
         </button>
       </div>
@@ -154,7 +156,7 @@ const Instructors: React.FC = () => {
                       <div className="flex items-center justify-end gap-3">
                         <button
                           onClick={() => handleRemoveInstructor(instructor.id)}
-                          className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors"
+                          className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors cursor-pointer"
                         >
                           Remove
                         </button>
