@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
@@ -13,6 +13,8 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const { user } = useSelector((state: RootState) => state.auth);
   const { signOut } = useGoogleAuth();
@@ -22,6 +24,14 @@ const Header: React.FC = () => {
   const openAuth = (e?: React.MouseEvent) => {
     e?.preventDefault();
     setIsAuthModalOpen(true);
+  };
+
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsMenuOpen(false); // Close mobile menu if open
+    }
   };
 
   return (
@@ -63,15 +73,19 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Search Bar - Pill Shape (Desktop) */}
           <div className="hidden md:flex flex-1 max-w-[600px] mx-4 lg:mx-8">
-            <div className="flex w-full relative">
+            <form onSubmit={handleSearch} className="flex w-full relative">
               <input
                 type="text"
                 placeholder="What do you want to learn?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-[48px] pl-6 pr-14 border border-border-card rounded-full text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary shadow-none transition-shadow"
               />
-              <button className="absolute right-1 top-1 h-[40px] w-[40px] flex items-center justify-center bg-primary text-white rounded-full hover:bg-primary-hover transition-colors">
+              <button
+                type="submit"
+                className="absolute right-1 top-1 h-[40px] w-[40px] flex items-center justify-center bg-primary text-white rounded-full hover:bg-primary-hover transition-colors"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -87,7 +101,7 @@ const Header: React.FC = () => {
                   />
                 </svg>
               </button>
-            </div>
+            </form>
           </div>
 
           {/* Desktop Navigation */}
@@ -243,13 +257,18 @@ const Header: React.FC = () => {
               </Button>
 
               {/* Mobile Search */}
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
                   placeholder="What do you want to learn?"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-[48px] pl-4 pr-12 border border-gray-400 rounded-full text-sm"
                 />
-                <button className="absolute right-1 top-1 h-[40px] w-[40px] bg-primary text-white rounded-full flex items-center justify-center">
+                <button
+                  type="submit"
+                  className="absolute right-1 top-1 h-[40px] w-[40px] bg-primary text-white rounded-full flex items-center justify-center"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -265,7 +284,7 @@ const Header: React.FC = () => {
                     />
                   </svg>
                 </button>
-              </div>
+              </form>
 
               <div className="flex flex-col gap-4 text-[16px] font-medium text-gray-800">
                 <Link
