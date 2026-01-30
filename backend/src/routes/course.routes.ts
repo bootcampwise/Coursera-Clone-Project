@@ -14,6 +14,7 @@ const router = Router();
 
 // Public routes
 router.get("/", getAllCourses);
+router.get("/search", getAllCourses);
 router.get("/:id", getCourseById);
 
 // Instructor routes (protected)

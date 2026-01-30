@@ -1,10 +1,14 @@
 import React from "react";
 
-const CourseInfoBar: React.FC = () => {
+interface CourseInfoBarProps {
+  course: any;
+}
+
+const CourseInfoBar: React.FC<CourseInfoBarProps> = ({ course }) => {
   const infoItems = [
     {
-      label: "Professional Certificate",
-      value: "Earn a career credential",
+      label: "Course",
+      value: `${course.category || "Professional Development"}`,
       icon: (
         <svg
           width="24"
@@ -41,8 +45,8 @@ const CourseInfoBar: React.FC = () => {
       ),
     },
     {
-      label: "Beginner level",
-      subLabel: "No prior experience required",
+      label: `${course.difficulty || "Beginner"} level`,
+      subLabel: "Suitable for everyone",
       icon: (
         <svg
           width="22"
@@ -79,8 +83,8 @@ const CourseInfoBar: React.FC = () => {
       ),
     },
     {
-      label: "7.7 million",
-      subLabel: "Learners",
+      label: `$${course.price || "Free"}`,
+      subLabel: "Course Price",
       icon: (
         <svg
           width="22"

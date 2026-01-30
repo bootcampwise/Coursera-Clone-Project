@@ -9,11 +9,50 @@ import SkillsGain from "./components/SkillsGain";
 import AdvanceExpertise from "./components/AdvanceExpertise";
 import CourseSeries from "./components/CourseSeries";
 import CareerTestimonials from "./components/CareerTestimonials";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { courseApi } from "../../services/courseApi";
 
 import Sidebar from "./components/Sidebar";
 
 const CourseDetails: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [course, setCourse] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      if (!id) return;
+      setIsLoading(true);
+      try {
+        const data = await courseApi.getCourseById(id);
+        setCourse(data);
+      } catch (error) {
+        console.error("Error fetching course details:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourse();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
+        <Header />
+        <div className="text-xl">Loading course details...</div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
+        <div className="text-xl">Course not found.</div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-white font-sans">
       <Header />
@@ -48,17 +87,15 @@ const CourseDetails: React.FC = () => {
             Professional Certificates
           </Link>
           <span className="text-gray-400 font-light text-[18px]">›</span>
-          <span className="text-[#1f1f1f] line-clamp-1">
-            Google Prompting Essentials Specialization
-          </span>
+          <span className="text-[#1f1f1f] line-clamp-1">{course.title}</span>
         </div>
       </div>
 
       <main>
-        <CourseHero />
+        <CourseHero course={course} />
 
         <div className="max-w-[1240px] mx-auto px-4 md:px-8 relative -mt-10 z-10">
-          <CourseInfoBar />
+          <CourseInfoBar course={course} />
         </div>
 
         <div className="max-w-[1240px] mx-auto px-4 md:px-8 py-12">
@@ -67,7 +104,10 @@ const CourseDetails: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-12">
             {/* Main Content */}
             <div className="lg:col-span-8 space-y-16">
-              <WhatYouWillLearn />
+              <WhatYouWillLearn
+                outcomes={course.outcomes}
+                description={course.description}
+              />
               <SkillsGain />
               <AdvanceExpertise />
               <CourseSeries />
@@ -76,7 +116,7 @@ const CourseDetails: React.FC = () => {
 
             {/* Sidebar */}
             <aside className="hidden lg:block lg:col-span-4">
-              <Sidebar />
+              <Sidebar course={course} />
             </aside>
           </div>
         </div>

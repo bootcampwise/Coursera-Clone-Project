@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface SearchCourseCardProps {
+  id: string;
   image: string;
   badge?: string;
   partnerLogo: string;
@@ -13,6 +15,7 @@ interface SearchCourseCardProps {
 }
 
 const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
+  id,
   image,
   badge,
   partnerLogo,
@@ -23,13 +26,17 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
   reviews,
   type,
 }) => {
+  const navigate = useNavigate();
   const hasDegreeLink =
     title.includes("Intelligence") ||
     title.includes("Cyber") ||
     title.includes("Data Analytics");
 
   return (
-    <div className="bg-white rounded-[4px] border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full font-sans group">
+    <div
+      onClick={() => navigate(`/course/${id}`)}
+      className="bg-white rounded-[4px] border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full font-sans group"
+    >
       {/* Image Section */}
       <div className="relative aspect-[16/9] w-full bg-gray-50 overflow-hidden">
         <img
@@ -43,8 +50,8 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
               badge === "POPULAR"
                 ? "bg-[#981b61]"
                 : badge === "NEW"
-                ? "bg-[#0056D2]"
-                : "bg-[#e7e7e7] text-[#1f1f1f]"
+                  ? "bg-[#0056D2]"
+                  : "bg-[#e7e7e7] text-[#1f1f1f]"
             }`}
           >
             <span className="flex items-center gap-1">

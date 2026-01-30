@@ -1,12 +1,17 @@
 import React from "react";
 
-const WhatYouWillLearn: React.FC = () => {
-  const points = [
-    "Identify prompting techniques to get better results from LLMs",
-    "Apply prompting essential elements (Persona, Task, Context, Format) to improve Gemini results",
-    "Apply prompt essential elements such as Persona, Task, Context, and Format to help improve LLM results",
-    "Identify ways prompting can help you use generative AI to be more productive at work",
-  ];
+interface WhatYouWillLearnProps {
+  outcomes?: string;
+  description: string;
+}
+
+const WhatYouWillLearn: React.FC<WhatYouWillLearnProps> = ({
+  outcomes,
+  description,
+}) => {
+  const points = outcomes
+    ? outcomes.split(";").map((p) => p.trim())
+    : [description.substring(0, 100)];
 
   return (
     <section>

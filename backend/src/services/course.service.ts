@@ -2,29 +2,37 @@ import { prisma } from "../config/prisma";
 
 interface CreateCourseData {
   title: string;
+  subtitle?: string;
   description: string;
+  outcomes?: string;
   category?: string;
   difficulty?: string;
+  language?: string;
   thumbnail?: string;
   price?: number;
+  status?: string;
   instructorId: string;
 }
 
 interface UpdateCourseData {
   title?: string;
+  subtitle?: string;
   description?: string;
+  outcomes?: string;
   category?: string;
   difficulty?: string;
+  language?: string;
   thumbnail?: string;
   price?: number;
-  published?: boolean;
+  status?: string;
 }
 
 interface CourseFilters {
   category?: string;
   difficulty?: string;
+  language?: string;
   search?: string;
-  published?: boolean;
+  status?: string;
 }
 
 export const getAllCourses = async (
@@ -36,8 +44,8 @@ export const getAllCourses = async (
 
   const where: any = {};
 
-  if (filters.published !== undefined) {
-    where.published = filters.published;
+  if (filters.status) {
+    where.status = filters.status;
   }
 
   if (filters.category) {
@@ -51,8 +59,14 @@ export const getAllCourses = async (
   if (filters.search) {
     where.OR = [
       { title: { contains: filters.search, mode: "insensitive" } },
+      { subtitle: { contains: filters.search, mode: "insensitive" } },
       { description: { contains: filters.search, mode: "insensitive" } },
+      { category: { contains: filters.search, mode: "insensitive" } },
     ];
+  }
+
+  if (filters.language) {
+    where.language = filters.language;
   }
 
   const [courses, total] = await Promise.all([
@@ -121,13 +135,16 @@ export const createCourse = async (data: CreateCourseData) => {
   const course = await prisma.course.create({
     data: {
       title: data.title,
+      subtitle: data.subtitle,
       description: data.description,
+      outcomes: data.outcomes,
       category: data.category,
       difficulty: data.difficulty,
+      language: data.language,
       thumbnail: data.thumbnail,
       price: data.price || 0,
       instructorId: data.instructorId,
-      published: false,
+      status: data.status || "Draft",
     },
     include: {
       instructor: {

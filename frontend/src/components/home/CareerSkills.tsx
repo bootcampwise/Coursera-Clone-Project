@@ -1,33 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../common/Button";
+import { courseApi } from "../../services/courseApi";
+import { useNavigate } from "react-router-dom";
 
 const CareerSkills: React.FC = () => {
-  const courses = [
-    {
-      university: "University of Michigan",
+  const [courses, setCourses] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
-      title: "Python for Everybody",
-      type: "Beginner · Specialization",
-      image:
-        "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera-course-photos/5c/21/f46046e711e5a32ecf01833c8464/pythonlearn_thumbnail_1x1.png?auto=format%2Ccompress&dpr=1",
-    },
-    {
-      university: "Vanderbilt University",
-      logo: "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera-university-assets.s3.amazonaws.com/2a/822a933c066a50b3c5132af8b2f8af/vanderbilt_squared_logo.png?auto=format%2Ccompress&dpr=1",
-      title: "Prompt Engineering",
-      type: "Beginner Specialization",
-      image:
-        "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera-course-photos/db/57/465030234125b04535352c80c0e5/Prompt-Engineering-for-ChatGPT_Square.png?auto=format%2Ccompress&dpr=1",
-    },
-    {
-      university: "IBM",
-      logo: "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera-university-assets.s3.amazonaws.com/bb/f5/8c92a54b455c91b58d3c52402170/ibm-logo.png?auto=format%2Ccompress&dpr=1",
-      title: "IBM Data Science",
-      type: "Beginner · Professional Certificate",
-      image:
-        "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera-course-photos/08/33/f788647611e8a2c7cd16e792e3a1/Data-Science_Square.png?auto=format%2Ccompress&dpr=1",
-    },
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await courseApi.getCourses({ limit: 6 });
+        // Map backend data to UI format
+        const mappedCourses = response.courses.map((c: any) => ({
+          id: c.id,
+          university: c.instructor?.name || "Instructor",
+          logo:
+            c.instructor?.avatarUrl ||
+            "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg",
+          title: c.title,
+          type: `${c.difficulty || "Beginner"} · Course`,
+          image:
+            c.thumbnail ||
+            "https://images.unsplash.com/photo-1591453089816-0fbb971ca25c?w=800&auto=format&fit=crop&q=60",
+        }));
+        setCourses(mappedCourses);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <section className="bg-[#F5F7F8] py-16">
+        <div className="container mx-auto px-4 md:px-8 text-center">
+          Loading amazing courses...
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-[#F5F7F8] py-16">
@@ -51,6 +68,7 @@ const CareerSkills: React.FC = () => {
             {courses.map((course, index) => (
               <div
                 key={index}
+                onClick={() => navigate(`/course/${course.id}`)}
                 className="bg-white rounded-lg shadow-sm border border-border-muted overflow-hidden flex flex-col hover:shadow-card transition-shadow cursor-pointer h-full"
               >
                 <div className="relative aspect-[16/9] overflow-hidden">

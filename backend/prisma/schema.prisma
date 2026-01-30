@@ -27,16 +27,19 @@ model User {
 model Course {
   id           String       @id @map("_id") @default(auto()) @db.ObjectId
   title        String
+  subtitle     String?
   description  String
+  outcomes     String?
   category     String?
-  difficulty   String?
+  difficulty   String?      @default("Beginner")
+  language     String?      @default("English")
   thumbnail    String?
   price        Float        @default(0)
-  published    Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  status       String       @default("Draft") // "Draft" | "Published"
   instructor   User         @relation(fields: [instructorId], references: [id], name: "InstructorCourses")
   instructorId String       @db.ObjectId
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
   modules      Module[]
   enrollments  Enrollment[]
   reviews      Review[]

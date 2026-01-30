@@ -1,29 +1,33 @@
-import React from "react";
+interface CourseHeroProps {
+  course: any;
+}
 
-const CourseHero: React.FC = () => {
+const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
   return (
     <section className="bg-gradient-to-r from-white via-white to-blue-50 relative overflow-hidden pt-12 pb-20 border-b border-gray-100 px-4 md:px-0">
       <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 items-center px-4 md:px-8">
         <div className="z-10">
           {/* Logo */}
           <div className="mb-6 flex items-center gap-2">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
-              alt="Google"
-              className="h-[32px] w-auto"
-            />
+            {course.instructor?.avatarUrl && (
+              <img
+                src={course.instructor.avatarUrl}
+                alt={course.instructor.name}
+                className="h-[32px] w-auto rounded-full"
+              />
+            )}
+            <span className="font-bold text-gray-700">
+              {course.instructor?.name}
+            </span>
           </div>
 
           {/* Title */}
           <h1 className="text-[40px] md:text-[56px] font-bold text-[#1f1f1f] leading-[1.1] mb-6 tracking-tight">
-            Google Prompting Essentials <br className="hidden md:block" />{" "}
-            Specialization
+            {course.title}
           </h1>
 
           <p className="text-[16px] text-gray-700 leading-relaxed mb-8 max-w-[600px]">
-            Master the art of prompting with Google's prompting framework. Use
-            AI to write, code, and design. Apply the essentials of prompting in
-            your personal and professional life.
+            {course.subtitle || course.description.substring(0, 150) + "..."}
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-6">

@@ -15,6 +15,7 @@ export const ENDPOINTS = {
 
   // Courses
   COURSES: "/courses",
+  COURSES_SEARCH: "/courses/search",
   COURSES_BY_ID: (id: string) => `/courses/${id}`,
   COURSES_INSTRUCTOR: "/courses/instructor/my",
 

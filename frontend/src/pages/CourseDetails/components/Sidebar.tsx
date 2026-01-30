@@ -1,6 +1,10 @@
 import React from "react";
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  course: any;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ course }) => {
   return (
     <div className="space-y-8 sticky top-[120px]">
       {/* Taught by */}
@@ -10,19 +14,23 @@ const Sidebar: React.FC = () => {
         </h3>
         <div className="flex items-center gap-4 mb-4">
           <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center overflow-hidden">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
-              alt="Google"
-              className="w-8"
-            />
+            {course.instructor?.avatarUrl ? (
+              <img
+                src={course.instructor.avatarUrl}
+                alt={course.instructor.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-xl font-bold text-primary">
+                {course.instructor?.name?.charAt(0)}
+              </span>
+            )}
           </div>
           <div>
             <h4 className="text-[15px] font-bold text-[#1f1f1f]">
-              Google Career Certificates
+              {course.instructor?.name}
             </h4>
-            <p className="text-[13px] text-gray-500">
-              1.2M+ Learners • 150+ Courses
-            </p>
+            <p className="text-[13px] text-gray-500">Instructor</p>
           </div>
         </div>
         <p className="text-[13px] text-gray-600 leading-relaxed">
@@ -38,11 +46,14 @@ const Sidebar: React.FC = () => {
           Offered by
         </h3>
         <div className="flex items-center gap-4 mb-2">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
-            alt="Google"
-            className="h-6"
-          />
+          {course.instructor?.avatarUrl && (
+            <img
+              src={course.instructor.avatarUrl}
+              alt={course.instructor.name}
+              className="h-6"
+            />
+          )}
+          <span className="text-sm font-medium">{course.instructor?.name}</span>
         </div>
         <button className="text-[#0056D2] text-[13px] font-bold hover:underline">
           Learn more

@@ -6,14 +6,14 @@ export const getAllCourses = asyncHandler(
   async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const { category, difficulty, search, published } = req.query;
+    const { category, difficulty, search, q, status, language } = req.query;
 
     const filters = {
       category: category as string,
       difficulty: difficulty as string,
-      search: search as string,
-      published:
-        published === "true" ? true : published === "false" ? false : undefined,
+      search: (search || q) as string,
+      status: (status || "Published") as string,
+      language: language as string,
     };
 
     const result = await courseService.getAllCourses(page, limit, filters);
@@ -31,8 +31,18 @@ export const getCourseById = asyncHandler(
 
 export const createCourse = asyncHandler(
   async (req: Request & { user?: any }, res: Response) => {
-    const { title, description, category, difficulty, thumbnail, price } =
-      req.body;
+    const {
+      title,
+      subtitle,
+      description,
+      outcomes,
+      category,
+      difficulty,
+      language,
+      thumbnail,
+      price,
+      status,
+    } = req.body;
     const instructorId = req.user?.id;
 
     if (!instructorId) {
@@ -42,12 +52,16 @@ export const createCourse = asyncHandler(
 
     const course = await courseService.createCourse({
       title,
+      subtitle,
       description,
+      outcomes,
       category,
       difficulty,
+      language,
       thumbnail,
-      price,
+      price: price ? parseFloat(price) : 0,
       instructorId,
+      status,
     });
 
     res.status(201).json(course);
