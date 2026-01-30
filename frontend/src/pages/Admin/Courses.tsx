@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../services/apiClient";
+import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
 
 interface Course {
@@ -24,7 +24,7 @@ const Courses: React.FC = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await api.get(ENDPOINTS.COURSES);
+      const response = await adminApi.get(ENDPOINTS.COURSES);
       setCourses(response.data.courses || response.data); // Handle both paginated and flat response
       setError(null);
     } catch (err: any) {
@@ -41,7 +41,7 @@ const Courses: React.FC = () => {
   const handleDeleteCourse = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
-      await api.delete(ENDPOINTS.COURSES_BY_ID(id));
+      await adminApi.delete(ENDPOINTS.COURSES_BY_ID(id));
       fetchCourses();
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to delete course");

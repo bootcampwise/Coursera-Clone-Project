@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../services/apiClient";
+import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
 
 interface StatCard {
@@ -37,7 +37,7 @@ const Overview: React.FC = () => {
     const fetchAnalytics = async () => {
       try {
         setLoading(true);
-        const response = await api.get(ENDPOINTS.ANALYTICS_ADMIN);
+        const response = await adminApi.get(ENDPOINTS.ANALYTICS_ADMIN);
         setData(response.data);
       } catch (err: any) {
         setError(

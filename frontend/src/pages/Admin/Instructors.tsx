@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../services/apiClient";
+import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
 
 interface Instructor {
@@ -23,7 +23,7 @@ const Instructors: React.FC = () => {
   const fetchInstructors = async () => {
     try {
       setLoading(true);
-      const response = await api.get(ENDPOINTS.USERS_LIST, {
+      const response = await adminApi.get(ENDPOINTS.USERS_LIST, {
         params: { role: "instructor", limit: 50 },
       });
       setInstructors(response.data.users);
@@ -45,7 +45,7 @@ const Instructors: React.FC = () => {
     if (!window.confirm("Are you sure you want to remove this instructor?"))
       return;
     try {
-      await api.delete(ENDPOINTS.USERS_BY_ID(id));
+      await adminApi.delete(ENDPOINTS.USERS_BY_ID(id));
       fetchInstructors();
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to remove instructor");

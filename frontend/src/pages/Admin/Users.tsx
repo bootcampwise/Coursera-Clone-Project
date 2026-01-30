@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "../../services/apiClient";
+import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
 
 interface User {
@@ -38,7 +38,7 @@ const Users: React.FC = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await api.get(ENDPOINTS.USERS_LIST, {
+      const response = await adminApi.get(ENDPOINTS.USERS_LIST, {
         params: { limit: 50 }, // Increased limit for admin view
       });
       setUsers(response.data.users);
@@ -70,7 +70,7 @@ const Users: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post(ENDPOINTS.USERS_LIST, formData);
+      await adminApi.post(ENDPOINTS.USERS_LIST, formData);
       handleCloseModal();
       fetchUsers();
     } catch (err: any) {
@@ -80,7 +80,9 @@ const Users: React.FC = () => {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      await api.patch(ENDPOINTS.USERS_UPDATE_ROLE(userId), { role: newRole });
+      await adminApi.patch(ENDPOINTS.USERS_UPDATE_ROLE(userId), {
+        role: newRole,
+      });
       fetchUsers();
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to update role");
@@ -98,7 +100,7 @@ const Users: React.FC = () => {
 
     try {
       setIsDeleting(userId);
-      await api.delete(ENDPOINTS.USERS_BY_ID(userId));
+      await adminApi.delete(ENDPOINTS.USERS_BY_ID(userId));
       fetchUsers();
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to delete user");
