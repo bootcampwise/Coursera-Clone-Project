@@ -18,7 +18,7 @@ const ProgramSearch: React.FC = () => {
   const handleSearch = (e?: React.FormEvent, tag?: string) => {
     e?.preventDefault();
     const searchTerm = tag || query;
-    if (searchTerm.trim() && searchTerm !== "Popular") {
+    if (searchTerm.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
@@ -68,7 +68,7 @@ const ProgramSearch: React.FC = () => {
               onClick={(e) => handleSearch(e, tag)}
               className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
                 index === 0
-                  ? "bg-white text-text-secondary hover:bg-gray-100 cursor-default pointer-events-none"
+                  ? "bg-white text-text-secondary hover:bg-gray-100"
                   : "bg-blue-50 text-primary hover:bg-blue-100"
               }`}
             >
