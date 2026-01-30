@@ -18,9 +18,9 @@ export const courseApi = {
     return response.data;
   },
 
-  searchCourses: async (query: string) => {
+  searchCourses: async (query: string, limit?: number) => {
     const response = await api.get(ENDPOINTS.COURSES_SEARCH, {
-      params: { q: query },
+      params: { q: query, limit },
     });
     return response.data;
   },

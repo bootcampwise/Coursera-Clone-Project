@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
@@ -8,18 +8,76 @@ import Button from "../common/Button";
 import { IMAGES } from "../../constants/images";
 import HomePreHeader from "./HomePreHeader";
 import AuthModal from "../common/AuthModal";
+import { courseApi } from "../../services/courseApi";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const popularSuggestions = [
+    "Python",
+    "Data Science",
+    "React",
+    "Business",
+    "Machine Learning",
+  ];
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const { user } = useSelector((state: RootState) => state.auth);
   const { signOut } = useGoogleAuth();
 
   const Logo = () => <img src={IMAGES.LOGO} alt="Logo" className="w-32" />;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        overlayRef.current &&
+        !overlayRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowOverlay(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setResults([]);
+      // Keep overlay open to show popular suggestions if focused
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const response = await courseApi.searchCourses(searchQuery);
+        // Only show published courses and limit to 6
+        const publishedResults = (response.courses || [])
+          .filter((c: any) => c.status === "Published")
+          .slice(0, 6);
+        setResults(publishedResults);
+        setShowOverlay(true);
+        setSelectedIndex(-1);
+      } catch (error) {
+        console.error("Live search failed:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const openAuth = (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -31,6 +89,48 @@ const Header: React.FC = () => {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setIsMenuOpen(false); // Close mobile menu if open
+      setShowOverlay(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showOverlay) {
+      if (e.key === "ArrowDown") {
+        setShowOverlay(true);
+        setSelectedIndex(0);
+      }
+      return;
+    }
+
+    const items = searchQuery.trim().length < 2 ? popularSuggestions : results;
+    const maxIndex = items.length - 1;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev < maxIndex ? prev + 1 : prev));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > -1 ? prev - 1 : prev));
+    } else if (e.key === "Enter") {
+      if (selectedIndex >= 0) {
+        e.preventDefault();
+        if (searchQuery.trim().length < 2) {
+          const suggestion = popularSuggestions[selectedIndex];
+          setSearchQuery(suggestion);
+          navigate(`/search?q=${encodeURIComponent(suggestion)}`);
+          setShowOverlay(false);
+        } else {
+          const course = results[selectedIndex];
+          navigate(`/course/${course.id}`);
+          setShowOverlay(false);
+          setSearchQuery("");
+        }
+      } else {
+        handleSearch(e);
+      }
+    } else if (e.key === "Escape") {
+      setShowOverlay(false);
+      inputRef.current?.blur();
     }
   };
 
@@ -73,35 +173,209 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-[600px] mx-4 lg:mx-8">
+          <div className="hidden md:flex flex-1 max-w-[600px] mx-4 lg:mx-8 relative">
             <form onSubmit={handleSearch} className="flex w-full relative">
               <input
+                ref={inputRef}
                 type="text"
                 placeholder="What do you want to learn?"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setShowOverlay(true)}
                 className="w-full h-[48px] pl-6 pr-14 border border-border-card rounded-full text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary shadow-none transition-shadow"
+                role="combobox"
+                aria-expanded={showOverlay}
+                aria-haspopup="listbox"
+                aria-autocomplete="list"
+                aria-activedescendant={
+                  selectedIndex >= 0
+                    ? searchQuery.trim().length < 2
+                      ? `suggestion-item-${selectedIndex}`
+                      : `course-item-${selectedIndex}`
+                    : undefined
+                }
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setResults([]);
+                    setSelectedIndex(-1);
+                    inputRef.current?.focus();
+                  }}
+                  className="absolute right-12 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1 bg-transparent border-none cursor-pointer"
+                  aria-label="Clear search"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              )}
               <button
                 type="submit"
                 className="absolute right-1 top-1 h-[40px] w-[40px] flex items-center justify-center bg-primary text-white rounded-full hover:bg-primary-hover transition-colors"
+                aria-label="Search"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                  />
-                </svg>
+                {isLoading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                    />
+                  </svg>
+                )}
               </button>
             </form>
+
+            {/* Search Overlay/Modal */}
+            {showOverlay && (
+              <div
+                ref={overlayRef}
+                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden max-h-[480px] overflow-y-auto"
+                role="listbox"
+              >
+                {isLoading ? (
+                  <div className="p-12 text-center">
+                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                    <p className="text-sm text-gray-500">Finding matches...</p>
+                  </div>
+                ) : searchQuery.trim().length < 2 ? (
+                  <div className="p-4">
+                    <div className="px-3 py-2 text-[12px] font-bold text-gray-500 uppercase tracking-wider mb-2">
+                      Popular Suggestions
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      {popularSuggestions.map((suggestion, index) => (
+                        <div
+                          key={suggestion}
+                          id={`suggestion-item-${index}`}
+                          onClick={() => {
+                            setSearchQuery(suggestion);
+                            navigate(
+                              `/search?q=${encodeURIComponent(suggestion)}`,
+                            );
+                            setShowOverlay(false);
+                          }}
+                          onMouseEnter={() => setSelectedIndex(index)}
+                          className={`flex items-center gap-3 px-3 py-2.5 rounded-md cursor-pointer transition-colors ${
+                            selectedIndex === index
+                              ? "bg-blue-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                          role="option"
+                          aria-selected={selectedIndex === index}
+                        >
+                          <svg
+                            className="w-4 h-4 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
+                          </svg>
+                          <span className="text-sm font-medium text-gray-700">
+                            {suggestion}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : results.length > 0 ? (
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-[12px] font-bold text-gray-500 uppercase tracking-wider">
+                      Courses
+                    </div>
+                    {results.map((course, index) => (
+                      <div
+                        key={course.id}
+                        id={`course-item-${index}`}
+                        onClick={() => {
+                          navigate(`/course/${course.id}`);
+                          setShowOverlay(false);
+                          setSearchQuery("");
+                        }}
+                        onMouseEnter={() => setSelectedIndex(index)}
+                        className={`flex items-center gap-4 p-3 rounded-md cursor-pointer transition-colors ${
+                          selectedIndex === index
+                            ? "bg-blue-50"
+                            : "hover:bg-gray-50"
+                        }`}
+                        role="option"
+                        aria-selected={selectedIndex === index}
+                      >
+                        <img
+                          src={course.thumbnail}
+                          alt=""
+                          className="w-16 h-10 object-cover rounded shadow-sm"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-bold text-gray-900 truncate">
+                            {course.title}
+                          </h4>
+                          <p className="text-xs text-gray-500 truncate">
+                            {course.category} • {course.difficulty}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="border-t border-gray-100 mt-2 pt-2">
+                      <button
+                        onClick={handleSearch}
+                        className="w-full text-left px-3 py-2 text-sm text-primary font-bold hover:bg-gray-50 flex items-center justify-between"
+                      >
+                        <span>See all results for "{searchQuery}"</span>
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-8 text-center text-gray-500">
+                    <p className="text-sm">
+                      No courses found for "{searchQuery}"
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Desktop Navigation */}
