@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { courseApi } from "../../services/courseApi";
+import adminApi from "../../services/adminApiClient";
 import { toast } from "react-hot-toast";
 
 type CourseStatus = "Draft" | "Published";
@@ -15,6 +16,7 @@ interface CourseFormState {
   status: CourseStatus;
   description: string;
   outcomes: string;
+  instructorId?: string;
 }
 
 const CreateCourse: React.FC = () => {
@@ -37,6 +39,10 @@ const CreateCourse: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEditMode);
+  const [instructors, setInstructors] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const isAdmin = location.pathname.includes("/admin");
 
   useEffect(() => {
     if (isEditMode && id) {
@@ -64,6 +70,21 @@ const CreateCourse: React.FC = () => {
     }
   }, [id, isEditMode]);
 
+  useEffect(() => {
+    if (isAdmin && !isEditMode) {
+      const fetchInstructors = async () => {
+        try {
+          const response = await adminApi.get("/users?role=instructor");
+          // Backend returns { users: [...], pagination: {...} }
+          setInstructors(response.data.users || []);
+        } catch (error) {
+          toast.error("Failed to load instructors");
+        }
+      };
+      fetchInstructors();
+    }
+  }, [isAdmin, isEditMode]);
+
   const onChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -81,6 +102,7 @@ const CreateCourse: React.FC = () => {
       const payload = {
         ...form,
         price: parseFloat(form.price) || 0,
+        ...(isAdmin && !isEditMode && { instructorId: form.instructorId }),
       };
 
       if (isEditMode && id) {
@@ -209,6 +231,28 @@ const CreateCourse: React.FC = () => {
                   </select>
                 </div>
               </div>
+
+              {isAdmin && !isEditMode && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Assign Instructor *
+                  </label>
+                  <select
+                    required
+                    name="instructorId"
+                    value={form.instructorId || ""}
+                    onChange={onChange}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">Select instructor...</option>
+                    {instructors.map((inst) => (
+                      <option key={inst.id} value={inst.id}>
+                        {inst.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

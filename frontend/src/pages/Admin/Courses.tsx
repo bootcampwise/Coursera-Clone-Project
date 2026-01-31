@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import adminApi from "../../services/adminApiClient";
 import { ENDPOINTS } from "../../services/endpoints";
 import { toast } from "react-hot-toast";
@@ -83,6 +84,25 @@ const Courses: React.FC = () => {
             </svg>
             Refresh
           </button>
+          <Link
+            to="/admin/courses/new"
+            className="px-4 py-2 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm flex items-center gap-2"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Course
+          </Link>
         </div>
       </div>
 
@@ -193,12 +213,26 @@ const Courses: React.FC = () => {
                       ${course.price}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => handleDeleteCourse(course.id)}
-                        className="text-xs font-medium text-red-600 hover:text-red-700 transition-colors px-3 py-1 rounded-lg hover:bg-red-50 cursor-pointer"
-                      >
-                        Delete
-                      </button>
+                      <div className="inline-flex items-center gap-3">
+                        <Link
+                          to={`/admin/videos?courseId=${course.id}`}
+                          className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                        >
+                          Manage Content
+                        </Link>
+                        <Link
+                          to={`/admin/courses/edit/${course.id}`}
+                          className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteCourse(course.id)}
+                          className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

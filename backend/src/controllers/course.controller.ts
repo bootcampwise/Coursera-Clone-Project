@@ -42,8 +42,24 @@ export const createCourse = asyncHandler(
       thumbnail,
       price,
       status,
+      instructorId: bodyInstructorId,
     } = req.body;
-    const instructorId = req.user?.id;
+
+    const userRole = req.user?.role?.toLowerCase();
+    let instructorId: string;
+
+    // Admin can specify instructor, instructor uses own ID
+    if (userRole === "admin") {
+      // Admin MUST provide instructorId in request body
+      if (!bodyInstructorId) {
+        res.status(400).json({ message: "instructorId is required for admin" });
+        return;
+      }
+      instructorId = bodyInstructorId;
+    } else {
+      // Instructor automatically uses own ID
+      instructorId = req.user?.id;
+    }
 
     if (!instructorId) {
       res.status(401).json({ message: "Unauthorized" });

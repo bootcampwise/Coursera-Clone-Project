@@ -101,6 +101,9 @@ const AppRoutes: React.FC = () => (
           <Route path="users" element={<Users />} />
           <Route path="instructors" element={<Instructors />} />
           <Route path="courses" element={<Courses />} />
+          <Route path="courses/new" element={<InstructorCreateCourse />} />
+          <Route path="courses/edit/:id" element={<InstructorCreateCourse />} />
+          <Route path="videos" element={<InstructorVideos />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
