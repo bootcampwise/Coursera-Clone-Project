@@ -13,7 +13,7 @@ app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Mount routes
-app.use("/api/upload", uploadRoutes); // Mount upload routes specifically
+app.use("/api/v1/upload", uploadRoutes); // Mount upload routes specifically
 app.use(routes); // Mount general routes
 
 app.use(errorMiddleware);
