@@ -57,9 +57,16 @@ model Module {
   updatedAt DateTime @updatedAt
 }
 
+enum LessonType {
+  VIDEO
+  READING
+  ASSESSMENT
+}
+
 model Lesson {
-  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  id        String     @id @map("_id") @default(auto()) @db.ObjectId
   title     String
+  type      LessonType @default(VIDEO)
   content   String?
   videoUrl  String?
   duration  Int?     // in seconds

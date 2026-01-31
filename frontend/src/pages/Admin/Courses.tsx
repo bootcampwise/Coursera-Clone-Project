@@ -221,6 +221,12 @@ const Courses: React.FC = () => {
                           Manage Content
                         </Link>
                         <Link
+                          to={`/admin/courses/${course.id}/curriculum`}
+                          className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                        >
+                          Curriculum
+                        </Link>
+                        <Link
                           to={`/admin/courses/edit/${course.id}`}
                           className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
                         >

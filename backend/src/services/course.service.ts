@@ -285,3 +285,21 @@ export const getCourseContent = async (courseId: string) => {
   if (!course) throw new Error("Course not found");
   return course.modules;
 };
+
+export const verifyCourseOwnership = async (
+  courseId: string,
+  userId: string,
+  userRole: string,
+) => {
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+    select: { id: true, instructorId: true },
+  });
+
+  if (!course) throw new Error("Course not found");
+
+  if (userRole.toLowerCase() !== "admin" && course.instructorId !== userId) {
+    throw new Error("Not authorized to modify this course");
+  }
+  return course;
+};
