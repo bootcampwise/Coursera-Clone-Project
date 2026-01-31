@@ -1,20 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoggedHeader from "../../components/layout/LoggedHeader";
 import Footer from "../../components/home/Footer";
+import { enrollmentApi } from "../../services/enrollmentApi";
+import { Link, useNavigate } from "react-router-dom";
 
 const MyLearning: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("Completed");
+  const [activeTab, setActiveTab] = useState("In Progress");
+  const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const tabs = ["In Progress", "Saved", "Completed"];
 
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      setIsLoading(true);
+      try {
+        const data = await enrollmentApi.getMyEnrollments();
+        setEnrollments(data);
+      } catch (error) {
+        console.error("Error fetching enrollments:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEnrollments();
+  }, []);
+
+  const filteredEnrollments = enrollments.filter((enrollment) => {
+    if (activeTab === "In Progress") return !enrollment.completed;
+    if (activeTab === "Completed") return enrollment.completed;
+    return false; // Saved tab logic can be added later if needed
+  });
+
+  const renderEmptyState = () => (
+    <div className="py-20 text-center">
+      <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#ccc"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+      </div>
+      <h3 className="text-[20px] font-bold text-[#1f1f1f] mb-2">
+        Nothing here yet
+      </h3>
+      <p className="text-gray-600 mb-8">
+        Start a new course and build your skills.
+      </p>
+      <Link
+        to="/search"
+        className="px-8 py-3 bg-[#0056D2] text-white font-bold rounded-[4px] hover:bg-[#00419e] transition-colors"
+      >
+        Explore Courses
+      </Link>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-white font-sans">
-      <LoggedHeader searchPlaceholder="Search Coursera for Google Career Certific..." />
+      <LoggedHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-[1100px]">
         {/* Page Title */}
         <h1 className="text-[32px] font-bold text-[#1f1f1f] mb-6">
-          My Google Career Certificates - UAF - Female Learning
+          My Learning
         </h1>
 
         {/* Tabs */}
@@ -34,142 +93,106 @@ const MyLearning: React.FC = () => {
           ))}
         </div>
 
-        {/* Specialization Card */}
-        <div className="border border-[#e1e1e1] rounded-[8px] overflow-hidden shadow-sm mb-12">
-          {/* Card Top Section */}
-          <div className="p-8 flex gap-8">
-            {/* Image */}
-            <div className="w-[180px] h-[120px] shrink-0 rounded-[4px] overflow-hidden">
-              <img
-                src="/images/office_man_smiling.png"
-                alt="Google Prompting Essentials"
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Content */}
-            <div className="flex-1">
-              <h2 className="text-[20px] font-bold text-[#1f1f1f] mb-2 hover:text-[#0056D2] cursor-pointer">
-                Google Prompting Essentials
-              </h2>
-              <p className="text-[14px] text-[#1f1f1f] leading-relaxed mb-4">
-                Want to use generative AI tools but not sure where to start?
-                Google Prompting Essentials teaches you how to give clear and
-                specific instructions to generative AI—known as prompting. In 5
-                easy steps, you'll learn how to prompt effectively and unlock
-                more of AI's benefits. Through hands-on exercises and real-world
-                examples, you'll learn how to use AI to: Save time: Craft
-                emails, brainstorm with ease, build tables and trackers, and
-                summarize lengthy documents. Uncover...
-              </p>
-
-              <button className="flex items-center gap-1 text-[#0056D2] text-[14px] font-bold mb-6 hover:underline">
-                More
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
-                  <path
-                    d="M1 1.5L5 5.5L9 1.5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-
-              <div className="flex items-center gap-4">
-                <span className="text-[14px] font-bold text-[#1f1f1f]">
-                  4 courses
-                </span>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4].map((num) => (
-                    <div
-                      key={num}
-                      className="w-[44px] h-[44px] rounded-full bg-[#187541] flex items-center justify-center text-white font-bold text-[18px]"
-                    >
-                      {num}
-                    </div>
-                  ))}
-                </div>
-                <button className="ml-2 text-[#636363] hover:text-[#1f1f1f]">
-                  <svg width="16" height="10" viewBox="0 0 16 10" fill="none">
-                    <path
-                      d="M1 1L8 8L15 1"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+        {isLoading ? (
+          <div className="py-20 flex justify-center">
+            <div className="w-12 h-12 border-4 border-[#0056D2] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : filteredEnrollments.length === 0 ? (
+          renderEmptyState()
+        ) : (
+          <div className="space-y-6">
+            {filteredEnrollments.map((enrollment) => (
+              <div
+                key={enrollment.id}
+                className="border border-[#e1e1e1] rounded-[8px] overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white flex flex-col md:flex-row p-6 gap-6"
+              >
+                {/* Course Image */}
+                <div className="w-full md:w-[180px] h-[120px] shrink-0 rounded-[4px] overflow-hidden border border-gray-100">
+                  {enrollment.course.thumbnail ? (
+                    <img
+                      src={enrollment.course.thumbnail}
+                      alt={enrollment.course.title}
+                      className="w-full h-full object-cover"
                     />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Card Bottom Section (Completed Course) */}
-          <div className="border-t border-[#e1e1e1] p-8 flex gap-8 bg-white hover:bg-gray-50 transition-colors group cursor-pointer">
-            <div className="w-[180px] h-[100px] shrink-0 rounded-[4px] overflow-hidden">
-              <img
-                src="/images/office_man_smiling.png"
-                alt="Use AI as a Creative or Expert Partner"
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            <div className="flex-1 flex items-start justify-between">
-              <div>
-                <h3 className="text-[16px] font-bold text-[#1f1f1f] mb-4 group-hover:text-[#0056D2]">
-                  Use AI as a Creative or Expert Partner
-                </h3>
-
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-[20px] h-[20px] rounded-full bg-[#187541] flex items-center justify-center">
-                    <svg
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                  </div>
-                  <span className="text-[14px] text-[#1f1f1f]">
-                    Completed on{" "}
-                    <span className="font-bold">August 7, 2025</span>
-                  </span>
+                  ) : (
+                    <div className="w-full h-full bg-blue-50 flex items-center justify-center text-primary font-bold text-2xl">
+                      {enrollment.course.title.charAt(0)}
+                    </div>
+                  )}
                 </div>
 
-                <button className="flex items-center gap-2 text-[#636363] text-[14px] font-medium hover:text-[#0056D2] hover:underline">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="3" y="4" width="18" height="15" rx="2" />
-                    <path d="M12 12h.01" />
-                    <path d="M16 12h.01" />
-                    <path d="M8 12h.01" />
-                    <path d="M12 16h.01" />
-                    <path d="M3 8h18" />
-                  </svg>
-                  View Certificate
-                </button>
-              </div>
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <h2
+                      onClick={() => navigate(`/learn/${enrollment.course.id}`)}
+                      className="text-[20px] font-bold text-[#1f1f1f] mb-1 hover:text-[#0056D2] cursor-pointer transition-colors"
+                    >
+                      {enrollment.course.title}
+                    </h2>
+                    <p className="text-[14px] text-gray-600 mb-4">
+                      By{" "}
+                      {enrollment.course.instructor?.name ||
+                        "Coursera Instructor"}
+                    </p>
 
-              <button className="mt-auto px-8 py-[8px] bg-[#0056D2] text-white font-bold rounded-[4px] text-[14px] hover:bg-[#00419e] transition-colors shadow-sm">
-                Review
-              </button>
-            </div>
+                    {/* Progress Bar */}
+                    <div className="w-full max-w-[300px] bg-gray-100 h-2 rounded-full overflow-hidden mb-2">
+                      <div
+                        className="bg-[#0056D2] h-full transition-all duration-500"
+                        style={{ width: `${enrollment.progress}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-[12px] font-bold text-[#1f1f1f]">
+                      {enrollment.progress}% complete
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-6">
+                    <div className="flex items-center gap-2">
+                      {enrollment.completed ? (
+                        <div className="flex items-center gap-2 text-[#187541] font-bold text-[14px]">
+                          <div className="w-5 h-5 rounded-full bg-[#187541] flex items-center justify-center">
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="white"
+                              strokeWidth="4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </div>
+                          Completed
+                        </div>
+                      ) : (
+                        <span className="text-[14px] text-gray-500">
+                          {enrollment.progress === 0
+                            ? "Not started"
+                            : "Last accessed recently"}
+                        </span>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => navigate(`/learn/${enrollment.course.id}`)}
+                      className="px-8 py-[10px] bg-[#0056D2] text-white font-bold rounded-[4px] text-[14px] hover:bg-[#00419e] transition-colors shadow-sm"
+                    >
+                      {enrollment.completed
+                        ? "Review"
+                        : enrollment.progress === 0
+                          ? "Start"
+                          : "Continue"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </main>
 
       <Footer />

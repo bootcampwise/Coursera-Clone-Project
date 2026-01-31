@@ -77,7 +77,7 @@ const AppRoutes: React.FC = () => (
         path="/instructor-login"
         element={<AdminInstructorLogin expectedRole="instructor" />}
       />
-      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/checkout/:courseId" element={<Checkout />} />
 
       {/* Protected Instructor Routes */}
       <Route
@@ -87,6 +87,7 @@ const AppRoutes: React.FC = () => (
           <Route index element={<InstructorOverview />} />
           <Route path="courses" element={<InstructorCourses />} />
           <Route path="courses/new" element={<InstructorCreateCourse />} />
+          <Route path="courses/edit/:id" element={<InstructorCreateCourse />} />
           <Route path="videos" element={<InstructorVideos />} />
           <Route path="analytics" element={<InstructorAnalytics />} />
           <Route path="settings" element={<InstructorSettings />} />

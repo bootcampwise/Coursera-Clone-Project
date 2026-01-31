@@ -217,6 +217,22 @@ export const getInstructorCourses = async (instructorId: string) => {
   return courses;
 };
 
+export const getAdminCourses = async () => {
+  const courses = await prisma.course.findMany({
+    include: {
+      instructor: {
+        select: { id: true, name: true },
+      },
+      _count: {
+        select: { enrollments: true, reviews: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return courses;
+};
+
 // --- Module & Lesson Services ---
 
 export const createModule = async (

@@ -6,24 +6,36 @@ import {
   updateCourse,
   deleteCourse,
   getInstructorCourses,
+  getAdminCourseCatalog,
 } from "../controllers/course.controller";
+import { getEnrollmentStatus } from "../controllers/enrollment.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { requireRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
-// Public routes
+// Public routes - Static paths first
 router.get("/", getAllCourses);
 router.get("/search", getAllCourses);
-router.get("/:id", getCourseById);
 
-// Instructor routes (protected)
+// Protected routes - Specific paths BEFORE parameterized routes
+// Instructor routes
 router.get(
   "/instructor/my",
   authMiddleware,
   requireRole(["instructor", "admin"]),
   getInstructorCourses,
 );
+
+// Admin routes
+router.get(
+  "/admin/catalog",
+  authMiddleware,
+  requireRole(["admin"]),
+  getAdminCourseCatalog,
+);
+
+// CRUD operations (protected)
 router.post(
   "/",
   authMiddleware,
@@ -42,5 +54,9 @@ router.delete(
   requireRole(["instructor", "admin"]),
   deleteCourse,
 );
+
+// Parameterized routes - AFTER specific routes to avoid catching them
+router.get("/:id", getCourseById);
+router.get("/:id/enrollment-status", authMiddleware, getEnrollmentStatus);
 
 export default router;

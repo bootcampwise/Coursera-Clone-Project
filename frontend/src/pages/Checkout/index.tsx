@@ -1,10 +1,48 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import LoggedHeader from "../../components/layout/LoggedHeader";
 import BillingInfo from "./components/BillingInfo";
 import PaymentMethods from "./components/PaymentMethods";
 import OrderSummary from "./components/OrderSummary";
+import { courseApi } from "../../services/courseApi";
 
 const Checkout: React.FC = () => {
+  const { courseId } = useParams<{ courseId: string }>();
+  const [course, setCourse] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      if (!courseId) return;
+      setIsLoading(true);
+      try {
+        const data = await courseApi.getCourseById(courseId);
+        setCourse(data);
+      } catch (error) {
+        console.error("Error fetching course for checkout:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCourse();
+  }, [courseId]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[#0056D2] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
+        <div className="text-xl">Course not found.</div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-white font-sans">
       <LoggedHeader />
@@ -31,12 +69,12 @@ const Checkout: React.FC = () => {
           <div className="lg:col-span-7">
             <BillingInfo />
             <div className="my-8 border-t border-[#e7e7e7]"></div>
-            <PaymentMethods />
+            <PaymentMethods course={course} />
           </div>
 
           {/* Right Column: Order Summary */}
           <div className="lg:col-span-5">
-            <OrderSummary />
+            <OrderSummary course={course} />
           </div>
         </div>
 

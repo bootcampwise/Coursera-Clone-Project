@@ -5,7 +5,7 @@ export const enrollUser = async (userId: string, courseId: string) => {
   const course = await prisma.course.findUnique({ where: { id: courseId } });
   if (!course) throw new Error("Course not found");
 
-  if (!course.published)
+  if (course.status !== "Published")
     throw new Error("Course is not available for enrollment");
 
   // Check if already enrolled
@@ -114,4 +114,16 @@ export const getCourseEnrollments = async (
   });
 
   return enrollments;
+};
+
+export const getEnrollmentStatus = async (userId: string, courseId: string) => {
+  const enrollment = await prisma.enrollment.findFirst({
+    where: { userId, courseId },
+    select: { id: true },
+  });
+
+  return {
+    isEnrolled: !!enrollment,
+    enrollmentId: enrollment?.id || null,
+  };
 };

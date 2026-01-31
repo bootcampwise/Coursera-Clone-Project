@@ -74,3 +74,21 @@ export const getCourseEnrollments = asyncHandler(
     res.json(enrollments);
   },
 );
+
+export const getEnrollmentStatus = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const status = await enrollmentService.getEnrollmentStatus(
+      userId,
+      id as string,
+    );
+    res.json(status);
+  },
+);

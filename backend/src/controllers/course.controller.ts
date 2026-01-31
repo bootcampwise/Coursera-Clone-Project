@@ -122,3 +122,10 @@ export const getInstructorCourses = asyncHandler(
     res.json(courses);
   },
 );
+
+export const getAdminCourseCatalog = asyncHandler(
+  async (req: Request, res: Response) => {
+    const courses = await courseService.getAdminCourses();
+    res.json(courses);
+  },
+);

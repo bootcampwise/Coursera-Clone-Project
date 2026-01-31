@@ -9,11 +9,13 @@ interface Course {
   description: string;
   category: string;
   price: number;
+  status: string;
   instructor: {
     name: string;
   };
   _count: {
     enrollments: number;
+    reviews: number;
   };
 }
 
@@ -25,8 +27,8 @@ const Courses: React.FC = () => {
   const fetchCourses = async () => {
     try {
       setLoading(true);
-      const response = await adminApi.get(ENDPOINTS.COURSES);
-      setCourses(response.data.courses || response.data); // Handle both paginated and flat response
+      const response = await adminApi.get(ENDPOINTS.COURSES_ADMIN_CATALOG);
+      setCourses(response.data);
       setError(null);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to load course catalog");
@@ -125,10 +127,13 @@ const Courses: React.FC = () => {
                     Course
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Instructor
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Category
+                    Metrics
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                     Price
@@ -150,17 +155,39 @@ const Courses: React.FC = () => {
                           {course.title}
                         </p>
                         <p className="text-xs text-gray-500 truncate max-w-xs">
-                          {course.description}
+                          {course.category}
                         </p>
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                          course.status === "Published"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {course.status}
+                      </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {course.instructor.name}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                        {course.category}
-                      </span>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-medium">
+                          Students:{" "}
+                          <span className="text-gray-900">
+                            {course._count.enrollments}
+                          </span>
+                        </span>
+                        <span className="text-xs font-medium">
+                          Reviews:{" "}
+                          <span className="text-gray-900">
+                            {course._count.reviews}
+                          </span>
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       ${course.price}
