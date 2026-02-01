@@ -22,4 +22,23 @@ export const enrollmentApi = {
     );
     return response.data;
   },
+
+  getCourseProgress: async (courseId: string) => {
+    const response = await api.get(
+      ENDPOINTS.ENROLLMENTS_COURSE_PROGRESS(courseId),
+    );
+    return response.data;
+  },
+
+  updateLessonProgress: async (
+    enrollmentId: string,
+    lessonId: string,
+    data: { completed?: boolean; lastPlayed?: number },
+  ) => {
+    const response = await api.patch(
+      ENDPOINTS.ENROLLMENTS_LESSON_PROGRESS(enrollmentId, lessonId),
+      data,
+    );
+    return response.data;
+  },
 };

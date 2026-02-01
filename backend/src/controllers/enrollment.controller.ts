@@ -92,3 +92,42 @@ export const getEnrollmentStatus = asyncHandler(
     res.json(status);
   },
 );
+
+export const getStudentCourseProgress = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const { courseId } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const progress = await enrollmentService.getStudentCourseProgress(
+      userId,
+      courseId as string,
+    );
+    res.json(progress);
+  },
+);
+
+export const updateLessonProgress = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const { enrollmentId, lessonId } = req.params;
+    const { completed, lastPlayed } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const updatedProgress = await enrollmentService.updateLessonProgress(
+      userId,
+      enrollmentId as string,
+      lessonId as string,
+      { completed, lastPlayed },
+    );
+    res.json(updatedProgress);
+  },
+);

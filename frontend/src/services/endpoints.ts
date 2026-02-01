@@ -27,6 +27,10 @@ export const ENDPOINTS = {
   ENROLLMENTS_PROGRESS: (id: string) => `/enrollments/${id}/progress`,
   ENROLLMENTS_BY_COURSE: (courseId: string) =>
     `/enrollments/course/${courseId}`,
+  ENROLLMENTS_COURSE_PROGRESS: (courseId: string) =>
+    `/enrollments/${courseId}/progress`,
+  ENROLLMENTS_LESSON_PROGRESS: (enrollmentId: string, lessonId: string) =>
+    `/enrollments/${enrollmentId}/lessons/${lessonId}`,
 
   // Reviews
   REVIEWS_CREATE: (courseId: string) => `/reviews/${courseId}`,

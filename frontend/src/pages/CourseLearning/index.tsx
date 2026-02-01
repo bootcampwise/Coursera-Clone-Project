@@ -1,19 +1,17 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import CourseLearningHeader from "../../components/layout/CourseLearningHeader";
+import { courseApi } from "../../services/courseApi";
+import { enrollmentApi } from "../../services/enrollmentApi";
 
 interface Lesson {
   id: string;
   title: string;
-  type:
-    | "Video"
-    | "Reading"
-    | "Ungraded Plugin"
-    | "Graded Practice Assignment"
-    | "Practice Assignment";
-  duration?: string;
+  type: string;
+  duration?: number;
   status: "completed" | "in-progress" | "not-started";
-  grade?: number;
+  videoUrl?: string;
+  content?: string;
 }
 
 interface ModuleSection {
@@ -39,168 +37,92 @@ const CourseLearning: React.FC = () => {
     );
   };
 
-  const modules = [
-    { id: "1", title: "Module 1", status: "completed" },
-    { id: "2", title: "Module 2", status: "completed" },
-    { id: "3", title: "Module 3", status: "in-progress" },
-    { id: "4", title: "Module 4", status: "not-started" },
-  ];
+  const [course, setCourse] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [progressData, setProgressData] = useState<any>(null);
 
-  const sections: ModuleSection[] = [
-    {
-      id: "participating",
-      title: "Participating in design critique sessions",
-      isExpanded: false,
-      isComplete: false,
-      lessons: [], // This is the header section in the design, handled separately in main
-    },
-    {
-      id: "give-feedback",
-      title: "Give and receive design feedback",
-      isExpanded: false,
-      isComplete: true,
-      lessons: [
-        {
-          id: "1",
-          title: "Give and receive feedback as a UX designer",
-          type: "Video",
-          duration: "5 min",
-          status: "completed",
-        },
-        {
-          id: "2",
-          title: "Practice giving and receiving design feedback",
-          type: "Ungraded Plugin",
-          duration: "15 min",
-          status: "completed",
-        },
-      ],
-    },
-    {
-      id: "explore-crit",
-      title: "Explore design critique sessions",
-      isExpanded: false,
-      isComplete: true,
-      lessons: [
-        {
-          id: "3",
-          title: "The basics of design critique sessions",
-          type: "Video",
-          duration: "3 min",
-          status: "completed",
-        },
-        {
-          id: "4",
-          title: "Best practices for design critique sessions",
-          type: "Video",
-          duration: "3 min",
-          status: "completed",
-        },
-        {
-          id: "5",
-          title: "Learn more about design critique sessions",
-          type: "Reading",
-          duration: "4 min",
-          status: "completed",
-        },
-        {
-          id: "6",
-          title: "Test your knowledge on design critique sessions",
-          type: "Graded Practice Assignment",
-          status: "completed",
-          grade: 100,
-        },
-        {
-          id: "7",
-          title: "Kunal - My experience with design critique sessions",
-          type: "Video",
-          duration: "3 min",
-          status: "completed",
-        },
-        {
-          id: "8",
-          title: "Self-Reflection: Request feedback on your work",
-          type: "Graded Practice Assignment",
-          status: "completed",
-          grade: 100,
-        },
-      ],
-    },
-    {
-      id: "observe-crit",
-      title: "Observe a mock crit session",
-      isExpanded: true,
-      isComplete: false,
-      lessons: [
-        {
-          id: "9",
-          title: "Introduction to a mock crit session",
-          type: "Video",
-          duration: "2 min",
-          status: "completed",
-        },
-        {
-          id: "10",
-          title: "Observe a mock crit session",
-          type: "Video",
-          duration: "5 min",
-          status: "not-started",
-        },
-      ],
-    },
-    {
-      id: "implement-feedback",
-      title: "Implement feedback from crit sessions",
-      isExpanded: false,
-      isComplete: false,
-      lessons: [
-        {
-          id: "11",
-          title: "Turn crit session feedback into actions",
-          type: "Video",
-          duration: "5 min",
-          status: "not-started",
-        },
-        {
-          id: "12",
-          title: "Iterate on mockups based on feedback from crit sessions",
-          type: "Video",
-          duration: "4 min",
-          status: "not-started",
-        },
-        {
-          id: "13",
-          title:
-            "Test your knowledge on implementing feedback from crit sessions",
-          type: "Practice Assignment",
-          duration: "30 min",
-          status: "not-started",
-        },
-      ],
-    },
-    {
-      id: "module-review",
-      title: "Module 3 Review",
-      isExpanded: false,
-      isComplete: false,
-      lessons: [
-        {
-          id: "14",
-          title: "Iterate on mockups based on feedback from crit sessions",
-          type: "Video",
-          duration: "4 min",
-          status: "not-started",
-        },
-        {
-          id: "15",
-          title: "Learn more about design critique sessions",
-          type: "Reading",
-          duration: "4 min",
-          status: "not-started",
-        },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!courseId) return;
+      try {
+        setLoading(true);
+        const [courseRes, progressRes] = await Promise.all([
+          courseApi.getCourseById(courseId),
+          enrollmentApi.getCourseProgress(courseId),
+        ]);
+        setCourse(courseRes);
+        setProgressData(progressRes);
+
+        // Auto-expand the first unfinished module
+        if (courseRes?.modules) {
+          const firstUnfinished = courseRes.modules.find((m: any) =>
+            m.lessons.some(
+              (l: any) =>
+                !progressRes?.lessonProgress.find(
+                  (p: any) => p.lessonId === l.id && p.completed,
+                ),
+            ),
+          );
+          if (firstUnfinished) {
+            setExpandedSections([firstUnfinished.id]);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch course data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [courseId]);
+
+  const isLessonCompleted = (lessonId: string) => {
+    return progressData?.lessonProgress?.some(
+      (p: any) => p.lessonId === lessonId && p.completed,
+    );
+  };
+
+  const getLessonStatus = (
+    lessonId: string,
+    index: number,
+    allLessons: any[],
+  ) => {
+    if (isLessonCompleted(lessonId)) return "completed";
+
+    // If it's the first uncompleted lesson, mark as in-progress (next up)
+    const prevLesson = allLessons[index - 1];
+    if (!prevLesson || isLessonCompleted(prevLesson.id)) return "in-progress";
+
+    return "not-started";
+  };
+
+  if (loading) return <div className="p-10">Loading course content...</div>;
+  if (!course) return <div className="p-10">Course not found.</div>;
+
+  const sections: ModuleSection[] = course.modules.map((module: any) => {
+    const moduleLessons = module.lessons.map((lesson: any, index: number) => ({
+      id: lesson.id,
+      title: lesson.title,
+      type: lesson.type.charAt(0) + lesson.type.slice(1).toLowerCase(), // VIDEO -> Video
+      duration: lesson.duration || 0, // Keep as number for now, format later
+      status: getLessonStatus(lesson.id, index, module.lessons),
+      videoUrl: lesson.videoUrl,
+      content: lesson.content,
+    }));
+
+    const isComplete = moduleLessons.every(
+      (l: any) => l.status === "completed",
+    );
+
+    return {
+      id: module.id,
+      title: module.title,
+      lessons: moduleLessons,
+      isExpanded: expandedSections.includes(module.id),
+      isComplete,
+    };
+  });
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
@@ -220,9 +142,11 @@ const CourseLearning: React.FC = () => {
               </div>
               <div>
                 <h1 className="text-[14px] font-bold text-[#1f1f1f] leading-tight mb-1">
-                  Build Dynamic User Interfaces (UI) for Websites
+                  {course.title}
                 </h1>
-                <p className="text-[12px] text-[#5f6368]">Google</p>
+                <p className="text-[12px] text-[#5f6368]">
+                  {course.instructor?.name || "Instructor"}
+                </p>
               </div>
             </div>
 
@@ -251,11 +175,11 @@ const CourseLearning: React.FC = () => {
               {/* Vertical line connector */}
               <div className="absolute left-[27px] top-2 bottom-6 w-[2px] bg-[#dadce0]"></div>
 
-              {modules.map((module, index) => (
-                <div key={module.id} className="relative pl-8 py-2">
+              {sections.map((section, index) => (
+                <div key={section.id} className="relative pl-8 py-2">
                   {/* Module item */}
                   <div className="absolute left-[19px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white z-10 flex items-center justify-center">
-                    {module.status === "completed" ? (
+                    {section.isComplete ? (
                       <div className="w-4 h-4 rounded-full bg-[#188038] flex items-center justify-center">
                         <svg
                           className="w-2.5 h-2.5 text-white"
@@ -267,20 +191,15 @@ const CourseLearning: React.FC = () => {
                           <path d="M5 13l4 4L19 7" />
                         </svg>
                       </div>
-                    ) : module.id === "3" ? (
-                      <div className="w-4 h-4 rounded-full border-2 border-[#1f1f1f] bg-white"></div>
                     ) : (
                       <div className="w-4 h-4 rounded-full border border-[#dadce0] bg-white"></div>
                     )}
                   </div>
                   <button
-                    className={`text-left text-[14px] font-medium w-full truncate pl-2 ${module.id === "3" ? "font-bold" : ""}`}
+                    className={`text-left text-[14px] font-medium w-full truncate pl-2`}
                   >
-                    {module.title}
+                    {section.title}
                   </button>
-                  {module.id === "3" && (
-                    <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0056D2] rounded-r"></div>
-                  )}
                 </div>
               ))}
             </div>
@@ -355,7 +274,7 @@ const CourseLearning: React.FC = () => {
               </div>
 
               <h2 className="text-[24px] font-normal font-serif text-[#1f1f1f] mb-4">
-                Participating in design critique sessions
+                {course.title}
               </h2>
               <div className="flex flex-wrap items-center gap-6 mb-4 text-[13px] text-[#1f1f1f]">
                 <div className="flex items-center gap-2">
@@ -409,13 +328,7 @@ const CourseLearning: React.FC = () => {
               </div>
 
               <div className="text-[14px] text-[#1f1f1f] leading-loose mb-4">
-                <p>
-                  After you&apos;ve empathized with users, defined the user
-                  problem to solve, and begun to ideate possible solutions,
-                  it&apos;s time to bring your ideas to life in wireframes. Your
-                  responsive website will have different layouts, depending on
-                  the device and...
-                </p>
+                <p>{course.description}</p>
               </div>
 
               <button className="text-[14px] text-[#0056D2] font-bold flex items-center gap-1 hover:underline bg-transparent border-none cursor-pointer p-0">
@@ -437,7 +350,7 @@ const CourseLearning: React.FC = () => {
 
             {/* Sections List */}
             <div className="space-y-4">
-              {sections.slice(1).map((section) => {
+              {sections.map((section) => {
                 const isExpanded = expandedSections.includes(section.id);
                 return (
                   <div key={section.id} className="">
@@ -487,104 +400,87 @@ const CourseLearning: React.FC = () => {
                       <div className="mt-2 ml-8 pl-4 border-l border-[#dadce0] space-y-6">
                         {section.lessons.map((lesson) => (
                           <div key={lesson.id} className="relative group">
-                            <div className="flex items-start gap-4">
-                              {/* Icon */}
-                              <div className="mt-1 shrink-0">
-                                {lesson.status === "completed" ? (
-                                  <div className="w-6 h-6 rounded-full bg-[#188038] flex items-center justify-center text-white">
-                                    <svg
-                                      className="w-4 h-4"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                      strokeWidth="3"
-                                    >
-                                      <path d="M5 13l4 4L19 7" />
-                                    </svg>
-                                  </div>
-                                ) : (
-                                  <div className="w-6 h-6 rounded-full border-2 border-[#1f1f1f] bg-white flex items-center justify-center text-[#1f1f1f]">
-                                    {lesson.type === "Video" && (
+                            <Link
+                              to={`/learn/${courseId}/lecture/${lesson.id}`}
+                              className="block"
+                            >
+                              <div className="flex items-start gap-4">
+                                {/* Icon */}
+                                <div className="mt-1 shrink-0">
+                                  {lesson.status === "completed" ? (
+                                    <div className="w-6 h-6 rounded-full bg-[#188038] flex items-center justify-center text-white">
                                       <svg
-                                        className="w-3 h-3 ml-0.5"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <polygon points="5 3 19 12 5 21 5 3" />
-                                      </svg>
-                                    )}
-                                    {lesson.type === "Reading" && (
-                                      <svg
-                                        className="w-3 h-3"
+                                        className="w-4 h-4"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
+                                        strokeWidth="3"
                                       >
-                                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                                        <path d="M5 13l4 4L19 7" />
                                       </svg>
-                                    )}
-                                    {lesson.type.includes("Assignment") && (
-                                      <svg
-                                        className="w-3 h-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M9 11l3 3L22 4" />
-                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                                      </svg>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Content */}
-                              <div className="flex-1">
-                                <p
-                                  className={`text-[14px] ${lesson.status === "in-progress" ? "font-bold" : "font-normal"} text-[#1f1f1f] mb-1 group-hover:text-[#0056D2] cursor-pointer`}
-                                >
-                                  {lesson.title}
-                                </p>
-                                <div className="flex items-center gap-2 text-[12px] text-[#5f6368]">
-                                  {lesson.type === "Video" && (
-                                    <span>Video • {lesson.duration}</span>
-                                  )}
-                                  {lesson.type === "Reading" && (
-                                    <span>Reading • {lesson.duration}</span>
-                                  )}
-                                  {lesson.type === "Ungraded Plugin" && (
-                                    <span>
-                                      Ungraded Plugin • {lesson.duration}
-                                    </span>
-                                  )}
-                                  {lesson.type ===
-                                    "Graded Practice Assignment" && (
-                                    <>
-                                      <span className="bg-[#e6f4ea] text-[#1e8e3e] px-1 rounded font-bold uppercase text-[10px] tracking-wide">
-                                        Graded
-                                      </span>
-                                      <span>
-                                        Practice Assessment • Submitted
-                                      </span>
-                                    </>
-                                  )}
-                                  {lesson.grade && (
-                                    <span>• Grade: {lesson.grade}%</span>
+                                    </div>
+                                  ) : (
+                                    <div className="w-6 h-6 rounded-full border-2 border-[#1f1f1f] bg-white flex items-center justify-center text-[#1f1f1f]">
+                                      {lesson.type === "Video" ? (
+                                        <svg
+                                          className="w-3 h-3 ml-0.5"
+                                          fill="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <polygon points="5 3 19 12 5 21 5 3" />
+                                        </svg>
+                                      ) : (
+                                        <svg
+                                          className="w-3 h-3"
+                                          fill="none"
+                                          stroke="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                          <polyline points="14 2 14 8 20 8" />
+                                          <line
+                                            x1="16"
+                                            y1="13"
+                                            x2="8"
+                                            y2="13"
+                                          />
+                                          <line
+                                            x1="16"
+                                            y1="17"
+                                            x2="8"
+                                            y2="17"
+                                          />
+                                          <polyline points="10 9 9 9 8 9" />
+                                        </svg>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
 
-                                {lesson.status === "in-progress" &&
-                                  lesson.title ===
-                                    "Introduction to a mock crit session" && (
+                                {/* Content */}
+                                <div className="flex-1">
+                                  <p
+                                    className={`text-[14px] ${lesson.status === "in-progress" ? "font-bold" : "font-normal"} text-[#1f1f1f] mb-1 group-hover:text-[#0056D2] cursor-pointer`}
+                                  >
+                                    {lesson.title}
+                                  </p>
+                                  <div className="flex items-center gap-2 text-[12px] text-[#5f6368]">
+                                    <span>
+                                      {lesson.type} •{" "}
+                                      {lesson.duration || "5 min"}
+                                    </span>
+                                  </div>
+
+                                  {lesson.status === "in-progress" && (
                                     <div className="mt-3">
                                       <button className="bg-[#0056D2] text-white px-6 py-2 rounded-[4px] font-bold text-[14px] hover:bg-[#00419e] transition-colors">
                                         Resume
                                       </button>
                                     </div>
                                   )}
+                                </div>
                               </div>
-                            </div>
+                            </Link>
                           </div>
                         ))}
                       </div>

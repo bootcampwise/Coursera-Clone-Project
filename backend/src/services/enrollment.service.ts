@@ -127,3 +127,84 @@ export const getEnrollmentStatus = async (userId: string, courseId: string) => {
     enrollmentId: enrollment?.id || null,
   };
 };
+
+export const getStudentCourseProgress = async (
+  userId: string,
+  courseId: string,
+) => {
+  const enrollment = await prisma.enrollment.findFirst({
+    where: { userId, courseId },
+    include: {
+      lessonProgress: {
+        select: { lessonId: true, completed: true, lastPlayed: true },
+      },
+    },
+  });
+
+  if (!enrollment) return null;
+
+  return {
+    enrollmentId: enrollment.id,
+    progress: enrollment.progress,
+    completed: enrollment.completed,
+    lessonProgress: enrollment.lessonProgress,
+  };
+};
+
+export const updateLessonProgress = async (
+  userId: string,
+  enrollmentId: string,
+  lessonId: string,
+  data: { completed?: boolean; lastPlayed?: number },
+) => {
+  const enrollment = await prisma.enrollment.findUnique({
+    where: { id: enrollmentId },
+  });
+
+  if (!enrollment) throw new Error("Enrollment not found");
+  if (enrollment.userId !== userId) throw new Error("Unauthorized");
+
+  // Upsert lesson progress
+  const progress = await prisma.lessonProgress.upsert({
+    where: {
+      enrollmentId_lessonId: {
+        enrollmentId,
+        lessonId,
+      },
+    },
+    update: {
+      ...data,
+    },
+    create: {
+      enrollmentId,
+      lessonId,
+      ...data,
+    },
+  });
+
+  // Recalculate course progress
+  // 1. Get total lessons count
+  const totalLessons = await prisma.lesson.count({
+    where: { module: { courseId: enrollment.courseId } },
+  });
+
+  // 2. Get completed lessons count
+  const completedLessons = await prisma.lessonProgress.count({
+    where: { enrollmentId, completed: true },
+  });
+
+  // 3. Update enrollment progress
+  const newProgress =
+    totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const isCompleted = newProgress === 100;
+
+  await prisma.enrollment.update({
+    where: { id: enrollmentId },
+    data: {
+      progress: newProgress,
+      completed: isCompleted,
+    },
+  });
+
+  return progress;
+};
