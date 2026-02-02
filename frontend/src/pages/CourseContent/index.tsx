@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import CourseContentHeader from "../../components/layout/CourseContentHeader";
 import { courseApi } from "../../services/courseApi";
@@ -19,6 +19,9 @@ const CourseContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     "transcript" | "notes" | "downloads"
   >("transcript");
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const lastSavedTime = useRef<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,6 +63,91 @@ const CourseContent: React.FC = () => {
     ?.flatMap((m: any) => m.lessons)
     ?.find((l: any) => l.id === lessonId);
 
+  // Resume playback logic
+  useEffect(() => {
+    if (
+      currentLesson?.type?.toLowerCase() === "video" &&
+      videoRef.current &&
+      progressData
+    ) {
+      const lessonProgress = progressData.lessonProgress?.find(
+        (p: any) => p.lessonId === lessonId,
+      );
+      if (
+        lessonProgress?.lastPlayed > 0 &&
+        videoRef.current.currentTime === 0
+      ) {
+        videoRef.current.currentTime = lessonProgress.lastPlayed;
+      }
+    }
+  }, [lessonId, progressData, currentLesson]);
+
+  // Auto-complete reading lessons on open
+  useEffect(() => {
+    const markReadingComplete = async () => {
+      if (
+        lessonId &&
+        currentLesson?.type?.toLowerCase() === "reading" &&
+        progressData?.enrollmentId &&
+        !isLessonCompleted(lessonId)
+      ) {
+        try {
+          await enrollmentApi.updateLessonProgress(
+            progressData.enrollmentId,
+            lessonId!,
+            { completed: true },
+          );
+          const newProgress = await enrollmentApi.getCourseProgress(courseId!);
+          setProgressData(newProgress);
+        } catch (err) {
+          console.error("Failed to mark reading as complete", err);
+        }
+      }
+    };
+    markReadingComplete();
+  }, [lessonId, progressData?.enrollmentId, currentLesson]);
+
+  // Throttled progress update
+  const handleTimeUpdate = async () => {
+    if (!videoRef.current || !progressData?.enrollmentId || !lessonId) return;
+
+    const currentTime = Math.floor(videoRef.current.currentTime);
+    const duration = Math.floor(videoRef.current.duration);
+
+    // Save every 10 seconds or when finished
+    if (
+      currentTime !== lastSavedTime.current &&
+      (currentTime % 10 === 0 || (duration > 0 && currentTime >= duration - 1))
+    ) {
+      lastSavedTime.current = currentTime;
+
+      const isNearEnd = duration > 0 && currentTime >= duration * 0.98;
+      const alreadyCompleted = isLessonCompleted(lessonId);
+
+      try {
+        await enrollmentApi.updateLessonProgress(
+          progressData.enrollmentId,
+          lessonId,
+          {
+            lastPlayed: currentTime,
+            completed:
+              alreadyCompleted || isNearEnd || currentTime >= duration - 1,
+          },
+        );
+
+        // If it was just completed, refresh progress data to update sidebar
+        if (!alreadyCompleted && (isNearEnd || currentTime >= duration - 1)) {
+          const newProgress = await enrollmentApi.getCourseProgress(
+            courseId as string,
+          );
+          setProgressData(newProgress);
+        }
+      } catch (err) {
+        console.error("Failed to track progress", err);
+      }
+    }
+  };
+
   const isLessonCompleted = (id: string) => {
     return progressData?.lessonProgress?.some(
       (p: any) => p.lessonId === id && p.completed,
@@ -70,11 +158,14 @@ const CourseContent: React.FC = () => {
     if (!enrollmentApi || !progressData?.enrollmentId || !lessonId) return;
 
     try {
-      await enrollmentApi.updateLessonProgress(
-        progressData.enrollmentId,
-        lessonId,
-        { completed: true, lastPlayed: 0 },
-      );
+      // Mark as completed if not already
+      if (!isLessonCompleted(lessonId)) {
+        await enrollmentApi.updateLessonProgress(
+          progressData.enrollmentId,
+          lessonId,
+          { completed: true },
+        );
+      }
 
       const allLessons = course?.modules?.flatMap((m: any) => m.lessons) || [];
       const currentIndex = allLessons.findIndex((l: any) => l.id === lessonId);
@@ -261,14 +352,25 @@ const CourseContent: React.FC = () => {
                       <div
                         className="w-full h-full"
                         dangerouslySetInnerHTML={{
-                          __html: currentLesson.videoUrl,
+                          __html: currentLesson.videoUrl
+                            .replace(/autoplay=1/g, "autoplay=0")
+                            .replace(/autoplay/g, "autoplay=0"),
                         }}
                       />
                     ) : (
                       <video
+                        ref={videoRef}
                         src={currentLesson.videoUrl}
                         controls
+                        autoPlay={false}
+                        preload="metadata"
                         className="w-full h-full"
+                        onTimeUpdate={handleTimeUpdate}
+                        onEnded={() => {
+                          if (videoRef.current) {
+                            handleTimeUpdate();
+                          }
+                        }}
                       />
                     )
                   ) : (
@@ -586,9 +688,15 @@ const CourseContent: React.FC = () => {
         <div className="fixed bottom-0 right-0 left-[350px] bg-white/80 backdrop-blur-sm border-t border-[#dadce0] p-4 flex items-center justify-end px-12 z-40">
           <button
             onClick={handleNext}
-            className="flex items-center gap-2 bg-white border border-[#0056D2] text-[#0056D2] px-6 py-2.5 rounded-[4px] font-bold text-[14px] hover:bg-[#f0f7ff] transition-colors"
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-[4px] font-bold text-[14px] transition-colors ${
+              isLessonCompleted(currentLesson.id)
+                ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
+                : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
+            }`}
           >
-            Go to next item
+            {isLessonCompleted(currentLesson.id)
+              ? "Go to next item"
+              : "Mark as completed"}
             <svg
               className="w-4 h-4"
               fill="none"
