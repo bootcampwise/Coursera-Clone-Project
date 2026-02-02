@@ -24,6 +24,21 @@ const CourseContent: React.FC = () => {
     "transcript" | "notes" | "downloads"
   >("transcript");
 
+  // Derive current lesson from course data
+  const currentLesson = course?.modules
+    ?.flatMap((m: any) => m.lessons)
+    ?.find((l: any) => l.id === lessonId);
+
+  // Reset tab to "notes" if switching to a Reading lesson where Transcript is hidden
+  useEffect(() => {
+    if (
+      currentLesson?.type?.toLowerCase() === "reading" &&
+      activeTab === "transcript"
+    ) {
+      setActiveTab("notes");
+    }
+  }, [currentLesson?.id, currentLesson?.type, activeTab]);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastSavedTime = useRef<number>(0);
 
@@ -68,10 +83,6 @@ const CourseContent: React.FC = () => {
       prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id],
     );
   };
-
-  const currentLesson = course?.modules
-    ?.flatMap((m: any) => m.lessons)
-    ?.find((l: any) => l.id === lessonId);
 
   // Fetch transcript
   useEffect(() => {
@@ -408,6 +419,31 @@ const CourseContent: React.FC = () => {
         {/* ================= MAIN CONTENT ================= */}
         <main className="flex-1 overflow-y-auto bg-white custom-scrollbar relative">
           <div className="max-w-[1000px] mx-auto px-6 py-8 md:px-12">
+            {/* Title and Save Note - Above for Reading, Below for Video */}
+            {currentLesson.type?.toLowerCase() !== "video" && (
+              <div className="flex items-start justify-between mb-8">
+                <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
+                  {currentLesson.title}
+                </h1>
+                <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Save note
+                </button>
+              </div>
+            )}
+
             {/* Video / Content Player */}
             <div className="mb-8">
               {currentLesson.type?.toLowerCase() === "video" ? (
@@ -462,191 +498,206 @@ const CourseContent: React.FC = () => {
               )}
             </div>
 
-            {/* Title and Save Note */}
-            <div className="flex items-start justify-between mb-8">
-              <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
-                {currentLesson.title}
-              </h1>
-              <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                Save note
-              </button>
-            </div>
-
-            {/* Coach AI Box */}
-            <div className="bg-[#f0f4f9] rounded-[16px] p-6 mb-12 border border-transparent hover:border-[#dadce0] transition-all">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[18px] font-serif italic text-[#3c4043] font-medium tracking-tight">
-                  coach
-                </span>
-                <button className="text-[#5f6368] hover:bg-white/50 p-1 rounded-md">
+            {/* Title and Save Note - Below for Video */}
+            {currentLesson.type?.toLowerCase() === "video" && (
+              <div className="flex items-start justify-between mb-8">
+                <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
+                  {currentLesson.title}
+                </h1>
+                <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
                   <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
+                    className="w-4 h-4"
                     fill="none"
+                    viewBox="0 0 24 24"
                     stroke="currentColor"
-                    strokeWidth="2"
                   >
-                    <path d="M18 15l-6-6-6 6" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
+                  Save note
                 </button>
               </div>
-              <p className="text-[14px] text-[#1f1f1f] mb-6 leading-relaxed">
-                Let me know if you have any questions about this material,
-                I&apos;m here to help!
-              </p>
+            )}
 
-              {/* AI Prompts */}
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Give me practice questions",
-                  "Explain this topic in simple terms",
-                  "Give me a summary",
-                  "Give me real-life examples",
-                ].map((prompt) => (
-                  <button
-                    key={prompt}
-                    className="flex items-center gap-2 bg-white border border-[#dadce0] px-4 py-2.5 rounded-[8px] text-[13px] font-medium text-[#1f1f1f] hover:bg-[#f8f9fa] shadow-sm transition-all active:scale-[0.98]"
-                  >
-                    <svg
-                      className="w-4 h-4 text-[#0056D2]"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
-                    </svg>
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Bottom Tabs: Transcript / Notes / Downloads */}
-            <div className="border-b border-[#dadce0] mb-8">
-              <div className="flex gap-8">
-                {["Transcript", "Notes", "Downloads"].map((tab) => {
-                  const slug = tab.toLowerCase() as any;
-                  return (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveTab(slug)}
-                      className={`pb-3 text-[14px] font-bold border-b-[3px] transition-all ${
-                        activeTab === slug
-                          ? "border-[#1f1f1f] text-[#1f1f1f]"
-                          : "border-transparent text-[#5f6368] hover:text-[#1f1f1f]"
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Tab Content: Transcript */}
-            {activeTab === "transcript" && (
-              <div className="pb-32">
-                <div className="flex items-center gap-3 mb-8">
-                  <span className="text-[13px] font-medium text-[#1f1f1f]">
-                    Transcript language:
+            {/* Coach AI Box - Only for Video Lessons */}
+            {currentLesson.type?.toLowerCase() === "video" && (
+              <div className="bg-[#f0f4f9] rounded-[16px] p-6 mb-12 border border-transparent hover:border-[#dadce0] transition-all">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-[18px] font-serif italic text-[#3c4043] font-medium tracking-tight">
+                    coach
                   </span>
-                  <div className="relative inline-flex items-center border border-[#dadce0] rounded-md px-3 py-1.5 bg-white cursor-pointer hover:bg-[#f8f9fa]">
-                    <span className="text-[13px] font-medium text-[#1f1f1f] mr-2">
-                      English
-                    </span>
+                  <button className="text-[#5f6368] hover:bg-white/50 p-1 rounded-md">
                     <svg
-                      width="12"
-                      height="12"
+                      width="16"
+                      height="16"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                     >
-                      <path d="M6 9l6 6 6-6" />
+                      <path d="M18 15l-6-6-6 6" />
                     </svg>
+                  </button>
+                </div>
+                <p className="text-[14px] text-[#1f1f1f] mb-6 leading-relaxed">
+                  Let me know if you have any questions about this material,
+                  I&apos;m here to help!
+                </p>
+
+                {/* AI Prompts */}
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Give me practice questions",
+                    "Explain this topic in simple terms",
+                    "Give me a summary",
+                    "Give me real-life examples",
+                  ].map((prompt) => (
+                    <button
+                      key={prompt}
+                      className="flex items-center gap-2 bg-white border border-[#dadce0] px-4 py-2.5 rounded-[8px] text-[13px] font-medium text-[#1f1f1f] hover:bg-[#f8f9fa] shadow-sm transition-all active:scale-[0.98]"
+                    >
+                      <svg
+                        className="w-4 h-4 text-[#0056D2]"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                      </svg>
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Bottom Tabs: Transcript / Notes / Downloads - Only for Video Lessons */}
+            {currentLesson.type?.toLowerCase() === "video" && (
+              <>
+                <div className="border-b border-[#dadce0] mb-8">
+                  <div className="flex gap-8">
+                    {["Transcript", "Notes", "Downloads"].map((tab) => {
+                      const slug = tab.toLowerCase() as any;
+                      // Only show Transcript tab for Video lessons
+                      if (
+                        slug === "transcript" &&
+                        currentLesson.type?.toLowerCase() !== "video"
+                      ) {
+                        return null;
+                      }
+                      return (
+                        <button
+                          key={tab}
+                          onClick={() => setActiveTab(slug)}
+                          className={`pb-3 text-[14px] font-bold border-b-[3px] transition-all ${
+                            activeTab === slug
+                              ? "border-[#1f1f1f] text-[#1f1f1f]"
+                              : "border-transparent text-[#5f6368] hover:text-[#1f1f1f]"
+                          }`}
+                        >
+                          {tab}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="space-y-8 max-w-[700px] max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
-                  {transcript.length > 0 ? (
-                    transcript.map((line) => (
-                      <div
-                        id={`transcript-line-${line.id}`}
-                        key={line.id}
-                        className={`flex items-start gap-10 group cursor-pointer p-4 rounded-lg transition-all duration-300 ${
-                          activeLineId === line.id
-                            ? "bg-[#e8f0fe] border-l-4 border-[#0056D2] shadow-sm"
-                            : "hover:bg-gray-50 border-l-4 border-transparent"
-                        }`}
-                        onClick={() => {
-                          if (videoRef.current) {
-                            videoRef.current.currentTime = line.startTime;
-                            videoRef.current.play();
-                          }
-                        }}
-                      >
-                        <span
-                          className={`text-[11px] mt-1 shrink-0 font-mono w-10 ${
-                            activeLineId === line.id
-                              ? "text-[#0056D2] font-bold"
-                              : "text-[#5f6368]"
-                          }`}
-                        >
-                          {Math.floor(line.startTime / 60)}:
-                          {String(Math.floor(line.startTime % 60)).padStart(
-                            2,
-                            "0",
-                          )}
+                {/* Tab Content: Transcript - Only for Video Lessons */}
+                {activeTab === "transcript" &&
+                  currentLesson.type?.toLowerCase() === "video" && (
+                    <div className="pb-32">
+                      <div className="flex items-center gap-3 mb-8">
+                        <span className="text-[13px] font-medium text-[#1f1f1f]">
+                          Transcript language:
                         </span>
-                        <p
-                          className={`text-[14px] leading-[1.6] ${
-                            activeLineId === line.id
-                              ? "text-[#1f1f1f] font-medium"
-                              : "text-[#5f6368] group-hover:text-[#1f1f1f]"
-                          }`}
-                        >
-                          {line.text}
-                        </p>
+                        <div className="relative inline-flex items-center border border-[#dadce0] rounded-md px-3 py-1.5 bg-white cursor-pointer hover:bg-[#f8f9fa]">
+                          <span className="text-[13px] font-medium text-[#1f1f1f] mr-2">
+                            English
+                          </span>
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M6 9l6 6 6-6" />
+                          </svg>
+                        </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-10 bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
-                      <p className="text-[#5f6368]">
-                        Transcript not available for this lesson.
-                      </p>
+
+                      <div className="space-y-8 max-w-[700px] max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+                        {transcript.length > 0 ? (
+                          transcript.map((line) => (
+                            <div
+                              id={`transcript-line-${line.id}`}
+                              key={line.id}
+                              className={`flex items-start gap-10 group cursor-pointer p-4 rounded-lg transition-all duration-300 ${
+                                activeLineId === line.id
+                                  ? "bg-[#e8f0fe] border-l-4 border-[#0056D2] shadow-sm"
+                                  : "hover:bg-gray-50 border-l-4 border-transparent"
+                              }`}
+                              onClick={() => {
+                                if (videoRef.current) {
+                                  videoRef.current.currentTime = line.startTime;
+                                  videoRef.current.play();
+                                }
+                              }}
+                            >
+                              <span
+                                className={`text-[11px] mt-1 shrink-0 font-mono w-10 ${
+                                  activeLineId === line.id
+                                    ? "text-[#0056D2] font-bold"
+                                    : "text-[#5f6368]"
+                                }`}
+                              >
+                                {Math.floor(line.startTime / 60)}:
+                                {String(
+                                  Math.floor(line.startTime % 60),
+                                ).padStart(2, "0")}
+                              </span>
+                              <p
+                                className={`text-[14px] leading-[1.6] ${
+                                  activeLineId === line.id
+                                    ? "text-[#1f1f1f] font-medium"
+                                    : "text-[#5f6368] group-hover:text-[#1f1f1f]"
+                                }`}
+                              >
+                                {line.text}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-10 bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
+                            <p className="text-[#5f6368]">
+                              Transcript not available for this lesson.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
-                </div>
-              </div>
-            )}
 
-            {/* Other Tab Contents (Placeholders) */}
-            {activeTab === "notes" && (
-              <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
-                <p className="text-[#5f6368]">
-                  Your notes for this lesson will appear here.
-                </p>
-              </div>
-            )}
-            {activeTab === "downloads" && (
-              <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
-                <p className="text-[#5f6368]">
-                  Any downloadable resources will be listed here.
-                </p>
-              </div>
+                {/* Other Tab Contents (Placeholders) */}
+                {activeTab === "notes" && (
+                  <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
+                    <p className="text-[#5f6368]">
+                      Your notes for this lesson will appear here.
+                    </p>
+                  </div>
+                )}
+                {activeTab === "downloads" && (
+                  <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
+                    <p className="text-[#5f6368]">
+                      Any downloadable resources will be listed here.
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
