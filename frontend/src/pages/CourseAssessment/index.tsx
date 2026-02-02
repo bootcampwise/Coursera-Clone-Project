@@ -1,90 +1,124 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-interface Question {
-  id: number;
-  text: string;
-  points: number;
-  type: "single" | "multiple";
-  options: string[];
-}
-
-const questions: Question[] = [
-  {
-    id: 1,
-    text: "Which of the following is a key characteristic of a supervised learning algorithm?",
-    points: 1,
-    type: "single",
-    options: [
-      "The algorithm learns from unlabeled data.",
-      "The algorithm learns from labeled data.",
-      "The algorithm does not require any data.",
-      "The algorithm is used only for clustering.",
-    ],
-  },
-  {
-    id: 2,
-    text: "Select all that apply: Which of these are common activation functions in neural networks?",
-    points: 1,
-    type: "multiple",
-    options: [
-      "ReLU (Rectified Linear Unit)",
-      "Sigmoid",
-      "Tanh",
-      "Linear Regression",
-    ],
-  },
-  {
-    id: 3,
-    text: "True or False: Overfitting occurs when a model learns the training data too well, including its noise.",
-    points: 1,
-    type: "single",
-    options: ["True", "False"],
-  },
-];
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { courseApi } from "../../services/courseApi";
+import { enrollmentApi } from "../../services/enrollmentApi";
 
 const CourseAssessment: React.FC = () => {
   const navigate = useNavigate();
-  const [answers, setAnswers] = useState<Record<number, string | string[]>>({});
+  const { courseId, assessmentId } = useParams<{
+    courseId: string;
+    assessmentId: string;
+  }>();
+
+  const [assessment, setAssessment] = useState<any>(null);
+  const [enrollment, setEnrollment] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [answers, setAnswers] = useState<Record<string, number>>({});
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [honorCodeAccepted, setHonorCodeAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleOptionChange = (
-    questionId: number,
-    option: string,
-    type: "single" | "multiple",
-  ) => {
-    setAnswers((prev) => {
-      if (type === "single") {
-        return { ...prev, [questionId]: option };
-      } else {
-        const currentAnswers = (prev[questionId] as string[]) || [];
-        if (currentAnswers.includes(option)) {
-          return {
-            ...prev,
-            [questionId]: currentAnswers.filter((a) => a !== option),
-          };
-        } else {
-          return { ...prev, [questionId]: [...currentAnswers, option] };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!courseId || !assessmentId) return;
+      try {
+        setLoading(true);
+        const [courseRes, progressRes] = await Promise.all([
+          courseApi.getCourseById(courseId),
+          enrollmentApi.getCourseProgress(courseId),
+        ]);
+
+        const foundAssessment = courseRes.modules
+          ?.flatMap((m: any) => m.lessons)
+          ?.find((l: any) => l.id === assessmentId);
+
+        if (!foundAssessment) {
+          setError("Assessment not found");
+          return;
         }
+
+        let parsedContent;
+        try {
+          parsedContent = JSON.parse(foundAssessment.content || "{}");
+        } catch (e) {
+          setError("Invalid assessment content format.");
+          return;
+        }
+
+        setAssessment({ ...foundAssessment, parsedContent });
+        setEnrollment(progressRes);
+      } catch (err) {
+        console.error("Failed to fetch assessment data", err);
+        setError("Failed to load assessment.");
+      } finally {
+        setLoading(false);
       }
-    });
+    };
+    fetchData();
+  }, [courseId, assessmentId]);
+
+  const questions = assessment?.parsedContent?.questions || [];
+
+  const handleOptionChange = (questionId: string, optionIndex: number) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: optionIndex }));
   };
 
   const handleSubmit = () => {
     setIsSubmitModalOpen(true);
   };
 
-  const handleSubmitConfirm = () => {
+  const handleSubmitConfirm = async () => {
     setIsSubmitModalOpen(false);
     setIsSubmitting(true);
-    // Simulate submission process
-    setTimeout(() => {
-      // Navigate to results page
-      navigate("/learn/1/assessment/1/result");
-    }, 3000);
+
+    let correctCount = 0;
+    questions.forEach((q: any) => {
+      if (answers[q.id] === q.correctAnswerIndex) {
+        correctCount++;
+      }
+    });
+
+    const finalScore = Number(
+      ((correctCount / questions.length) * 100).toFixed(2),
+    );
+    const isPassed = finalScore >= assessment.parsedContent.passingScore;
+
+    try {
+      if (isPassed && enrollment?.enrollmentId) {
+        await enrollmentApi.updateLessonProgress(
+          enrollment.enrollmentId,
+          assessmentId!,
+          { completed: true },
+        );
+      }
+
+      // Simulate submission process for UX
+      setTimeout(() => {
+        navigate(`/learn/${courseId}/assessment/${assessmentId}/result`, {
+          state: {
+            score: finalScore,
+            passingScore: assessment.parsedContent.passingScore,
+            answers,
+            questions,
+            isPassed,
+            title: assessment.parsedContent.title || assessment.title,
+            highestScore:
+              (assessmentId && enrollment?.progress?.[assessmentId]?.score) ||
+              finalScore,
+          },
+        });
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to submit assessment", err);
+      setIsSubmitting(false);
+      alert("Failed to submit assessment. Please try again.");
+    }
   };
+
+  if (loading) return <div className="p-10">Loading assessment...</div>;
+  if (error) return <div className="p-10 text-red-600">{error}</div>;
 
   return (
     <div className="min-h-screen bg-white font-sans text-[#1f1f1f] relative">
@@ -116,12 +150,14 @@ const CourseAssessment: React.FC = () => {
 
             <div className="w-full md:w-auto">
               <h1 className="text-[16px] font-bold text-[#1f1f1f] leading-snug break-words">
-                Module 3 Challenge
+                {assessment.title}
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#5f6368] mt-1 md:mt-0">
                 <span>Graded Assignment</span>
                 <span className="hidden xs:inline">•</span>
-                <span>1h</span>
+                <span>
+                  {assessment.parsedContent.questions?.length || 0} Questions
+                </span>
               </div>
             </div>
           </div>
@@ -137,7 +173,9 @@ const CourseAssessment: React.FC = () => {
               <line x1="2" y1="12" x2="22" y2="12"></line>
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
-            <span className="text-[#1f1f1f]">Due Nov 13, 11:59 PM PST</span>
+            <span className="text-[#1f1f1f]">
+              Pass Score: {assessment.parsedContent.passingScore}%
+            </span>
           </div>
         </div>
       </header>
@@ -176,70 +214,48 @@ const CourseAssessment: React.FC = () => {
         <>
           {/* ================= MAIN CONTENT ================= */}
           <main className="max-w-[850px] mx-auto px-4 md:px-6 py-6 md:py-12">
-            <h2 className="text-2xl md:text-[28px] font-bold text-[#1f1f1f] mb-8 md:mb-12">
-              Assessment
+            <h2 className="text-2xl md:text-[28px] font-bold text-[#1f1f1f] mb-2">
+              {assessment.parsedContent.title || "Assessment"}
             </h2>
+            <p className="text-[14px] text-[#5f6368] mb-8 md:mb-12">
+              {assessment.parsedContent.instructions}
+            </p>
 
             <div className="space-y-8 md:space-y-12">
-              {questions.map((q) => (
+              {questions.map((q: any, idx: number) => (
                 <div key={q.id} className="relative">
                   {/* Question Header */}
                   <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-2 sm:gap-0">
                     <div className="flex gap-4">
                       <span className="text-[14px] font-normal text-[#1f1f1f] w-4 shrink-0 pt-0.5">
-                        {q.id}.
+                        {idx + 1}.
                       </span>
                       <p className="text-[16px] leading-relaxed text-[#1f1f1f] font-normal max-w-[680px]">
-                        {q.text}
+                        {q.question}
                       </p>
                     </div>
                     <span className="text-[14px] text-[#5f6368] font-normal sm:text-right pl-8 sm:pl-0">
-                      {q.points} point
+                      1 point
                     </span>
                   </div>
 
-                  {/* Options */}
                   <div className="ml-0 sm:ml-8 space-y-3">
-                    {q.options.map((option) => (
+                    {q.options.map((option: string, optIdx: number) => (
                       <label
-                        key={option}
+                        key={optIdx}
                         className="flex items-start gap-3 cursor-pointer group p-2 rounded hover:bg-gray-50 transition-colors"
                       >
                         <div className="relative mt-0.5 shrink-0">
                           <input
-                            type={q.type === "single" ? "radio" : "checkbox"}
+                            type="radio"
                             name={`question-${q.id}`}
-                            value={option}
-                            checked={
-                              q.type === "single"
-                                ? answers[q.id] === option
-                                : (answers[q.id] as string[])?.includes(option)
-                            }
-                            onChange={() =>
-                              handleOptionChange(q.id, option, q.type)
-                            }
+                            value={optIdx}
+                            checked={answers[q.id] === optIdx}
+                            onChange={() => handleOptionChange(q.id, optIdx)}
                             className="peer sr-only"
                           />
                           {/* Custom Radio/Checkbox Design */}
-                          {q.type === "single" ? (
-                            <div className="w-5 h-5 rounded-full border border-[#757575] bg-white group-hover:border-[#1f1f1f] peer-checked:border-[#0056D2] peer-checked:border-[6px] transition-all"></div>
-                          ) : (
-                            <div className="w-5 h-5 rounded-[2px] border border-[#757575] bg-white group-hover:border-[#1f1f1f] peer-checked:bg-[#0056D2] peer-checked:border-[#0056D2] flex items-center justify-center transition-all">
-                              <svg
-                                className="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={3}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            </div>
-                          )}
+                          <div className="w-5 h-5 rounded-full border border-[#757575] bg-white group-hover:border-[#1f1f1f] peer-checked:border-[#0056D2] peer-checked:border-[6px] transition-all"></div>
                         </div>
                         <span className="text-[16px] text-[#1f1f1f] leading-relaxed select-none">
                           {option}
@@ -289,9 +305,10 @@ const CourseAssessment: React.FC = () => {
                 </div>
                 <div className="text-[12px] text-[#1f1f1f] leading-relaxed">
                   <span className="font-bold">
-                    I, Zainab Murtaza, understand that submitting work that
-                    isn&apos;t my own may result in permanent failure of this
-                    course or deactivation of my Coursera account.
+                    I, {enrollment?.studentName || "Learner"}, understand that
+                    submitting work that isn&apos;t my own may result in
+                    permanent failure of this course or deactivation of my
+                    Coursera account.
                   </span>
                   <br />
                   <span className="text-[#5f6368]">
@@ -306,8 +323,11 @@ const CourseAssessment: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-12 md:mb-16">
               <button
                 onClick={handleSubmit}
-                disabled={!honorCodeAccepted}
-                className="w-full sm:w-auto px-6 py-2 bg-[#0056D2] text-white font-bold text-[14px] rounded-[4px] hover:bg-primary-hover disabled:bg-[#dadce0] disabled:text-[#757575] border border-[#0056D2] disabled:border-[#dadce0] transition-colors cursor-pointer"
+                disabled={
+                  !honorCodeAccepted ||
+                  Object.keys(answers).length < questions.length
+                }
+                className="w-full sm:w-auto px-6 py-2 bg-[#0056D2] text-white font-bold text-[14px] rounded-[4px] hover:bg-[#00419e] disabled:bg-[#dadce0] disabled:text-[#757575] border border-[#0056D2] disabled:border-[#dadce0] transition-colors cursor-pointer"
               >
                 Submit
               </button>

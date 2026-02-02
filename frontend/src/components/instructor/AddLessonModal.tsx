@@ -3,7 +3,7 @@ import React, { useState } from "react";
 interface AddLessonModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (title: string, type: "VIDEO" | "READING") => void;
+  onSave: (title: string, type: "VIDEO" | "READING" | "ASSESSMENT") => void;
   // moduleId removed as unused
 }
 
@@ -13,7 +13,7 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
   onSave,
 }) => {
   const [title, setTitle] = useState("");
-  const [type, setType] = useState<"VIDEO" | "READING">("VIDEO");
+  const [type, setType] = useState<"VIDEO" | "READING" | "ASSESSMENT">("VIDEO");
 
   if (!isOpen) return null;
 
@@ -112,17 +112,21 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
                     className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
                     value={type}
                     onChange={(e) =>
-                      setType(e.target.value as "VIDEO" | "READING")
+                      setType(
+                        e.target.value as "VIDEO" | "READING" | "ASSESSMENT",
+                      )
                     }
                   >
                     <option value="VIDEO">Video Lesson</option>
                     <option value="READING">Reading / Article</option>
+                    <option value="ASSESSMENT">Assessment / Quiz</option>
                   </select>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
-                  {type === "VIDEO"
-                    ? "Learners will watch a video content."
-                    : "Learners will read text or articles."}
+                  {type === "VIDEO" && "Learners will watch a video content."}
+                  {type === "READING" && "Learners will read text or articles."}
+                  {type === "ASSESSMENT" &&
+                    "Learners will complete a multiple-choice quiz."}
                 </p>
               </div>
             </div>

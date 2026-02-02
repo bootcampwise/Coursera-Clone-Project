@@ -33,8 +33,28 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (lesson.type === "ASSESSMENT") {
+      try {
+        const parsed = JSON.parse(content);
+        if (parsed.questions.some((q: any) => q.options.length !== 4)) {
+          alert("Each question must have exactly 4 options.");
+          return;
+        }
+      } catch (err) {
+        alert("Invalid JSON format. Please check your syntax.");
+        return;
+      }
+    }
+
     if (title.trim()) {
-      onSave(lesson.id, title, lesson.type === "READING" ? content : undefined);
+      onSave(
+        lesson.id,
+        title,
+        lesson.type === "READING" || lesson.type === "ASSESSMENT"
+          ? content
+          : undefined,
+      );
       onClose();
     }
   };
@@ -56,9 +76,15 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
         <div className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:p-6">
           <div className="sm:flex sm:items-start">
             <div
-              className={`mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10 ${lesson.type === "VIDEO" ? "bg-indigo-100" : "bg-green-100"}`}
+              className={`mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full sm:mx-0 sm:h-10 sm:w-10 ${
+                lesson.type === "VIDEO"
+                  ? "bg-indigo-100"
+                  : lesson.type === "READING"
+                    ? "bg-green-100"
+                    : "bg-purple-100"
+              }`}
             >
-              {lesson.type === "VIDEO" ? (
+              {lesson.type === "VIDEO" && (
                 <svg
                   className="h-6 w-6 text-indigo-600"
                   fill="none"
@@ -72,7 +98,8 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
                     d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                   />
                 </svg>
-              ) : (
+              )}
+              {lesson.type === "READING" && (
                 <svg
                   className="h-6 w-6 text-green-600"
                   fill="none"
@@ -87,13 +114,34 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
                   />
                 </svg>
               )}
+              {lesson.type === "ASSESSMENT" && (
+                <svg
+                  className="h-6 w-6 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              )}
             </div>
             <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
               <h3
                 className="text-lg leading-6 font-medium text-gray-900"
                 id="edit-modal-title"
               >
-                Edit {lesson.type === "VIDEO" ? "Video" : "Reading"} Lesson
+                Edit{" "}
+                {lesson.type === "VIDEO"
+                  ? "Video"
+                  : lesson.type === "READING"
+                    ? "Reading"
+                    : "Assessment"}{" "}
+                Lesson
               </h3>
 
               <form onSubmit={handleSubmit} className="mt-6 space-y-6">
@@ -132,6 +180,72 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
                         rows={10}
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border font-mono text-sm"
                         placeholder="Enter lesson content here (Markdown supported)..."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {lesson.type === "ASSESSMENT" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="edit-assessment"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Assessment JSON Data
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const template = {
+                            title: "Quiz Title",
+                            instructions: "Please select the correct answer.",
+                            questions: [
+                              {
+                                id: "q1",
+                                question: "What is React?",
+                                options: [
+                                  "A Library",
+                                  "A Framework",
+                                  "A Language",
+                                  "A Database",
+                                ],
+                                correctAnswerIndex: 0,
+                              },
+                            ],
+                            passingScore: 60,
+                          };
+                          setContent(JSON.stringify(template, null, 2));
+                        }}
+                        className="text-[12px] text-indigo-600 font-bold hover:underline"
+                      >
+                        Insert Template
+                      </button>
+                    </div>
+
+                    <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4">
+                      <h4 className="text-sm font-bold text-amber-800 mb-1">
+                        Instructional Guide:
+                      </h4>
+                      <ul className="text-xs text-amber-700 list-disc ml-4 space-y-1">
+                        <li>Each question MUST have exactly 4 options.</li>
+                        <li>
+                          `correctAnswerIndex` must be 0, 1, 2, or 3 (0 = first
+                          option).
+                        </li>
+                        <li>`passingScore` is a number (e.g., 60).</li>
+                      </ul>
+                    </div>
+
+                    <div className="mt-1">
+                      <textarea
+                        id="edit-assessment"
+                        name="content"
+                        rows={12}
+                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border font-mono text-[13px] bg-slate-50"
+                        placeholder="Paste Assessment JSON here..."
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                       />

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import CourseContentHeader from "../../components/layout/CourseContentHeader";
+import { useParams, useNavigate } from "react-router-dom";
 import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
 import { transcriptApi } from "../../services/transcriptApi";
@@ -317,7 +316,11 @@ const CourseContent: React.FC = () => {
                       return (
                         <Link
                           key={lesson.id}
-                          to={`/learn/${courseId}/lecture/${lesson.id}`}
+                          to={
+                            lesson.type?.toLowerCase() === "assessment"
+                              ? `/learn/${courseId}/assessment/${lesson.id}`
+                              : `/learn/${courseId}/lecture/${lesson.id}`
+                          }
                           className={`flex items-start gap-3 p-4 py-4 cursor-pointer transition-colors ${
                             isActive
                               ? "bg-[#e8f0fe] relative"
@@ -419,28 +422,30 @@ const CourseContent: React.FC = () => {
         {/* ================= MAIN CONTENT ================= */}
         <main className="flex-1 overflow-y-auto bg-white custom-scrollbar relative">
           <div className="max-w-[1000px] mx-auto px-6 py-8 md:px-12">
-            {/* Title and Save Note - Above for Reading, Below for Video */}
+            {/* Title and Save Note - Above for Reading/Assessment, Below for Video */}
             {currentLesson.type?.toLowerCase() !== "video" && (
               <div className="flex items-start justify-between mb-8">
                 <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
                   {currentLesson.title}
                 </h1>
-                <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  Save note
-                </button>
+                {currentLesson.type?.toLowerCase() !== "assessment" && (
+                  <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                    Save note
+                  </button>
+                )}
               </div>
             )}
 
@@ -705,15 +710,23 @@ const CourseContent: React.FC = () => {
           <div className="fixed bottom-0 right-0 left-[350px] bg-white/80 backdrop-blur-sm border-t border-[#dadce0] p-4 flex items-center justify-end px-12 z-40">
             <button
               onClick={handleNext}
+              disabled={
+                currentLesson.type?.toLowerCase() === "assessment" &&
+                !isLessonCompleted(currentLesson.id)
+              }
               className={`flex items-center gap-2 px-6 py-2.5 rounded-[4px] font-bold text-[14px] transition-colors ${
                 isLessonCompleted(currentLesson.id)
                   ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
-                  : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
+                  : currentLesson.type?.toLowerCase() === "assessment"
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
               }`}
             >
               {isLessonCompleted(currentLesson.id)
                 ? "Go to next item"
-                : "Mark as completed"}
+                : currentLesson.type?.toLowerCase() === "assessment"
+                  ? "Locked (Pass to continue)"
+                  : "Mark as completed"}
               <svg
                 className="w-4 h-4"
                 fill="none"

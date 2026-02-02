@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import CourseLearningHeader from "../../components/layout/CourseLearningHeader";
 import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
@@ -23,6 +23,7 @@ interface ModuleSection {
 }
 
 const CourseLearning: React.FC = () => {
+  const navigate = useNavigate();
   const { courseId } = useParams<{ courseId: string }>();
   // Default expanded state to match screenshot
   const [expandedSections, setExpandedSections] = useState<string[]>([
@@ -401,7 +402,11 @@ const CourseLearning: React.FC = () => {
                         {section.lessons.map((lesson) => (
                           <div key={lesson.id} className="relative group">
                             <Link
-                              to={`/learn/${courseId}/lecture/${lesson.id}`}
+                              to={
+                                lesson.type?.toLowerCase() === "assessment"
+                                  ? `/learn/${courseId}/assessment/${lesson.id}`
+                                  : `/learn/${courseId}/lecture/${lesson.id}`
+                              }
                               className="block"
                             >
                               <div className="flex items-start gap-4">
@@ -473,7 +478,18 @@ const CourseLearning: React.FC = () => {
 
                                   {lesson.status === "in-progress" && (
                                     <div className="mt-3">
-                                      <button className="bg-[#0056D2] text-white px-6 py-2 rounded-[4px] font-bold text-[14px] hover:bg-[#00419e] transition-colors">
+                                      <button
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          navigate(
+                                            lesson.type?.toLowerCase() ===
+                                              "assessment"
+                                              ? `/learn/${courseId}/assessment/${lesson.id}`
+                                              : `/learn/${courseId}/lecture/${lesson.id}`,
+                                          );
+                                        }}
+                                        className="bg-[#0056D2] text-white px-6 py-2 rounded-[4px] font-bold text-[14px] hover:bg-[#00419e] transition-colors"
+                                      >
                                         Resume
                                       </button>
                                     </div>
