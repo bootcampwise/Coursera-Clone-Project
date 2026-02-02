@@ -43,6 +43,7 @@ const Courses: React.FC = () => {
       toast.success("Course deleted");
       fetchCourses();
     } catch (error) {
+      console.error("Failed to delete course:", error);
       toast.error("Failed to delete course");
     }
   };

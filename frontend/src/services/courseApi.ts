@@ -46,6 +46,11 @@ export const courseApi = {
     return response.data;
   },
 
+  deleteCourse: async (id: string) => {
+    const response = await instructorApi.delete(ENDPOINTS.COURSES_BY_ID(id));
+    return response.data;
+  },
+
   // Module & Lesson Methods
   getModules: async (courseId: string) => {
     // GET /courses/:courseId/modules
