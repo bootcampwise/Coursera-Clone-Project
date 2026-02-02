@@ -5,6 +5,7 @@ import {
   deleteLesson,
   reorderLessons,
 } from "../controllers/lesson.controller";
+import { getTranscript } from "../controllers/lessonTranscript.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { requireRole } from "../middlewares/role.middleware";
 
@@ -39,5 +40,7 @@ router.delete(
   requireRole(["instructor", "admin"]),
   deleteLesson,
 );
+
+router.get("/lessons/:id/transcript", authMiddleware, getTranscript);
 
 export default router;

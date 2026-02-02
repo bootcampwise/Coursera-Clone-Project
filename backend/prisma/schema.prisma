@@ -90,6 +90,18 @@ model Lesson {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   lessonProgress LessonProgress[]
+  transcript     TranscriptLine[]
+}
+
+model TranscriptLine {
+  id        String   @id @map("_id") @default(auto()) @db.ObjectId
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId  String   @db.ObjectId
+  startTime Float    // Start time in seconds
+  endTime   Float    // End time in seconds
+  text      String
+  order     Int      // To ensure correct sequence
+  createdAt DateTime @default(now())
 }
 
 model Enrollment {

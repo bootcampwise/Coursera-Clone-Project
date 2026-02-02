@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import CourseContentHeader from "../../components/layout/CourseContentHeader";
 import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
+import { transcriptApi } from "../../services/transcriptApi";
+import type { TranscriptLine } from "../../services/transcriptApi";
 
 const CourseContent: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +17,8 @@ const CourseContent: React.FC = () => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [course, setCourse] = useState<any>(null);
   const [progressData, setProgressData] = useState<any>(null);
+  const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
+  const [activeLineId, setActiveLineId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<
     "transcript" | "notes" | "downloads"
@@ -22,6 +26,12 @@ const CourseContent: React.FC = () => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastSavedTime = useRef<number>(0);
+
+  const isLessonCompleted = (id: string) => {
+    return progressData?.lessonProgress?.some(
+      (p: any) => p.lessonId === id && p.completed,
+    );
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +72,32 @@ const CourseContent: React.FC = () => {
   const currentLesson = course?.modules
     ?.flatMap((m: any) => m.lessons)
     ?.find((l: any) => l.id === lessonId);
+
+  // Fetch transcript
+  useEffect(() => {
+    const fetchTranscript = async () => {
+      if (lessonId && currentLesson?.type?.toLowerCase() === "video") {
+        try {
+          const data = await transcriptApi.getTranscript(lessonId);
+          console.log(
+            `✅ Transcript loaded for lesson ${lessonId}: ${data.length} lines`,
+          );
+          setTranscript(data);
+        } catch (err) {
+          console.error("Failed to fetch transcript", err);
+          setTranscript([]); // Fallback to empty
+        }
+      } else {
+        setTranscript([]);
+      }
+    };
+    fetchTranscript();
+  }, [lessonId, currentLesson]);
+
+  // Sync transcript highlighting (Auto-scroll removed as requested)
+  useEffect(() => {
+    // Highlighting is handled via state and inline classes, no side-effect needed for scroll.
+  }, [activeLineId]);
 
   // Resume playback logic
   useEffect(() => {
@@ -111,47 +147,56 @@ const CourseContent: React.FC = () => {
   const handleTimeUpdate = async () => {
     if (!videoRef.current || !progressData?.enrollmentId || !lessonId) return;
 
-    const currentTime = Math.floor(videoRef.current.currentTime);
+    const currentTime = videoRef.current.currentTime;
+    const currentTimeInt = Math.floor(currentTime);
     const duration = Math.floor(videoRef.current.duration);
+
+    // Sync active transcript line
+    if (transcript.length > 0) {
+      const activeLine = transcript.find(
+        (line) => currentTime >= line.startTime && currentTime < line.endTime,
+      );
+      if (activeLine && activeLine.id !== activeLineId) {
+        setActiveLineId(activeLine.id);
+      } else if (!activeLine && activeLineId) {
+        setActiveLineId(null);
+      }
+    }
 
     // Save every 10 seconds or when finished
     if (
-      currentTime !== lastSavedTime.current &&
-      (currentTime % 10 === 0 || (duration > 0 && currentTime >= duration - 1))
+      currentTimeInt !== lastSavedTime.current &&
+      (currentTimeInt % 10 === 0 ||
+        (duration > 0 && currentTimeInt >= duration - 1))
     ) {
-      lastSavedTime.current = currentTime;
+      lastSavedTime.current = currentTimeInt;
 
-      const isNearEnd = duration > 0 && currentTime >= duration * 0.98;
+      const isNearEnd = duration > 0 && currentTimeInt >= duration * 0.98;
       const alreadyCompleted = isLessonCompleted(lessonId);
 
       try {
         await enrollmentApi.updateLessonProgress(
           progressData.enrollmentId,
-          lessonId,
+          lessonId!,
           {
-            lastPlayed: currentTime,
+            lastPlayed: currentTimeInt,
             completed:
-              alreadyCompleted || isNearEnd || currentTime >= duration - 1,
+              alreadyCompleted || isNearEnd || currentTimeInt >= duration - 1,
           },
         );
 
         // If it was just completed, refresh progress data to update sidebar
-        if (!alreadyCompleted && (isNearEnd || currentTime >= duration - 1)) {
-          const newProgress = await enrollmentApi.getCourseProgress(
-            courseId as string,
-          );
+        if (
+          !alreadyCompleted &&
+          (isNearEnd || currentTimeInt >= duration - 1)
+        ) {
+          const newProgress = await enrollmentApi.getCourseProgress(courseId!);
           setProgressData(newProgress);
         }
       } catch (err) {
         console.error("Failed to track progress", err);
       }
     }
-  };
-
-  const isLessonCompleted = (id: string) => {
-    return progressData?.lessonProgress?.some(
-      (p: any) => p.lessonId === id && p.completed,
-    );
   };
 
   const handleNext = async () => {
@@ -242,11 +287,11 @@ const CourseContent: React.FC = () => {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    strokeWidth="1.5"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={1.5}
                       d="M19 9l-7 7-7-7"
                     />
                   </svg>
@@ -269,64 +314,66 @@ const CourseContent: React.FC = () => {
                           }`}
                         >
                           {isActive && (
-                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0056D2]"></div>
+                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0056D2]" />
                           )}
-
-                          <div className="mt-0.5">
+                          <div className="shrink-0 mt-0.5">
                             {isComplete ? (
                               <svg
-                                className="w-5 h-5 text-[#188038]"
+                                className="w-[18px] h-[18px] text-[#00814d]"
+                                viewBox="0 0 24 24"
                                 fill="currentColor"
-                                viewBox="0 0 20 20"
                               >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                               </svg>
                             ) : (
-                              <div
-                                className={`w-5 h-5 rounded-full border-2 bg-white ${
-                                  isActive
-                                    ? "border-[#0056D2]"
-                                    : "border-[#dadce0]"
-                                }`}
-                              ></div>
+                              <div className="w-[18px] h-[18px] border-2 border-[#dadce0] rounded-full" />
                             )}
                           </div>
-
-                          <div className="flex-1">
+                          <div>
                             <p
-                              className={`text-[14px] leading-snug ${
+                              className={`text-[13px] leading-tight ${
                                 isActive
-                                  ? "font-bold text-[#1f1f1f]"
-                                  : "text-[#3c4043]"
+                                  ? "text-[#0056D2] font-bold"
+                                  : "text-[#3c4043] font-normal"
                               }`}
                             >
                               {lesson.title}
                             </p>
-                            <div className="flex items-center gap-1.5 text-[12px] text-[#5f6368] mt-1.5">
+                            <div className="flex items-center gap-2 mt-1.5">
                               {lesson.type?.toLowerCase() === "video" ? (
                                 <svg
-                                  className="w-3.5 h-3.5"
-                                  fill="currentColor"
+                                  className="w-3.5 h-3.5 text-[#5f6368]"
+                                  fill="none"
                                   viewBox="0 0 24 24"
+                                  stroke="currentColor"
                                 >
-                                  <polygon points="5 3 19 12 5 21 5 3" />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                  />
                                 </svg>
                               ) : (
                                 <svg
-                                  className="w-3.5 h-3.5"
+                                  className="w-3.5 h-3.5 text-[#5f6368]"
                                   fill="none"
-                                  stroke="currentColor"
                                   viewBox="0 0 24 24"
+                                  stroke="currentColor"
                                 >
-                                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                  />
                                 </svg>
                               )}
-                              <span>
-                                {lesson.type} • {lesson.duration || 5} min
+                              <span className="text-[11px] text-[#5f6368] font-medium uppercase tracking-wider">
+                                {lesson.type || "Lesson"} •{" "}
+                                {lesson.duration
+                                  ? `${Math.floor(lesson.duration / 60)}m`
+                                  : "5m"}
                               </span>
                             </div>
                           </div>
@@ -337,6 +384,24 @@ const CourseContent: React.FC = () => {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Progress Indicator */}
+          <div className="p-6 bg-white border-t border-[#dadce0] mt-auto">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-[12px] font-bold text-[#1f1f1f]">
+                Course Progress
+              </span>
+              <span className="text-[12px] font-bold text-[#1f1f1f]">
+                {progressData?.progress || 0}%
+              </span>
+            </div>
+            <div className="w-full h-1.5 bg-[#e8f0fe] rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#0056D2] transition-all duration-500"
+                style={{ width: `${progressData?.progress || 0}%` }}
+              />
+            </div>
           </div>
         </aside>
 
@@ -362,21 +427,16 @@ const CourseContent: React.FC = () => {
                         ref={videoRef}
                         src={currentLesson.videoUrl}
                         controls
-                        autoPlay={false}
-                        preload="metadata"
                         className="w-full h-full"
                         onTimeUpdate={handleTimeUpdate}
-                        onEnded={() => {
-                          if (videoRef.current) {
-                            handleTimeUpdate();
-                          }
-                        }}
+                        autoPlay={false}
+                        preload="metadata"
                       />
                     )
                   ) : (
-                    <div className="w-full h-full relative">
+                    <div className="relative w-full h-full group">
                       <img
-                        src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2670&auto=format&fit=crop"
+                        src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&auto=format&fit=crop&q=60"
                         alt="Video content"
                         className="w-full h-full object-cover opacity-90"
                       />
@@ -520,71 +580,55 @@ const CourseContent: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="space-y-8 max-w-[700px]">
-                  <div className="flex items-start gap-10 group">
-                    <span className="text-[11px] text-[#5f6368] mt-1 shrink-0 font-mono w-10">
-                      0:01
-                    </span>
-                    <p className="text-[14px] text-[#1f1f1f] leading-[1.6]">
-                      Welcome back. We&apos;re moments away from checking out an
-                      example of a crit session in action. A standard design
-                      critique session is at least 30 minutes, and the designer
-                      usually spends five to ten of those minutes presenting.
-                      But keep in mind, the session length will depend on the
-                      amount of feedback requested and the number of reviewers
-                      involved. We don&apos;t have time to share a full crit
-                      session with you. So the upcoming video is just a snapshot
-                      of what usually happens. In the mock crit session,
-                      I&apos;ll play the role of the presenter, sharing some of
-                      the mockups for the dog walker app with two colleagues who
-                      were the reviewers.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-10 group">
-                    <span className="text-[11px] text-[#5f6368] mt-1 shrink-0 font-mono w-10">
-                      0:38
-                    </span>
-                    <div>
-                      <p className="text-[14px] text-[#1f1f1f] leading-[1.6] mb-4">
-                        There will also be a facilitator guiding the flow of the
-                        interaction. While you&apos;ve been working on your
-                        mockups throughout this course, so have I.{" "}
-                        <span className="bg-[#e6f4ea] border-b border-[#188038]/30">
-                          The mockups I&apos;ll present in the design critique
-                          session are my current iteration of the dog walker
-                          app.
-                        </span>{" "}
-                        As the presenter, I&apos;ll ask for feedback on two
-                        parts of this design, the scheduling flow and the
-                        call-to-action buttons. Remember, call-to-action buttons
-                        are elements in the design that tell the user to take
-                        action. In the dog walker app, the call-to-action
-                        buttons are labeled things like &quot;book
-                        appointment&quot; and &quot;next.&quot; You&apos;ll have
-                        a chance to watch how the flow of ideas and
-                        communication happens as I present my work and receive
-                        feedback.
+                <div className="space-y-8 max-w-[700px] max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+                  {transcript.length > 0 ? (
+                    transcript.map((line) => (
+                      <div
+                        id={`transcript-line-${line.id}`}
+                        key={line.id}
+                        className={`flex items-start gap-10 group cursor-pointer p-4 rounded-lg transition-all duration-300 ${
+                          activeLineId === line.id
+                            ? "bg-[#e8f0fe] border-l-4 border-[#0056D2] shadow-sm"
+                            : "hover:bg-gray-50 border-l-4 border-transparent"
+                        }`}
+                        onClick={() => {
+                          if (videoRef.current) {
+                            videoRef.current.currentTime = line.startTime;
+                            videoRef.current.play();
+                          }
+                        }}
+                      >
+                        <span
+                          className={`text-[11px] mt-1 shrink-0 font-mono w-10 ${
+                            activeLineId === line.id
+                              ? "text-[#0056D2] font-bold"
+                              : "text-[#5f6368]"
+                          }`}
+                        >
+                          {Math.floor(line.startTime / 60)}:
+                          {String(Math.floor(line.startTime % 60)).padStart(
+                            2,
+                            "0",
+                          )}
+                        </span>
+                        <p
+                          className={`text-[14px] leading-[1.6] ${
+                            activeLineId === line.id
+                              ? "text-[#1f1f1f] font-medium"
+                              : "text-[#5f6368] group-hover:text-[#1f1f1f]"
+                          }`}
+                        >
+                          {line.text}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-10 bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
+                      <p className="text-[#5f6368]">
+                        Transcript not available for this lesson.
                       </p>
                     </div>
-                  </div>
-
-                  <div className="flex items-start gap-10 group">
-                    <span className="text-[11px] text-[#5f6368] mt-1 shrink-0 font-mono w-10">
-                      1:18
-                    </span>
-                    <p className="text-[14px] text-[#1f1f1f] leading-[1.6]">
-                      As you watch, take note of how I, as the presenter,
-                      respond to the feedback I&apos;m receiving. Ask yourself,
-                      is the presenter actively listening? Is the presenter
-                      taking notes? What types of follow-up questions is the
-                      presenter asking? You should also focus on the way that
-                      reviewers share their feedback and opinions. Ask yourself,
-                      do the reviewers share the reasoning behind their
-                      feedback? Do the reviewers focus on problems with the
-                      design instead of offering solutions?
-                    </p>
-                  </div>
+                  )}
                 </div>
               </div>
             )}
@@ -600,114 +644,37 @@ const CourseContent: React.FC = () => {
             {activeTab === "downloads" && (
               <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
                 <p className="text-[#5f6368]">
-                  Downloadable resources for this lesson.
+                  Any downloadable resources will be listed here.
                 </p>
               </div>
             )}
           </div>
-        </main>
 
-        {/* Floating AI / Tool Bar */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-          <div className="bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#dadce0] p-1.5 flex items-center gap-1">
-            <div className="flex items-center gap-1 px-2 border-r border-gray-200">
-              <button className="p-2.5 rounded-full hover:bg-gray-100 text-[#0056D2]">
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
-                </svg>
-              </button>
-              <button className="p-2.5 rounded-full hover:bg-gray-100 text-gray-700">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0V12m-3-1V5m3 6V3.5a1.5 1.5 0 113 0V11m-3-1V2a1.5 1.5 0 113 0v11m-3-1c.142.14.772.635 1.256 1.12l4.89 4.89a2 2 0 010 2.828l-.172.172a2 2 0 01-2.828 0l-4.242-4.242-1-1" />
-                </svg>
-              </button>
-              <button className="p-2.5 rounded-full hover:bg-gray-100 text-gray-700">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-              </button>
-            </div>
-            <button className="bg-[#0056D2] text-white px-5 py-2 rounded-full font-bold text-[14px] hover:bg-[#00419e] transition-colors shadow-sm ml-1">
-              Ask to edit
-            </button>
-            <div className="flex items-center gap-1 pl-1 pr-2 border-l border-gray-200 ml-1">
-              <button className="p-2.5 rounded-full hover:bg-gray-100 text-gray-400">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-              </button>
-              <button className="p-2.5 rounded-full hover:bg-gray-100 text-gray-400">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-              </button>
-              <button className="p-2.5 rounded-full hover:bg-gray-100 text-gray-400">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Simple Footer / Next Button */}
-        <div className="fixed bottom-0 right-0 left-[350px] bg-white/80 backdrop-blur-sm border-t border-[#dadce0] p-4 flex items-center justify-end px-12 z-40">
-          <button
-            onClick={handleNext}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-[4px] font-bold text-[14px] transition-colors ${
-              isLessonCompleted(currentLesson.id)
-                ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
-                : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
-            }`}
-          >
-            {isLessonCompleted(currentLesson.id)
-              ? "Go to next item"
-              : "Mark as completed"}
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
+          {/* Navigation Bar */}
+          <div className="fixed bottom-0 right-0 left-[350px] bg-white/80 backdrop-blur-sm border-t border-[#dadce0] p-4 flex items-center justify-end px-12 z-40">
+            <button
+              onClick={handleNext}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-[4px] font-bold text-[14px] transition-colors ${
+                isLessonCompleted(currentLesson.id)
+                  ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
+                  : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
+              }`}
             >
-              <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </div>
+              {isLessonCompleted(currentLesson.id)
+                ? "Go to next item"
+                : "Mark as completed"}
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+        </main>
       </div>
     </div>
   );
