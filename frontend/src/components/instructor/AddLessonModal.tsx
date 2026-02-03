@@ -3,7 +3,11 @@ import React, { useState } from "react";
 interface AddLessonModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (title: string, type: "VIDEO" | "READING" | "ASSESSMENT") => void;
+  onSave: (
+    title: string,
+    type: "VIDEO" | "READING" | "ASSESSMENT",
+    description?: string,
+  ) => void;
   // moduleId removed as unused
 }
 
@@ -14,15 +18,18 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
 }) => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState<"VIDEO" | "READING" | "ASSESSMENT">("VIDEO");
+  const [description, setDescription] = useState("");
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      onSave(title, type);
+      const cleanedDescription = description.trim();
+      onSave(title, type, cleanedDescription ? cleanedDescription : undefined);
       setTitle("");
       setType("VIDEO");
+      setDescription("");
       onClose();
     }
   };
@@ -94,6 +101,26 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     autoFocus
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Lesson Description
+                </label>
+                <div className="mt-1">
+                  <textarea
+                    id="description"
+                    name="description"
+                    rows={4}
+                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                    placeholder="Short summary shown to learners (optional)"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
               </div>

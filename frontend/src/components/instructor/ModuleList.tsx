@@ -6,6 +6,7 @@ interface Lesson {
   title: string;
   type: "VIDEO" | "READING" | "ASSESSMENT";
   order: number;
+  updatedAt?: string;
 }
 
 interface Module {

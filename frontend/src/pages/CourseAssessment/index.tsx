@@ -222,8 +222,10 @@ const CourseAssessment: React.FC = () => {
             </p>
 
             <div className="space-y-8 md:space-y-12">
-              {questions.map((q: any, idx: number) => (
-                <div key={q.id} className="relative">
+              {questions.map((q: any, idx: number) => {
+                const questionId = q.id || `q-${idx + 1}`;
+                return (
+                <div key={questionId} className="relative">
                   {/* Question Header */}
                   <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-2 sm:gap-0">
                     <div className="flex gap-4">
@@ -248,10 +250,12 @@ const CourseAssessment: React.FC = () => {
                         <div className="relative mt-0.5 shrink-0">
                           <input
                             type="radio"
-                            name={`question-${q.id}`}
+                            name={`question-${questionId}`}
                             value={optIdx}
-                            checked={answers[q.id] === optIdx}
-                            onChange={() => handleOptionChange(q.id, optIdx)}
+                            checked={answers[questionId] === optIdx}
+                            onChange={() =>
+                              handleOptionChange(questionId, optIdx)
+                            }
                             className="peer sr-only"
                           />
                           {/* Custom Radio/Checkbox Design */}
@@ -264,7 +268,8 @@ const CourseAssessment: React.FC = () => {
                     ))}
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
 
             {/* Honor Code Section */}

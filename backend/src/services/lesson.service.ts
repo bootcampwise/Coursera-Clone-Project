@@ -5,6 +5,7 @@ interface CreateLessonData {
   title: string;
   order: number;
   type?: "VIDEO" | "READING" | "ASSESSMENT";
+  description?: string;
   videoUrl?: string;
   content?: string;
   duration?: number;
@@ -13,6 +14,7 @@ interface CreateLessonData {
 interface UpdateLessonData {
   title?: string;
   type?: "VIDEO" | "READING" | "ASSESSMENT";
+  description?: string;
   videoUrl?: string;
   content?: string;
   duration?: number;

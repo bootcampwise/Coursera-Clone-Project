@@ -5,6 +5,7 @@ interface Lesson {
   title: string;
   type: "VIDEO" | "READING" | "ASSESSMENT";
   order: number;
+  updatedAt?: string;
 }
 
 interface LessonListProps {
@@ -20,6 +21,13 @@ const LessonList: React.FC<LessonListProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const formatUpdatedAt = (value?: string) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString();
+  };
+
   return (
     <div className="space-y-2 mt-2 ml-4">
       {lessons.map((lesson) => (
@@ -89,6 +97,11 @@ const LessonList: React.FC<LessonListProps> = ({
                 >
                   {lesson.type}
                 </span>
+                {lesson.updatedAt && (
+                  <span className="text-xs text-gray-400">
+                    • Updated {formatUpdatedAt(lesson.updatedAt)}
+                  </span>
+                )}
               </div>
             </div>
           </div>

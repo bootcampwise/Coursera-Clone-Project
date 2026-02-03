@@ -81,6 +81,7 @@ model Lesson {
   id        String     @id @map("_id") @default(auto()) @db.ObjectId
   title     String
   type      LessonType @default(VIDEO)
+  description String?
   content   String?
   videoUrl  String?
   duration  Int?     // in seconds

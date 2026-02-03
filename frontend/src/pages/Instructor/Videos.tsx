@@ -25,6 +25,55 @@ const Videos: React.FC = () => {
   const [activeTab, setActiveTab] = useState<{
     [key: string]: "upload" | "embed";
   }>({});
+  const [durationInputs, setDurationInputs] = useState<{
+    [key: string]: string;
+  }>({});
+
+  const formatDurationInput = (seconds: number | null | undefined) => {
+    if (!seconds || Number.isNaN(seconds)) return "";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${String(secs).padStart(2, "0")}`;
+  };
+
+  const parseDurationInput = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    if (trimmed.includes(":")) {
+      const [m, s] = trimmed.split(":");
+      const mins = Number(m);
+      const secs = Number(s);
+      if (Number.isNaN(mins) || Number.isNaN(secs) || secs >= 60 || secs < 0)
+        return null;
+      return Math.max(0, mins * 60 + secs);
+    }
+    const asSeconds = Number(trimmed);
+    if (Number.isNaN(asSeconds) || asSeconds < 0) return null;
+    return Math.floor(asSeconds);
+  };
+
+  const getVideoDuration = (file: File): Promise<number | null> =>
+    new Promise((resolve) => {
+      const video = document.createElement("video");
+      const objectUrl = URL.createObjectURL(file);
+      const cleanup = () => {
+        URL.revokeObjectURL(objectUrl);
+        video.removeAttribute("src");
+      };
+      video.preload = "metadata";
+      video.onloadedmetadata = () => {
+        const duration = Number.isFinite(video.duration)
+          ? Math.floor(video.duration)
+          : null;
+        cleanup();
+        resolve(duration);
+      };
+      video.onerror = () => {
+        cleanup();
+        resolve(null);
+      };
+      video.src = objectUrl;
+    });
 
   useEffect(() => {
     fetchCourses();
@@ -56,6 +105,9 @@ const Videos: React.FC = () => {
       const modules = await courseApi.getModules(courseId);
       const videoLessons: LessonRow[] = [];
       const course = courses.find((c) => c.id === courseId);
+      const nextActiveTab: { [key: string]: "upload" | "embed" } = {};
+      const nextEmbedUrls: { [key: string]: string } = {};
+      const nextDurationInputs: { [key: string]: string } = {};
 
       // Flatten lessons from modules
       if (modules && Array.isArray(modules)) {
@@ -73,11 +125,11 @@ const Videos: React.FC = () => {
                   updatedAt: lesson.updatedAt,
                 });
                 // Initialize state
-                setActiveTab((prev) => ({ ...prev, [lesson.id]: "upload" }));
-                setEmbedUrls((prev) => ({
-                  ...prev,
-                  [lesson.id]: lesson.videoUrl || "",
-                }));
+                nextActiveTab[lesson.id] = "upload";
+                nextEmbedUrls[lesson.id] = lesson.videoUrl || "";
+                nextDurationInputs[lesson.id] = formatDurationInput(
+                  lesson.duration,
+                );
               }
             });
           }
@@ -85,6 +137,9 @@ const Videos: React.FC = () => {
       }
 
       setLessons(videoLessons);
+      setActiveTab((prev) => ({ ...prev, ...nextActiveTab }));
+      setEmbedUrls((prev) => ({ ...prev, ...nextEmbedUrls }));
+      setDurationInputs((prev) => ({ ...prev, ...nextDurationInputs }));
     } catch (error) {
       toast.error("Failed to load lessons");
     } finally {
@@ -100,6 +155,8 @@ const Videos: React.FC = () => {
     formData.append("file", file);
 
     try {
+      const durationSec = await getVideoDuration(file);
+
       // 1. Upload File
       const uploadResponse = await api.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -108,10 +165,15 @@ const Videos: React.FC = () => {
       const fileUrl = uploadResponse.data.url;
 
       // 2. Update Lesson
-      await courseApi.updateLesson(lessonId, {
-        videoUrl: fileUrl,
-        duration: 120, // Should calculate real duration if possible, default 2 mins
-      });
+      const payload: any = { videoUrl: fileUrl };
+      if (durationSec !== null) {
+        payload.duration = durationSec;
+        setDurationInputs((prev) => ({
+          ...prev,
+          [lessonId]: formatDurationInput(durationSec),
+        }));
+      }
+      await courseApi.updateLesson(lessonId, payload);
 
       toast.success("Video uploaded successfully", { id: toastId });
       fetchLessons(selectedCourseId);
@@ -129,14 +191,30 @@ const Videos: React.FC = () => {
 
     const toastId = toast.loading("Saving embed URL...");
     try {
-      await courseApi.updateLesson(lessonId, {
-        videoUrl: url,
-        duration: 0, // External embeds might not provide duration easily
-      });
+      const durationSec = parseDurationInput(durationInputs[lessonId] || "");
+      const payload: any = { videoUrl: url };
+      if (durationSec !== null) payload.duration = durationSec;
+      await courseApi.updateLesson(lessonId, payload);
       toast.success("Video URL saved", { id: toastId });
       fetchLessons(selectedCourseId);
     } catch (error) {
       toast.error("Failed to save URL", { id: toastId });
+    }
+  };
+
+  const handleDurationSave = async (lessonId: string) => {
+    const durationSec = parseDurationInput(durationInputs[lessonId] || "");
+    if (durationSec === null) {
+      toast.error("Enter a valid duration (e.g., 540 or 9:00).");
+      return;
+    }
+    const toastId = toast.loading("Saving duration...");
+    try {
+      await courseApi.updateLesson(lessonId, { duration: durationSec });
+      toast.success("Duration saved", { id: toastId });
+      fetchLessons(selectedCourseId);
+    } catch (error) {
+      toast.error("Failed to save duration", { id: toastId });
     }
   };
 
@@ -234,6 +312,11 @@ const Videos: React.FC = () => {
                       <p className="text-sm text-gray-500">
                         {lesson.moduleTitle}
                       </p>
+                      {lesson.updatedAt && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Updated {new Date(lesson.updatedAt).toLocaleDateString()}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center">
                       {lesson.videoUrl ? (
@@ -355,6 +438,35 @@ const Videos: React.FC = () => {
                       </a>
                     </div>
                   )}
+
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Duration (mm:ss or seconds)
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="e.g., 9:30 or 570"
+                        className="flex-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                        value={durationInputs[lesson.id] || ""}
+                        onChange={(e) =>
+                          setDurationInputs((prev) => ({
+                            ...prev,
+                            [lesson.id]: e.target.value,
+                          }))
+                        }
+                      />
+                      <button
+                        onClick={() => handleDurationSave(lesson.id)}
+                        className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900"
+                      >
+                        Save
+                      </button>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      This duration is shown to learners in the course content.
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

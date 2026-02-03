@@ -3,11 +3,17 @@ import React, { useState, useEffect } from "react";
 interface EditLessonModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (id: string, title: string, content?: string) => void;
+  onSave: (
+    id: string,
+    title: string,
+    description?: string,
+    content?: string,
+  ) => void;
   lesson: {
     id: string;
     title: string;
     type: "VIDEO" | "READING" | "ASSESSMENT";
+    description?: string;
     content?: string;
     videoUrl?: string;
   } | null;
@@ -20,37 +26,98 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
   lesson,
 }) => {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
+  const [assessmentErrors, setAssessmentErrors] = useState<string[]>([]);
+  const [assessmentWarnings, setAssessmentWarnings] = useState<string[]>([]);
 
   useEffect(() => {
     if (lesson) {
       setTitle(lesson.title);
+      setDescription(lesson.description || "");
       setContent(lesson.content || "");
+      setAssessmentErrors([]);
+      setAssessmentWarnings([]);
     }
   }, [lesson]);
 
   if (!isOpen || !lesson) return null;
 
+  const validateAssessmentContent = (raw: string) => {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    let parsed: any = null;
+
+    try {
+      parsed = JSON.parse(raw);
+    } catch (err) {
+      errors.push("Invalid JSON format. Please check your syntax.");
+      return { errors, warnings };
+    }
+
+    if (!parsed || typeof parsed !== "object") {
+      errors.push("Assessment content must be a JSON object.");
+      return { errors, warnings };
+    }
+
+    if (!parsed.title || typeof parsed.title !== "string") {
+      errors.push("Assessment title is required and must be a string.");
+    }
+    if (typeof parsed.passingScore !== "number") {
+      errors.push("Passing score is required and must be a number.");
+    }
+
+    if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
+      errors.push("Assessment must include at least one question.");
+    } else {
+      parsed.questions.forEach((q: any, index: number) => {
+        const label = `Question ${index + 1}`;
+        if (!q.id || typeof q.id !== "string") {
+          errors.push(`${label} is missing a string 'id'.`);
+        }
+        if (!q.question || typeof q.question !== "string") {
+          errors.push(`${label} is missing 'question' text.`);
+        }
+        if (!Array.isArray(q.options) || q.options.length !== 4) {
+          errors.push(`${label} must have exactly 4 options.`);
+        }
+        if (
+          typeof q.correctAnswerIndex !== "number" ||
+          q.correctAnswerIndex < 0 ||
+          q.correctAnswerIndex > 3
+        ) {
+          errors.push(
+            `${label} has invalid correctAnswerIndex (must be 0-3).`,
+          );
+        }
+      });
+    }
+
+    if (parsed.instructions && typeof parsed.instructions !== "string") {
+      warnings.push("Instructions should be a string if provided.");
+    }
+
+    return { errors, warnings };
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (lesson.type === "ASSESSMENT") {
-      try {
-        const parsed = JSON.parse(content);
-        if (parsed.questions.some((q: any) => q.options.length !== 4)) {
-          alert("Each question must have exactly 4 options.");
-          return;
-        }
-      } catch (err) {
-        alert("Invalid JSON format. Please check your syntax.");
+      const { errors, warnings } = validateAssessmentContent(content);
+      setAssessmentErrors(errors);
+      setAssessmentWarnings(warnings);
+      if (errors.length > 0) {
         return;
       }
     }
 
     if (title.trim()) {
+      const cleanedDescription = description.trim();
       onSave(
         lesson.id,
         title,
+        cleanedDescription ? cleanedDescription : undefined,
         lesson.type === "READING" || lesson.type === "ASSESSMENT"
           ? content
           : undefined,
@@ -165,6 +232,26 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
                   </div>
                 </div>
 
+                <div>
+                  <label
+                    htmlFor="edit-description"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Lesson Description
+                  </label>
+                  <div className="mt-1">
+                    <textarea
+                      id="edit-description"
+                      name="description"
+                      rows={4}
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                      placeholder="Short summary shown to learners (optional)"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 {lesson.type === "READING" && (
                   <div>
                     <label
@@ -218,6 +305,8 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
                             passingScore: 60,
                           };
                           setContent(JSON.stringify(template, null, 2));
+                          setAssessmentErrors([]);
+                          setAssessmentWarnings([]);
                         }}
                         className="text-[12px] text-indigo-600 font-bold hover:underline"
                       >
@@ -225,11 +314,42 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
                       </button>
                     </div>
 
+                    {(assessmentErrors.length > 0 ||
+                      assessmentWarnings.length > 0) && (
+                      <div className="space-y-3">
+                        {assessmentErrors.length > 0 && (
+                          <div className="bg-red-50 border-l-4 border-red-400 p-4">
+                            <h4 className="text-sm font-bold text-red-800 mb-1">
+                              Fix these errors before saving:
+                            </h4>
+                            <ul className="text-xs text-red-700 list-disc ml-4 space-y-1">
+                              {assessmentErrors.map((err) => (
+                                <li key={err}>{err}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {assessmentWarnings.length > 0 && (
+                          <div className="bg-amber-50 border-l-4 border-amber-400 p-4">
+                            <h4 className="text-sm font-bold text-amber-800 mb-1">
+                              Warnings:
+                            </h4>
+                            <ul className="text-xs text-amber-700 list-disc ml-4 space-y-1">
+                              {assessmentWarnings.map((warn) => (
+                                <li key={warn}>{warn}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div className="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4">
                       <h4 className="text-sm font-bold text-amber-800 mb-1">
                         Instructional Guide:
                       </h4>
                       <ul className="text-xs text-amber-700 list-disc ml-4 space-y-1">
+                        <li>Each question MUST include a unique string `id`.</li>
                         <li>Each question MUST have exactly 4 options.</li>
                         <li>
                           `correctAnswerIndex` must be 0, 1, 2, or 3 (0 = first
@@ -247,8 +367,46 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
                         className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border font-mono text-[13px] bg-slate-50"
                         placeholder="Paste Assessment JSON here..."
                         value={content}
-                        onChange={(e) => setContent(e.target.value)}
+                        onChange={(e) => {
+                          setContent(e.target.value);
+                          if (assessmentErrors.length > 0) {
+                            setAssessmentErrors([]);
+                          }
+                          if (assessmentWarnings.length > 0) {
+                            setAssessmentWarnings([]);
+                          }
+                        }}
                       />
+                      <div className="mt-2 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const { errors, warnings } =
+                              validateAssessmentContent(content);
+                            setAssessmentErrors(errors);
+                            setAssessmentWarnings(warnings);
+                          }}
+                          className="text-[12px] text-slate-800 font-bold hover:underline"
+                        >
+                          Validate JSON
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            try {
+                              const parsed = JSON.parse(content);
+                              setContent(JSON.stringify(parsed, null, 2));
+                            } catch {
+                              setAssessmentErrors([
+                                "Invalid JSON format. Please check your syntax.",
+                              ]);
+                            }
+                          }}
+                          className="text-[12px] text-slate-800 font-bold hover:underline"
+                        >
+                          Format JSON
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

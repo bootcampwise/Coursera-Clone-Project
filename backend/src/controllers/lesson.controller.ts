@@ -5,7 +5,8 @@ import * as lessonService from "../services/lesson.service";
 export const createLesson = asyncHandler(
   async (req: Request & { user?: any }, res: Response) => {
     const { moduleId } = req.params;
-    const { title, order, type, videoUrl, content, duration } = req.body;
+    const { title, order, type, description, videoUrl, content, duration } =
+      req.body;
     const userId = req.user?.id;
     const userRole = req.user?.role;
 
@@ -20,6 +21,7 @@ export const createLesson = asyncHandler(
         title,
         order: order ?? 0,
         type,
+        description,
         videoUrl,
         content,
         duration,
@@ -34,7 +36,7 @@ export const createLesson = asyncHandler(
 export const updateLesson = asyncHandler(
   async (req: Request & { user?: any }, res: Response) => {
     const { id } = req.params;
-    const { title, type, videoUrl, content, duration } = req.body;
+    const { title, type, description, videoUrl, content, duration } = req.body;
     const userId = req.user?.id;
     const userRole = req.user?.role;
 
@@ -43,6 +45,7 @@ export const updateLesson = asyncHandler(
       {
         title,
         type,
+        description,
         videoUrl,
         content,
         duration,

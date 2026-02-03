@@ -12,8 +12,10 @@ interface Lesson {
   title: string;
   type: "VIDEO" | "READING" | "ASSESSMENT";
   order: number;
+  description?: string;
   content?: string;
   videoUrl?: string;
+  updatedAt?: string;
 }
 
 interface Module {
@@ -96,7 +98,11 @@ const CurriculumBuilder: React.FC = () => {
   };
 
   const handleDeleteModule = async (moduleId: string) => {
-    if (confirm("Delete this module? All lessons within it will be deleted.")) {
+    if (
+      confirm(
+        "Delete this module? All lessons inside will be removed and this will immediately affect student course content.",
+      )
+    ) {
       try {
         await courseApi.deleteModule(moduleId);
         toast.success("Module deleted");
@@ -113,7 +119,11 @@ const CurriculumBuilder: React.FC = () => {
     setIsAddLessonModalOpen(true);
   };
 
-  const handleSaveLesson = async (title: string, type: "VIDEO" | "READING") => {
+  const handleSaveLesson = async (
+    title: string,
+    type: "VIDEO" | "READING" | "ASSESSMENT",
+    description?: string,
+  ) => {
     if (!currentModuleId) return;
 
     try {
@@ -125,9 +135,12 @@ const CurriculumBuilder: React.FC = () => {
         title,
         type,
         order,
+        description,
       });
 
-      toast.success(`${type === "VIDEO" ? "Video" : "Reading"} lesson added`);
+      const typeLabel =
+        type === "VIDEO" ? "Video" : type === "READING" ? "Reading" : "Assessment";
+      toast.success(`${typeLabel} lesson added`);
       setIsAddLessonModalOpen(false);
       setCurrentModuleId(null);
       fetchModules();
@@ -145,11 +158,13 @@ const CurriculumBuilder: React.FC = () => {
   const handleSaveEditedLesson = async (
     id: string,
     title: string,
+    description?: string,
     content?: string,
   ) => {
     try {
       await courseApi.updateLesson(id, {
         title,
+        description,
         content,
       });
       toast.success("Lesson updated");
@@ -162,7 +177,11 @@ const CurriculumBuilder: React.FC = () => {
   };
 
   const handleDeleteLesson = async (lessonId: string) => {
-    if (confirm("Delete this lesson?")) {
+    if (
+      confirm(
+        "Delete this lesson? This will immediately remove it from student course content.",
+      )
+    ) {
       try {
         await courseApi.deleteLesson(lessonId);
         toast.success("Lesson deleted");

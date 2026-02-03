@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
 import { transcriptApi } from "../../services/transcriptApi";
 import type { TranscriptLine } from "../../services/transcriptApi";
+import CourseContentHeader from "../../components/layout/CourseContentHeader";
 
 const CourseContent: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +28,13 @@ const CourseContent: React.FC = () => {
   const currentLesson = course?.modules
     ?.flatMap((m: any) => m.lessons)
     ?.find((l: any) => l.id === lessonId);
+
+  const formatUpdatedAt = (value?: string) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString();
+  };
 
   // Reset tab to "notes" if switching to a Reading lesson where Transcript is hidden
   useEffect(() => {
@@ -457,9 +465,16 @@ const CourseContent: React.FC = () => {
             {/* Title and Save Note - Above for Reading/Assessment, Below for Video */}
             {currentLesson.type?.toLowerCase() !== "video" && (
               <div className="flex items-start justify-between mb-8">
-                <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
-                  {currentLesson.title}
-                </h1>
+                <div>
+                  <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
+                    {currentLesson.title}
+                  </h1>
+                  {currentLesson.updatedAt && (
+                    <p className="mt-1 text-[12px] text-[#5f6368]">
+                      Updated {formatUpdatedAt(currentLesson.updatedAt)}
+                    </p>
+                  )}
+                </div>
                 {currentLesson.type?.toLowerCase() !== "assessment" && (
                   <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
                     <svg
@@ -538,9 +553,16 @@ const CourseContent: React.FC = () => {
             {/* Title and Save Note - Below for Video */}
             {currentLesson.type?.toLowerCase() === "video" && (
               <div className="flex items-start justify-between mb-8">
-                <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
-                  {currentLesson.title}
-                </h1>
+                <div>
+                  <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
+                    {currentLesson.title}
+                  </h1>
+                  {currentLesson.updatedAt && (
+                    <p className="mt-1 text-[12px] text-[#5f6368]">
+                      Updated {formatUpdatedAt(currentLesson.updatedAt)}
+                    </p>
+                  )}
+                </div>
                 <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
                   <svg
                     className="w-4 h-4"
