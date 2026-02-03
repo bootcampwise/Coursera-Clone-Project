@@ -1,14 +1,18 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
 
 const CourseAssessment: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { courseId, assessmentId } = useParams<{
     courseId: string;
     assessmentId: string;
   }>();
+  const assessmentStarted = Boolean(
+    (location.state as any)?.assessmentStarted,
+  );
 
   const [assessment, setAssessment] = useState<any>(null);
   const [enrollment, setEnrollment] = useState<any>(null);
@@ -127,11 +131,24 @@ const CourseAssessment: React.FC = () => {
         <div className="max-w-[1000px] mx-auto px-4 md:px-6 min-h-[72px] py-4 md:py-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 w-full md:w-auto">
             <button
-              onClick={() => navigate(-1)}
-              className="group flex items-center gap-1 text-[#0056D2] font-bold text-[14px] bg-transparent border-none cursor-pointer p-0"
+              onClick={() => {
+                if (!assessmentStarted) {
+                  navigate(`/learn/${courseId}`);
+                }
+              }}
+              disabled={assessmentStarted}
+              className={`group flex items-center gap-1 font-bold text-[14px] bg-transparent border-none p-0 ${
+                assessmentStarted
+                  ? "text-[#9aa0a6] cursor-not-allowed"
+                  : "text-[#0056D2] cursor-pointer"
+              }`}
             >
               <svg
-                className="w-5 h-5 text-[#0056D2] group-hover:-translate-x-1 transition-transform"
+                className={`w-5 h-5 transition-transform ${
+                  assessmentStarted
+                    ? "text-[#9aa0a6]"
+                    : "text-[#0056D2] group-hover:-translate-x-1"
+                }`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

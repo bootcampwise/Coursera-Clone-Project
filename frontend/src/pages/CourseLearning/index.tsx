@@ -323,7 +323,7 @@ const CourseLearning: React.FC = () => {
 
         {/* Center Content */}
         <main className="flex-1 min-w-0 bg-white">
-          <div className="max-w-[610px] mx-auto mt-6 px-8 py-8 border border-[#e6e9ef] rounded-[12px]">
+          <div className="max-w-[610px] mx-auto mt-6 mb-16 px-8 py-8 border border-[#e6e9ef] rounded-[12px]">
             {/* Top Info Block */}
             <div className="mb-10">
               <div className="flex items-start gap-2 mb-4">
@@ -474,7 +474,7 @@ const CourseLearning: React.FC = () => {
 
                     {/* Lessons List */}
                     {isExpanded && (
-                      <div className="mt-2 ml-8 pl-4 border-l border-[#dadce0] space-y-6">
+                      <div className="mt-2 ml-8 pl-4 space-y-6">
                         {section.lessons.map((lesson) => (
                           <div key={lesson.id} className="relative group">
                             <Link
@@ -518,7 +518,9 @@ const CourseLearning: React.FC = () => {
                                 </div>
 
                                 {/* Content */}
-                                <div className="flex-1">
+                                <div
+                                  className={`flex-1 ${lesson.status === "in-progress" ? "pr-28 relative" : ""}`}
+                                >
                                   <p
                                     className={`text-[14px] ${lesson.status === "in-progress" ? "font-bold" : "font-normal"} text-[#1f1f1f] mb-1 group-hover:text-[#0056D2] cursor-pointer`}
                                   >
@@ -532,20 +534,33 @@ const CourseLearning: React.FC = () => {
                                   </div>
 
                                   {lesson.status === "in-progress" && (
-                                    <div className="mt-3">
+                                    <div className="absolute right-0 top-0">
                                       <button
                                         onClick={(e) => {
                                           e.preventDefault();
-                                          navigate(
+                                          if (
                                             lesson.type?.toLowerCase() ===
-                                              "assessment"
-                                              ? `/learn/${courseId}/assessment/${lesson.id}`
-                                              : `/learn/${courseId}/lecture/${lesson.id}`,
-                                          );
+                                            "assessment"
+                                          ) {
+                                            navigate(
+                                              `/learn/${courseId}/assessment/${lesson.id}`,
+                                              {
+                                                state: {
+                                                  assessmentStarted: true,
+                                                },
+                                              },
+                                            );
+                                          } else {
+                                            navigate(
+                                              `/learn/${courseId}/lecture/${lesson.id}`,
+                                            );
+                                          }
                                         }}
-                                        className="bg-[#0056D2] text-white px-6 py-2 rounded-[4px] font-bold text-[14px] hover:bg-[#00419e] transition-colors"
+                                        className="bg-[#0056D2] text-white px-5 py-2 rounded-[6px] font-normal text-[13px] hover:bg-[#00419e] transition-colors"
                                       >
-                                        Resume
+                                        {lesson.type === "Assessment"
+                                          ? "Start"
+                                          : "Resume"}
                                       </button>
                                     </div>
                                   )}

@@ -202,8 +202,11 @@ export const updateLessonProgress = async (
   if (!enrollment) throw new Error("Enrollment not found");
   if (enrollment.userId !== userId) throw new Error("Unauthorized");
 
+  const { completed: requestedCompleted, lastPlayed, passed, forceComplete } =
+    data;
+
   // Enforce assessment and video completion rules
-  let completed = data.completed;
+  let completed = requestedCompleted;
   if (completed) {
     const [lesson, existingProgress] = await Promise.all([
       prisma.lesson.findUnique({
@@ -218,14 +221,14 @@ export const updateLessonProgress = async (
       }),
     ]);
 
-    if (lesson?.type === "ASSESSMENT" && !data.passed) {
+    if (lesson?.type === "ASSESSMENT" && !passed) {
       completed = false;
     }
 
-    if (lesson?.type === "VIDEO" && !data.forceComplete) {
+    if (lesson?.type === "VIDEO" && !forceComplete) {
       const duration = lesson.duration ?? 0;
       const lastPlayed =
-        data.lastPlayed ?? existingProgress?.lastPlayed ?? 0;
+        lastPlayed ?? existingProgress?.lastPlayed ?? 0;
       const watchedEnough =
         duration > 0 && lastPlayed >= Math.floor(duration * 0.98);
       if (!watchedEnough) completed = false;
@@ -241,13 +244,13 @@ export const updateLessonProgress = async (
       },
     },
     update: {
-      ...data,
+      ...(typeof lastPlayed === "number" ? { lastPlayed } : {}),
       completed,
     },
     create: {
       enrollmentId,
       lessonId,
-      ...data,
+      ...(typeof lastPlayed === "number" ? { lastPlayed } : {}),
       completed,
     },
   });

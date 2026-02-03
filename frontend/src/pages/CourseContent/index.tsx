@@ -120,20 +120,34 @@ const CourseContent: React.FC = () => {
   // Resume playback logic
   useEffect(() => {
     if (
-      currentLesson?.type?.toLowerCase() === "video" &&
-      videoRef.current &&
-      progressData
+      currentLesson?.type?.toLowerCase() !== "video" ||
+      !videoRef.current ||
+      !progressData
     ) {
-      const lessonProgress = progressData.lessonProgress?.find(
-        (p: any) => p.lessonId === lessonId,
-      );
-      if (
-        lessonProgress?.lastPlayed > 0 &&
-        videoRef.current.currentTime === 0
-      ) {
-        videoRef.current.currentTime = lessonProgress.lastPlayed;
-      }
+      return;
     }
+
+    const lessonProgress = progressData.lessonProgress?.find(
+      (p: any) => p.lessonId === lessonId,
+    );
+    if (!lessonProgress?.lastPlayed || lessonProgress.lastPlayed <= 0) return;
+
+    const videoEl = videoRef.current;
+    const applyResume = () => {
+      if (videoEl.currentTime < 1) {
+        videoEl.currentTime = lessonProgress.lastPlayed;
+      }
+    };
+
+    if (videoEl.readyState >= 1) {
+      applyResume();
+    } else {
+      videoEl.addEventListener("loadedmetadata", applyResume);
+    }
+
+    return () => {
+      videoEl.removeEventListener("loadedmetadata", applyResume);
+    };
   }, [lessonId, progressData, currentLesson]);
 
   // Auto-complete reading lessons on open
@@ -217,6 +231,21 @@ const CourseContent: React.FC = () => {
     }
   };
 
+  const handlePause = async () => {
+    if (!videoRef.current || !progressData?.enrollmentId || !lessonId) return;
+    const currentTimeInt = Math.floor(videoRef.current.currentTime);
+
+    try {
+      await enrollmentApi.updateLessonProgress(
+        progressData.enrollmentId,
+        lessonId,
+        { lastPlayed: currentTimeInt },
+      );
+    } catch (err) {
+      console.error("Failed to save pause progress", err);
+    }
+  };
+
   const handleNext = async () => {
     if (!enrollmentApi || !progressData?.enrollmentId || !lessonId) return;
 
@@ -228,7 +257,8 @@ const CourseContent: React.FC = () => {
           lessonId,
           {
             completed: true,
-            forceComplete: currentLesson?.type?.toLowerCase() === "video",
+            forceComplete:
+              currentLesson?.type?.toLowerCase() !== "assessment",
           },
         );
       }
@@ -520,6 +550,7 @@ const CourseContent: React.FC = () => {
                         controls
                         className="w-full h-full"
                         onTimeUpdate={handleTimeUpdate}
+                        onPause={handlePause}
                         autoPlay={false}
                         preload="metadata"
                       />
