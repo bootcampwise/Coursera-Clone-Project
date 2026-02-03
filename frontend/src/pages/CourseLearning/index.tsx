@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import CourseLearningHeader from "../../components/layout/CourseLearningHeader";
 import { courseApi } from "../../services/courseApi";
+import { IMAGES } from "../../constants/images";
 import { enrollmentApi } from "../../services/enrollmentApi";
 
 interface Lesson {
@@ -29,6 +30,9 @@ const CourseLearning: React.FC = () => {
   const [expandedSections, setExpandedSections] = useState<string[]>([
     "observe-crit",
   ]);
+  const [isCourseMaterialOpen, setIsCourseMaterialOpen] = useState(true);
+  const [isTopInfoOpen, setIsTopInfoOpen] = useState(true);
+  const [isObjectivesOpen, setIsObjectivesOpen] = useState(false);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) =>
@@ -41,6 +45,7 @@ const CourseLearning: React.FC = () => {
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState<any>(null);
+  const [learningObjectives, setLearningObjectives] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,6 +58,19 @@ const CourseLearning: React.FC = () => {
         ]);
         setCourse(courseRes);
         setProgressData(progressRes);
+        // Normalize outcomes into a list for objectives rendering
+        const rawOutcomes = courseRes?.outcomes;
+        if (Array.isArray(rawOutcomes)) {
+          setLearningObjectives(rawOutcomes.filter(Boolean));
+        } else if (typeof rawOutcomes === "string") {
+          const split = rawOutcomes
+            .split(/\r?\n|•|- /g)
+            .map((s: string) => s.trim())
+            .filter(Boolean);
+          setLearningObjectives(split);
+        } else {
+          setLearningObjectives([]);
+        }
 
         // Auto-expand the first unfinished module
         if (courseRes?.modules) {
@@ -169,29 +187,30 @@ const CourseLearning: React.FC = () => {
         {/* Left Sidebar - Course Navigation */}
         <aside className="w-[300px] border-r border-[#dadce0] bg-white h-[calc(100vh-64px)] overflow-y-auto sticky top-[64px] shrink-0 custom-scrollbar">
           <div className="p-4 pt-6">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="w-12 h-12 rounded-[4px] shrink-0 overflow-hidden">
+            <div className="flex flex-col items-start text-left mb-10 ml-6">
+              <div className="w-16 h-16 rounded-full shrink-0 overflow-hidden bg-white flex items-start justify-start mb-2">
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                  src={IMAGES.LOGOS.GOOGLE_LOGO}
                   alt="Google"
-                  className="w-full h-full object-contain p-1 bg-white border border-[#dadce0]"
+                  className="w-14 h-14 object-contain"
                 />
               </div>
-              <div>
-                <h1 className="text-[14px] font-bold text-[#1f1f1f] leading-tight mb-1">
+              <div className="min-w-0 flex flex-col">
+                <span className="text-[13px] font-medium text-[#1f1f1f] leading-snug">
                   {course.title}
-                </h1>
-                <p className="text-[12px] text-[#5f6368]">
+                </span>
+                <span className="text-[12px] text-[#5f6368]">Google</span>
+                <span className="text-[12px] text-[#5f6368]">
                   {course.instructor?.name || "Instructor"}
-                </p>
+                </span>
               </div>
             </div>
 
-            <div className="mb-4">
-              <button className="flex items-center justify-between w-full text-left bg-transparent border-none cursor-pointer">
-                <h2 className="text-[12px] font-bold text-[#1f1f1f] uppercase tracking-wide">
-                  Course Material
-                </h2>
+            <div className="mb-3 ml-6">
+              <button
+                onClick={() => setIsCourseMaterialOpen((prev) => !prev)}
+                className="flex items-center gap-2 w-full text-left bg-transparent border-none cursor-pointer"
+              >
                 <svg
                   width="12"
                   height="12"
@@ -201,45 +220,59 @@ const CourseLearning: React.FC = () => {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-[#5f6368]"
+                  className={`text-[#5f6368] transition-transform ${
+                    isCourseMaterialOpen ? "" : "rotate-180"
+                  }`}
                 >
                   <path d="M18 15l-6-6-6 6" />
                 </svg>
+                <h2 className="text-[12px] font-bold text-[#1f1f1f] uppercase tracking-wide">
+                  Course Material
+                </h2>
               </button>
             </div>
 
-            <div className="relative pl-4 space-y-0">
-              {/* Vertical line connector */}
-              <div className="absolute left-[27px] top-2 bottom-6 w-[2px] bg-[#dadce0]"></div>
-
-              {sections.map((section, index) => (
-                <div key={section.id} className="relative pl-8 py-2">
-                  {/* Module item */}
-                  <div className="absolute left-[19px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white z-10 flex items-center justify-center">
-                    {section.isComplete ? (
-                      <div className="w-4 h-4 rounded-full bg-[#188038] flex items-center justify-center">
-                        <svg
-                          className="w-2.5 h-2.5 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                        >
-                          <path d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <div className="w-4 h-4 rounded-full border border-[#dadce0] bg-white"></div>
-                    )}
-                  </div>
-                  <button
-                    className={`text-left text-[14px] font-medium w-full truncate pl-2`}
+            {isCourseMaterialOpen && (
+              <div className="relative pl-2 space-y-0">
+                {sections.map((section, index) => (
+                  <div
+                    key={section.id}
+                    className={`relative pl-8 py-2 rounded-[6px] mx-2 ${
+                      section.isExpanded ? "bg-[#e8f0fe]" : ""
+                    }`}
                   >
-                    {section.title}
-                  </button>
-                </div>
-              ))}
-            </div>
+                    {section.isExpanded && (
+                      <div className="absolute left-[6px] top-1 bottom-1 w-[3px] bg-[#0056D2] rounded-full" />
+                    )}
+                    {/* Module item */}
+                    <div className="absolute left-[19px] top-1/2 -translate-y-1/2 w-4 h-4 bg-white z-10 flex items-center justify-center">
+                      {section.isComplete ? (
+                        <div className="w-4 h-4 rounded-full bg-[#188038] flex items-center justify-center">
+                          <svg
+                            className="w-2.5 h-2.5 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                          >
+                            <path d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border border-[#dadce0] bg-white"></div>
+                      )}
+                    </div>
+                    <button
+                      className={`text-left text-[14px] font-medium w-full truncate pl-2 ${
+                        section.isExpanded ? "text-[#1f1f1f]" : "text-[#5f6368]"
+                      }`}
+                    >
+                      Module {index + 1}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="mt-8 pt-4 border-t border-[#dadce0] space-y-1">
               {[
@@ -290,11 +323,15 @@ const CourseLearning: React.FC = () => {
 
         {/* Center Content */}
         <main className="flex-1 min-w-0 bg-white">
-          <div className="max-w-[800px] mx-auto px-8 py-8">
+          <div className="max-w-[610px] mx-auto mt-6 px-8 py-8 border border-[#e6e9ef] rounded-[12px]">
             {/* Top Info Block */}
-            <div className="mb-10 border-b border-[#dadce0] pb-8">
-              <div className="flex justify-between items-start mb-4">
-                <button className="text-[#5f6368] hover:bg-[#f5f5f5] p-2 rounded-full -ml-2">
+            <div className="mb-10">
+              <div className="flex items-start gap-2 mb-4">
+                <button
+                  onClick={() => setIsTopInfoOpen((prev) => !prev)}
+                  className="text-[#5f6368] hover:bg-[#f5f5f5] p-2 rounded-full -ml-2"
+                  aria-label="Toggle section"
+                >
                   <svg
                     width="24"
                     height="24"
@@ -304,85 +341,88 @@ const CourseLearning: React.FC = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    className={`transition-transform ${
+                      isTopInfoOpen ? "" : "-rotate-90"
+                    }`}
                   >
                     <path d="M18 15l-6-6-6 6" />
                   </svg>
                 </button>
+                <div className="flex-1">
+                  <h2 className="text-[20px] font-normal font-serif text-[#1f1f1f]">
+                    {course.title}
+                  </h2>
+                </div>
               </div>
 
-              <h2 className="text-[24px] font-normal font-serif text-[#1f1f1f] mb-4">
-                {course.title}
-              </h2>
-              <div className="flex flex-wrap items-center gap-6 mb-4 text-[13px] text-[#1f1f1f]">
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+              {isTopInfoOpen && (
+                <>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3 mb-4 ml-10 text-[13px] text-[#5f6368]">
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={IMAGES.UI.VIDEO_ICON}
+                        alt=""
+                        className="w-4 h-4"
+                      />
+                      <span>18 min of videos left</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={IMAGES.UI.BOOK_ICON}
+                        alt=""
+                        className="w-4 h-4"
+                      />
+                      <span>2 min of readings left</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={IMAGES.UI.GRADE_ICON}
+                        alt=""
+                        className="w-4 h-4"
+                      />
+                      <span>1 graded assessment left</span>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-[#cfd4dc] my-5 -mx-8"></div>
+
+                  <div className="text-[14px] text-[#1f1f1f] leading-loose mb-4">
+                    <p>{course.description}</p>
+                  </div>
+
+                  <button
+                    onClick={() => setIsObjectivesOpen((prev) => !prev)}
+                    className="text-[14px] text-[#266ED8] font-bold flex items-center gap-1 ml-6  hover:underline bg-transparent border-none cursor-pointer p-0"
                   >
-                    <rect
-                      x="2"
-                      y="3"
-                      width="20"
+                    <svg
+                      width="14"
                       height="14"
-                      rx="2"
-                      ry="2"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
                       strokeWidth="2"
-                    />
-                    <path d="M8 21h8" strokeWidth="2" />
-                    <path d="M12 17v4" strokeWidth="2" />
-                  </svg>
-                  <span>18 min of videos left</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                  </svg>
-                  <span>2 min of readings left</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                    <polyline points="10 9 9 9 8 9" />
-                  </svg>
-                  <span>1 graded assessment left</span>
-                </div>
-              </div>
-
-              <div className="text-[14px] text-[#1f1f1f] leading-loose mb-4">
-                <p>{course.description}</p>
-              </div>
-
-              <button className="text-[14px] text-[#0056D2] font-bold flex items-center gap-1 hover:underline bg-transparent border-none cursor-pointer p-0">
-                <svg
-                  width="12"
-                  height="12"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-                Show Learning Objectives
-              </button>
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className={`transition-transform ${
+                        isObjectivesOpen ? "rotate-180" : ""
+                      }`}
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                    Show Learning Objectives
+                  </button>
+                  {isObjectivesOpen && learningObjectives.length > 0 && (
+                    <div className="mt-4 ml-6 space-y-2 text-[14px] text-[#1f1f1f]">
+                      {learningObjectives.map((item, idx) => (
+                        <div key={`${item}-${idx}`} className="flex gap-2">
+                          <span className="mt-[2px] h-1.5 w-1.5 rounded-full bg-[#1f1f1f]"></span>
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Sections List */}
@@ -410,7 +450,7 @@ const CourseLearning: React.FC = () => {
                             strokeLinejoin="round"
                           />
                         </svg>
-                        <span className="text-[16px] font-bold text-[#1f1f1f] group-hover:text-[#0056D2] transition-colors">
+                        <span className="text-[16px] font-normal text-[#1A1C1F] group-hover:text-[#0056D2] transition-colors">
                           {section.title}
                         </span>
                       </div>
@@ -449,9 +489,9 @@ const CourseLearning: React.FC = () => {
                                 {/* Icon */}
                                 <div className="mt-1 shrink-0">
                                   {lesson.status === "completed" ? (
-                                    <div className="w-6 h-6 rounded-full bg-[#188038] flex items-center justify-center text-white">
+                                    <div className="w-8 h-8 rounded-full bg-[#188038] flex items-center justify-center text-white">
                                       <svg
-                                        className="w-4 h-4"
+                                        className="w-5 h-5"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -461,39 +501,18 @@ const CourseLearning: React.FC = () => {
                                       </svg>
                                     </div>
                                   ) : (
-                                    <div className="w-6 h-6 rounded-full border-2 border-[#1f1f1f] bg-white flex items-center justify-center text-[#1f1f1f]">
-                                      {lesson.type === "Video" ? (
-                                        <svg
-                                          className="w-3 h-3 ml-0.5"
-                                          fill="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <polygon points="5 3 19 12 5 21 5 3" />
-                                        </svg>
-                                      ) : (
-                                        <svg
-                                          className="w-3 h-3"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                          <polyline points="14 2 14 8 20 8" />
-                                          <line
-                                            x1="16"
-                                            y1="13"
-                                            x2="8"
-                                            y2="13"
-                                          />
-                                          <line
-                                            x1="16"
-                                            y1="17"
-                                            x2="8"
-                                            y2="17"
-                                          />
-                                          <polyline points="10 9 9 9 8 9" />
-                                        </svg>
-                                      )}
+                                    <div className="w-10 h-10 rounded-full  flex items-center justify-center">
+                                      <img
+                                        src={
+                                          lesson.type === "Video"
+                                            ? IMAGES.UI.VIDEO_LESSON_PLAYER
+                                            : lesson.type === "Reading"
+                                              ? IMAGES.UI.READING_ARTICLE_ICON
+                                              : IMAGES.UI.ASSESSMENT_ICON
+                                        }
+                                        alt=""
+                                        className="w-8 h-8 object-contain"
+                                      />
                                     </div>
                                   )}
                                 </div>
