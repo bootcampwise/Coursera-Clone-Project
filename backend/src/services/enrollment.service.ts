@@ -132,22 +132,55 @@ export const getStudentCourseProgress = async (
   userId: string,
   courseId: string,
 ) => {
-  const enrollment = await prisma.enrollment.findFirst({
-    where: { userId, courseId },
-    include: {
-      lessonProgress: {
-        select: { lessonId: true, completed: true, lastPlayed: true },
+  const [enrollment, modules] = await Promise.all([
+    prisma.enrollment.findFirst({
+      where: { userId, courseId },
+      include: {
+        lessonProgress: {
+          select: { lessonId: true, completed: true, lastPlayed: true },
+        },
       },
-    },
-  });
+    }),
+    prisma.module.findMany({
+      where: { courseId },
+      include: {
+        lessons: {
+          select: { id: true },
+        },
+      },
+      orderBy: { order: "asc" },
+    }),
+  ]);
 
   if (!enrollment) return null;
+
+  const completedLessonIds = new Set(
+    enrollment.lessonProgress
+      .filter((p) => p.completed)
+      .map((p) => p.lessonId),
+  );
+
+  const moduleProgress = modules.map((module) => {
+    const lessonIds = module.lessons.map((l) => l.id);
+    const completedLessons = lessonIds.filter((id) =>
+      completedLessonIds.has(id),
+    ).length;
+    const completed =
+      lessonIds.length > 0 && completedLessons === lessonIds.length;
+    return {
+      moduleId: module.id,
+      totalLessons: lessonIds.length,
+      completedLessons,
+      completed,
+    };
+  });
 
   return {
     enrollmentId: enrollment.id,
     progress: enrollment.progress,
     completed: enrollment.completed,
     lessonProgress: enrollment.lessonProgress,
+    moduleProgress,
   };
 };
 
@@ -155,7 +188,12 @@ export const updateLessonProgress = async (
   userId: string,
   enrollmentId: string,
   lessonId: string,
-  data: { completed?: boolean; lastPlayed?: number },
+  data: {
+    completed?: boolean;
+    lastPlayed?: number;
+    passed?: boolean;
+    forceComplete?: boolean;
+  },
 ) => {
   const enrollment = await prisma.enrollment.findUnique({
     where: { id: enrollmentId },
@@ -163,6 +201,36 @@ export const updateLessonProgress = async (
 
   if (!enrollment) throw new Error("Enrollment not found");
   if (enrollment.userId !== userId) throw new Error("Unauthorized");
+
+  // Enforce assessment and video completion rules
+  let completed = data.completed;
+  if (completed) {
+    const [lesson, existingProgress] = await Promise.all([
+      prisma.lesson.findUnique({
+        where: { id: lessonId },
+        select: { type: true, duration: true },
+      }),
+      prisma.lessonProgress.findUnique({
+        where: {
+          enrollmentId_lessonId: { enrollmentId, lessonId },
+        },
+        select: { lastPlayed: true },
+      }),
+    ]);
+
+    if (lesson?.type === "ASSESSMENT" && !data.passed) {
+      completed = false;
+    }
+
+    if (lesson?.type === "VIDEO" && !data.forceComplete) {
+      const duration = lesson.duration ?? 0;
+      const lastPlayed =
+        data.lastPlayed ?? existingProgress?.lastPlayed ?? 0;
+      const watchedEnough =
+        duration > 0 && lastPlayed >= Math.floor(duration * 0.98);
+      if (!watchedEnough) completed = false;
+    }
+  }
 
   // Upsert lesson progress
   const progress = await prisma.lessonProgress.upsert({
@@ -174,29 +242,56 @@ export const updateLessonProgress = async (
     },
     update: {
       ...data,
+      completed,
     },
     create: {
       enrollmentId,
       lessonId,
       ...data,
+      completed,
     },
   });
 
-  // Recalculate course progress
-  // 1. Get total lessons count
-  const totalLessons = await prisma.lesson.count({
-    where: { module: { courseId: enrollment.courseId } },
-  });
+  // Recalculate course progress and completion
+  // Progress: lesson-based completion percentage
+  // Completion: module-based completion (all modules complete)
+  const [totalLessons, completedLessons, modules, completedProgress] =
+    await Promise.all([
+      prisma.lesson.count({
+        where: { module: { courseId: enrollment.courseId } },
+      }),
+      prisma.lessonProgress.count({
+        where: { enrollmentId, completed: true },
+      }),
+      prisma.module.findMany({
+        where: { courseId: enrollment.courseId },
+        include: {
+          lessons: {
+            select: { id: true },
+          },
+        },
+      }),
+      prisma.lessonProgress.findMany({
+        where: { enrollmentId, completed: true },
+        select: { lessonId: true },
+      }),
+    ]);
 
-  // 2. Get completed lessons count
-  const completedLessons = await prisma.lessonProgress.count({
-    where: { enrollmentId, completed: true },
-  });
+  const completedLessonIds = new Set(
+    completedProgress.map((p) => p.lessonId),
+  );
 
-  // 3. Update enrollment progress
+  const totalModules = modules.length;
+  const completedModules = modules.filter((module) => {
+    if (!module.lessons || module.lessons.length === 0) return false;
+    return module.lessons.every((lesson) =>
+      completedLessonIds.has(lesson.id),
+    );
+  }).length;
+
   const newProgress =
     totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-  const isCompleted = newProgress === 100;
+  const isCompleted = totalModules > 0 && completedModules === totalModules;
 
   await prisma.enrollment.update({
     where: { id: enrollmentId },

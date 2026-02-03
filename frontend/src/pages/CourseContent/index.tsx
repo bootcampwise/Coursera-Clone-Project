@@ -226,7 +226,10 @@ const CourseContent: React.FC = () => {
         await enrollmentApi.updateLessonProgress(
           progressData.enrollmentId,
           lessonId,
-          { completed: true },
+          {
+            completed: true,
+            forceComplete: currentLesson?.type?.toLowerCase() === "video",
+          },
         );
       }
 

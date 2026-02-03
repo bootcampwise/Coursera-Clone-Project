@@ -33,7 +33,12 @@ export const enrollmentApi = {
   updateLessonProgress: async (
     enrollmentId: string,
     lessonId: string,
-    data: { completed?: boolean; lastPlayed?: number },
+    data: {
+      completed?: boolean;
+      lastPlayed?: number;
+      passed?: boolean;
+      forceComplete?: boolean;
+    },
   ) => {
     const response = await api.patch(
       ENDPOINTS.ENROLLMENTS_LESSON_PROGRESS(enrollmentId, lessonId),

@@ -90,7 +90,7 @@ const CourseAssessment: React.FC = () => {
         await enrollmentApi.updateLessonProgress(
           enrollment.enrollmentId,
           assessmentId!,
-          { completed: true },
+          { completed: true, passed: true },
         );
       }
 

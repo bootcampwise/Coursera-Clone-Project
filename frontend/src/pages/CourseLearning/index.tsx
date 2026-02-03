@@ -145,9 +145,12 @@ const CourseLearning: React.FC = () => {
       content: lesson.content,
     }));
 
-    const isComplete = moduleLessons.every(
-      (l: any) => l.status === "completed",
+    const backendModuleProgress = progressData?.moduleProgress?.find(
+      (m: any) => m.moduleId === module.id,
     );
+    const isComplete = backendModuleProgress
+      ? backendModuleProgress.completed
+      : moduleLessons.every((l: any) => l.status === "completed");
 
     return {
       id: module.id,
