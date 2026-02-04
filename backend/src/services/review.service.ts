@@ -96,3 +96,42 @@ export const deleteReview = async (
 
   return { message: "Review deleted successfully" };
 };
+
+export const getAllReviews = async () => {
+  const reviews = await prisma.review.findMany({
+    include: {
+      user: { select: { id: true, name: true, avatarUrl: true } },
+      course: {
+        select: {
+          id: true,
+          title: true,
+          instructor: { select: { id: true, name: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return reviews;
+};
+
+export const getInstructorReviews = async (instructorId: string) => {
+  const reviews = await prisma.review.findMany({
+    where: {
+      course: { instructorId },
+    },
+    include: {
+      user: { select: { id: true, name: true, avatarUrl: true } },
+      course: {
+        select: {
+          id: true,
+          title: true,
+          instructor: { select: { id: true, name: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return reviews;
+};

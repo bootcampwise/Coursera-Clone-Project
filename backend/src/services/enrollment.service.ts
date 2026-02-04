@@ -56,7 +56,20 @@ export const getUserEnrollments = async (userId: string) => {
     orderBy: { createdAt: "desc" },
   });
 
-  return enrollments;
+  const courseIds = enrollments.map((e) => e.course.id);
+  const reviews = await prisma.review.findMany({
+    where: { userId, courseId: { in: courseIds } },
+    select: { courseId: true, rating: true },
+  });
+  const reviewedByCourseId = new Map(
+    reviews.map((r) => [r.courseId, r.rating]),
+  );
+
+  return enrollments.map((enrollment) => ({
+    ...enrollment,
+    hasReviewed: reviewedByCourseId.has(enrollment.course.id),
+    myRating: reviewedByCourseId.get(enrollment.course.id) ?? null,
+  }));
 };
 
 export const updateProgress = async (

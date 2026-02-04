@@ -10,6 +10,7 @@ import InstructorCourses from "../pages/Instructor/Courses";
 import InstructorCreateCourse from "../pages/Instructor/CreateCourse";
 import InstructorVideos from "../pages/Instructor/Videos";
 import InstructorAnalytics from "../pages/Instructor/Analytics";
+import InstructorReviews from "../pages/Instructor/Reviews";
 import InstructorSettings from "../pages/Instructor/Settings";
 import CurriculumBuilder from "../pages/Instructor/CurriculumBuilder";
 import Login from "../pages/Auth/Login";
@@ -22,6 +23,7 @@ import Users from "../pages/Admin/Users";
 import Courses from "../pages/Admin/Courses";
 import Instructors from "../pages/Admin/Instructors";
 import Settings from "../pages/Admin/Settings";
+import AdminReviews from "../pages/Admin/Reviews";
 import Profile from "../pages/Profile/index";
 import CourseLearning from "../pages/CourseLearning/index";
 import CourseContent from "../pages/CourseContent/index";
@@ -95,6 +97,7 @@ const AppRoutes: React.FC = () => (
           />
           <Route path="videos" element={<InstructorVideos />} />
           <Route path="analytics" element={<InstructorAnalytics />} />
+          <Route path="reviews" element={<InstructorReviews />} />
           <Route path="settings" element={<InstructorSettings />} />
         </Route>
       </Route>
@@ -106,6 +109,7 @@ const AppRoutes: React.FC = () => (
           <Route path="users" element={<Users />} />
           <Route path="instructors" element={<Instructors />} />
           <Route path="courses" element={<Courses />} />
+          <Route path="reviews" element={<AdminReviews />} />
           <Route path="courses/new" element={<InstructorCreateCourse />} />
           <Route path="courses/edit/:id" element={<InstructorCreateCourse />} />
           <Route

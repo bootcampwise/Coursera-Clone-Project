@@ -35,6 +35,8 @@ export const ENDPOINTS = {
   // Reviews
   REVIEWS_CREATE: (courseId: string) => `/reviews/${courseId}`,
   REVIEWS_BY_COURSE: (courseId: string) => `/reviews/course/${courseId}`,
+  REVIEWS_ADMIN: "/reviews/admin",
+  REVIEWS_INSTRUCTOR: "/reviews/instructor",
 
   // Analytics
   ANALYTICS_ADMIN: "/analytics/admin/overview",

@@ -51,3 +51,22 @@ export const deleteReview = asyncHandler(
     res.json(result);
   },
 );
+
+export const getAllReviews = asyncHandler(
+  async (_req: Request, res: Response) => {
+    const reviews = await reviewService.getAllReviews();
+    res.json(reviews);
+  },
+);
+
+export const getInstructorReviews = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const reviews = await reviewService.getInstructorReviews(userId);
+    res.json(reviews);
+  },
+);
