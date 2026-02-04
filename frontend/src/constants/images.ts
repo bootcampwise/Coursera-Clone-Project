@@ -19,6 +19,7 @@ import GRADE_ICON from "../assets/icons/grade-icon.png";
 import VIDEO_LESSON_PLAYER from "../assets/icons/video-lesson-player.png";
 import READING_ARTICLE_ICON from "../assets/icons/reading-article-icon.png";
 import ASSESSMENT_ICON from "../assets/icons/assessment-icon.png";
+import REPORT_ICON from "../assets/icons/report.png";
 
 export const IMAGES = {
   HERO: HERO,
@@ -45,5 +46,6 @@ export const IMAGES = {
     VIDEO_LESSON_PLAYER: VIDEO_LESSON_PLAYER,
     READING_ARTICLE_ICON: READING_ARTICLE_ICON,
     ASSESSMENT_ICON: ASSESSMENT_ICON,
+    REPORT_ICON: REPORT_ICON,
   },
 };

@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
-import { transcriptApi } from "../../services/transcriptApi";
-import type { TranscriptLine } from "../../services/transcriptApi";
 import CourseContentHeader from "../../components/layout/CourseContentHeader";
+import { IMAGES } from "../../constants/images";
 
 const CourseContent: React.FC = () => {
   const navigate = useNavigate();
@@ -17,12 +16,42 @@ const CourseContent: React.FC = () => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [course, setCourse] = useState<any>(null);
   const [progressData, setProgressData] = useState<any>(null);
-  const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
-  const [activeLineId, setActiveLineId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<
-    "transcript" | "notes" | "downloads"
-  >("transcript");
+  const [activeTab, setActiveTab] = useState<"transcript" | "notes-downloads">(
+    "transcript",
+  );
+  const [isCoachOpen, setIsCoachOpen] = useState(true);
+  const transcript: {
+    id: string;
+    startTime: number;
+    endTime: number;
+    text: string;
+  }[] = [
+    {
+      id: "t-001",
+      startTime: 1,
+      endTime: 38,
+      text: "Welcome back. We're moments away from checking out an example of a crit session in action. A standard design critique session is at least 30 minutes, and the designer usually spends five to ten of those minutes presenting. But keep in mind, the session length will depend on the amount of feedback requested and the number of reviewers involved. We don't have time to share a full crit session with you. So the upcoming video is just a snapshot of what usually happens. In the mock crit session, I'll play the role of the presenter, sharing some of the mockups for the dog walker app with two colleagues who were the reviewers.",
+    },
+    {
+      id: "t-002",
+      startTime: 38,
+      endTime: 78,
+      text: "There will also be a facilitator guiding the flow of the interaction. While you've been working on your mockups throughout this course, so have I. The mockups I'll present in the design critique session are my current iteration of the dog walker app. As the presenter, I'll ask for feedback on two parts of this design, the scheduling flow and the call-to-action buttons. Remember, call-to-action buttons are elements in the design that tell the user to take action. In the dog walker app, the call-to-action buttons are labeled things like \"book appointment\" and \"next.\" You'll have a chance to watch how the flow of ideas and communication happens as I present my work and receive feedback.",
+    },
+    {
+      id: "t-003",
+      startTime: 78,
+      endTime: 109,
+      text: "As you watch, take note of how I, as the presenter, respond to the feedback I'm receiving. Ask yourself, is the presenter actively listening? Is the presenter taking notes? What types of follow-up questions is the presenter asking? You should also focus on the way that reviewers share their feedback and opinions. Ask yourself, do the reviewers share the reasoning behind their feedback? Do the reviewers focus on problems with the design instead of offering solutions?",
+    },
+    {
+      id: "t-004",
+      startTime: 109,
+      endTime: 150,
+      text: "Do the reviewers connect their feedback to the objectives of the design critique session? With these questions in mind, let's join the crit session. Meet you there.",
+    },
+  ];
 
   // Derive current lesson from course data
   const currentLesson = course?.modules
@@ -91,31 +120,6 @@ const CourseContent: React.FC = () => {
     );
   };
 
-  // Fetch transcript
-  useEffect(() => {
-    const fetchTranscript = async () => {
-      if (lessonId && currentLesson?.type?.toLowerCase() === "video") {
-        try {
-          const data = await transcriptApi.getTranscript(lessonId);
-          console.log(
-            `✅ Transcript loaded for lesson ${lessonId}: ${data.length} lines`,
-          );
-          setTranscript(data);
-        } catch (err) {
-          console.error("Failed to fetch transcript", err);
-          setTranscript([]); // Fallback to empty
-        }
-      } else {
-        setTranscript([]);
-      }
-    };
-    fetchTranscript();
-  }, [lessonId, currentLesson]);
-
-  // Sync transcript highlighting (Auto-scroll removed as requested)
-  useEffect(() => {
-    // Highlighting is handled via state and inline classes, no side-effect needed for scroll.
-  }, [activeLineId]);
 
   // Resume playback logic
   useEffect(() => {
@@ -182,18 +186,6 @@ const CourseContent: React.FC = () => {
     const currentTime = videoRef.current.currentTime;
     const currentTimeInt = Math.floor(currentTime);
     const duration = Math.floor(videoRef.current.duration);
-
-    // Sync active transcript line
-    if (transcript.length > 0) {
-      const activeLine = transcript.find(
-        (line) => currentTime >= line.startTime && currentTime < line.endTime,
-      );
-      if (activeLine && activeLine.id !== activeLineId) {
-        setActiveLineId(activeLine.id);
-      } else if (!activeLine && activeLineId) {
-        setActiveLineId(null);
-      }
-    }
 
     // Save every 10 seconds or when finished
     if (
@@ -327,7 +319,7 @@ const CourseContent: React.FC = () => {
           {/* Top Course Title Block */}
           <div className="p-4 py-8 border-b border-[#dadce0] sticky top-0 bg-white z-10">
             <div className="flex justify-between items-start gap-3">
-              <h2 className="text-[14px] font-bold text-[#1f1f1f] leading-snug">
+              <h2 className="text-[14px] font-bold text-[#000000] leading-snug">
                 {course.title}
               </h2>
               <button
@@ -341,7 +333,7 @@ const CourseContent: React.FC = () => {
 
           {/* Scrolling Content */}
           <div className="flex-1 pb-10">
-            {course.modules.map((module: any) => (
+            {course.modules.map((module: any, index: number) => (
               <div key={module.id} className="border-b border-[#dadce0]">
                 <button
                   onClick={() => toggleModule(module.id)}
@@ -349,12 +341,31 @@ const CourseContent: React.FC = () => {
                     expandedModules.includes(module.id) ? "bg-[#f5f7f8]" : ""
                   }`}
                 >
-                  <div>
-                    <p className="text-[12px] text-[#5f6368] mb-1 font-medium">
-                      Module {module.order || ""}
-                    </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[12px] text-[#5f6368] font-medium">
+                        Module {index + 1}
+                      </p>
+                      <svg
+                        className={`w-5 h-5 text-[#5f6368] transition-transform ${
+                          expandedModules.includes(module.id)
+                            ? "rotate-180"
+                            : ""
+                        }`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
                     <p
-                      className={`text-[14px] ${
+                      className={`text-[14px] mt-1 ${
                         expandedModules.includes(module.id)
                           ? "font-bold text-[#1f1f1f]"
                           : "font-medium text-[#3c4043]"
@@ -363,21 +374,6 @@ const CourseContent: React.FC = () => {
                       {module.title}
                     </p>
                   </div>
-                  <svg
-                    className={`w-5 h-5 text-[#5f6368] transition-transform ${
-                      expandedModules.includes(module.id) ? "rotate-180" : ""
-                    }`}
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
                 </button>
 
                 {expandedModules.includes(module.id) && (
@@ -473,23 +469,6 @@ const CourseContent: React.FC = () => {
             ))}
           </div>
 
-          {/* Progress Indicator */}
-          <div className="p-6 bg-white border-t border-[#dadce0] mt-auto">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-[12px] font-bold text-[#1f1f1f]">
-                Course Progress
-              </span>
-              <span className="text-[12px] font-bold text-[#1f1f1f]">
-                {progressData?.progress || 0}%
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-[#e8f0fe] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#0056D2] transition-all duration-500"
-                style={{ width: `${progressData?.progress || 0}%` }}
-              />
-            </div>
-          </div>
         </aside>
 
         {/* ================= MAIN CONTENT ================= */}
@@ -623,7 +602,11 @@ const CourseContent: React.FC = () => {
                   <span className="text-[18px] font-serif italic text-[#3c4043] font-medium tracking-tight">
                     coach
                   </span>
-                  <button className="text-[#5f6368] hover:bg-white/50 p-1 rounded-md">
+                  <button
+                    onClick={() => setIsCoachOpen((prev) => !prev)}
+                    className="text-[#5f6368] hover:bg-white/50 p-1 rounded-md"
+                    aria-label="Toggle coach section"
+                  >
                     <svg
                       width="16"
                       height="16"
@@ -631,39 +614,44 @@ const CourseContent: React.FC = () => {
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
+                      className={`transition-transform ${isCoachOpen ? "" : "-rotate-90"}`}
                     >
                       <path d="M18 15l-6-6-6 6" />
                     </svg>
                   </button>
                 </div>
-                <p className="text-[14px] text-[#1f1f1f] mb-6 leading-relaxed">
-                  Let me know if you have any questions about this material,
-                  I&apos;m here to help!
-                </p>
+                {isCoachOpen && (
+                  <>
+                    <p className="text-[14px] text-[#1f1f1f] mb-6 leading-relaxed">
+                      Let me know if you have any questions about this material,
+                      I&apos;m here to help!
+                    </p>
 
-                {/* AI Prompts */}
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    "Give me practice questions",
-                    "Explain this topic in simple terms",
-                    "Give me a summary",
-                    "Give me real-life examples",
-                  ].map((prompt) => (
-                    <button
-                      key={prompt}
-                      className="flex items-center gap-2 bg-white border border-[#dadce0] px-4 py-2.5 rounded-[8px] text-[13px] font-medium text-[#1f1f1f] hover:bg-[#f8f9fa] shadow-sm transition-all active:scale-[0.98]"
-                    >
-                      <svg
-                        className="w-4 h-4 text-[#0056D2]"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
-                      </svg>
-                      {prompt}
-                    </button>
-                  ))}
-                </div>
+                    {/* AI Prompts */}
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Give me practice questions",
+                        "Explain this topic in simple terms",
+                        "Give me a summary",
+                        "Give me real-life examples",
+                      ].map((prompt) => (
+                        <button
+                          key={prompt}
+                          className="flex items-center gap-2 bg-white border border-[#dadce0] px-4 py-2.5 rounded-[8px] text-[13px] font-medium text-[#1f1f1f] hover:bg-[#f8f9fa] shadow-sm transition-all active:scale-[0.98]"
+                        >
+                          <svg
+                            className="w-4 h-4 text-[#0056D2]"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z" />
+                          </svg>
+                          {prompt}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -672,8 +660,9 @@ const CourseContent: React.FC = () => {
               <>
                 <div className="border-b border-[#dadce0] mb-8">
                   <div className="flex gap-8">
-                    {["Transcript", "Notes", "Downloads"].map((tab) => {
-                      const slug = tab.toLowerCase() as any;
+                    {["Transcript", "Notes Downloads"].map((tab) => {
+                      const slug =
+                        tab === "Transcript" ? "transcript" : "notes-downloads";
                       // Only show Transcript tab for Video lessons
                       if (
                         slug === "transcript" &&
@@ -702,12 +691,12 @@ const CourseContent: React.FC = () => {
                 {activeTab === "transcript" &&
                   currentLesson.type?.toLowerCase() === "video" && (
                     <div className="pb-32">
-                      <div className="flex items-center gap-3 mb-8">
+                      <div className="flex items-center gap-1 mb-8">
                         <span className="text-[13px] font-medium text-[#1f1f1f]">
                           Transcript language:
                         </span>
-                        <div className="relative inline-flex items-center border border-[#dadce0] rounded-md px-3 py-1.5 bg-white cursor-pointer hover:bg-[#f8f9fa]">
-                          <span className="text-[13px] font-medium text-[#1f1f1f] mr-2">
+                        <div className="inline-flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f] cursor-pointer">
+                          <span className="text-[13px] font-medium text-[#1f1f1f]">
                             English
                           </span>
                           <svg
@@ -723,43 +712,23 @@ const CourseContent: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-8 max-w-[700px] max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+                      <div className="space-y-1 w-full max-h-[600px] overflow-y-auto pr-4 no-scrollbar">
                         {transcript.length > 0 ? (
                           transcript.map((line) => (
                             <div
                               id={`transcript-line-${line.id}`}
                               key={line.id}
-                              className={`flex items-start gap-10 group cursor-pointer p-4 rounded-lg transition-all duration-300 ${
-                                activeLineId === line.id
-                                  ? "bg-[#e8f0fe] border-l-4 border-[#0056D2] shadow-sm"
-                                  : "hover:bg-gray-50 border-l-4 border-transparent"
-                              }`}
-                              onClick={() => {
-                                if (videoRef.current) {
-                                  videoRef.current.currentTime = line.startTime;
-                                  videoRef.current.play();
-                                }
-                              }}
+                              className="flex items-start gap-10 group cursor-pointer p-4 rounded-lg transition-all duration-300 hover:bg-gray-50 border-l-4 border-transparent"
                             >
                               <span
-                                className={`text-[11px] mt-1 shrink-0 font-mono w-10 ${
-                                  activeLineId === line.id
-                                    ? "text-[#0056D2] font-bold"
-                                    : "text-[#5f6368]"
-                                }`}
+                                className="text-[11px] mt-1 shrink-0 font-mono w-10 text-[#5f6368]"
                               >
                                 {Math.floor(line.startTime / 60)}:
                                 {String(
                                   Math.floor(line.startTime % 60),
                                 ).padStart(2, "0")}
                               </span>
-                              <p
-                                className={`text-[14px] leading-[1.6] ${
-                                  activeLineId === line.id
-                                    ? "text-[#1f1f1f] font-medium"
-                                    : "text-[#5f6368] group-hover:text-[#1f1f1f]"
-                                }`}
-                              >
+                              <p className="text-[14px] leading-[1.6] text-[#5f6368] group-hover:text-[#1f1f1f]">
                                 {line.text}
                               </p>
                             </div>
@@ -776,18 +745,13 @@ const CourseContent: React.FC = () => {
                   )}
 
                 {/* Other Tab Contents (Placeholders) */}
-                {activeTab === "notes" && (
-                  <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
+                {activeTab === "notes-downloads" && (
+                  <div className="pb-32">
+                    <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
                     <p className="text-[#5f6368]">
-                      Your notes for this lesson will appear here.
+                      Your notes and downloads for this lesson will appear here.
                     </p>
-                  </div>
-                )}
-                {activeTab === "downloads" && (
-                  <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
-                    <p className="text-[#5f6368]">
-                      Any downloadable resources will be listed here.
-                    </p>
+                    </div>
                   </div>
                 )}
               </>
@@ -795,36 +759,80 @@ const CourseContent: React.FC = () => {
           </div>
 
           {/* Navigation Bar */}
-          <div className="fixed bottom-0 right-0 left-[350px] bg-white/80 backdrop-blur-sm border-t border-[#dadce0] p-4 flex items-center justify-end px-12 z-40">
-            <button
-              onClick={handleNext}
-              disabled={
-                currentLesson.type?.toLowerCase() === "assessment" &&
-                !isLessonCompleted(currentLesson.id)
-              }
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-[4px] font-bold text-[14px] transition-colors ${
-                isLessonCompleted(currentLesson.id)
-                  ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
-                  : currentLesson.type?.toLowerCase() === "assessment"
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
-              }`}
-            >
-              {isLessonCompleted(currentLesson.id)
-                ? "Go to next item"
-                : currentLesson.type?.toLowerCase() === "assessment"
-                  ? "Locked (Pass to continue)"
-                  : "Mark as completed"}
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
+          <div className="fixed bottom-0 right-0 left-[350px] bg-white/80 backdrop-blur-sm border-t border-[#dadce0] h-[72px] sm:h-[80px] md:h-[88px] lg:h-[96px] xl:h-[104px] p-2 px-6 sm:p-3 sm:px-8 lg:p-4 lg:px-10 xl:p-5 xl:px-12 z-40 flex flex-col justify-center">
+            <div className="flex items-center gap-4 text-[12px] sm:gap-6 sm:text-[13px] mb-2 sm:mb-3">
+              <button className="flex items-center gap-1 text-[#0056D2] cursor-pointer">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2 10h4v10H2zM6 10l4-7h4a2 2 0 012 2v5h4l-3 10H6"
+                  />
+                </svg>
+                Like
+              </button>
+              <button className="flex items-center gap-1 text-[#0056D2] cursor-pointer">
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2 14h4V4H2zM6 14l4 7h4a2 2 0 002-2v-5h4l-3-10H6"
+                  />
+                </svg>
+                Dislike
+              </button>
+              <button className="flex items-center gap-1 text-[#0056D2] cursor-pointer">
+                <img
+                  src={IMAGES.UI.REPORT_ICON}
+                  alt=""
+                  className="w-3 h-3"
+                />
+                Report an issue
+              </button>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={handleNext}
+                disabled={
+                  currentLesson.type?.toLowerCase() === "assessment" &&
+                  !isLessonCompleted(currentLesson.id)
+                }
+                className={`flex items-center gap-2 px-4 py-2 text-[12px] sm:px-5 sm:py-2.5 sm:text-[13px] lg:px-6 lg:text-[14px] rounded-[4px] font-bold transition-colors ${
+                  isLessonCompleted(currentLesson.id)
+                    ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
+                    : currentLesson.type?.toLowerCase() === "assessment"
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
+                }`}
               >
-                <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </button>
+                {isLessonCompleted(currentLesson.id)
+                  ? "Go to next item"
+                  : currentLesson.type?.toLowerCase() === "assessment"
+                    ? "Locked (Pass to continue)"
+                    : "Mark as completed"}
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </div>
           </div>
         </main>
       </div>
@@ -833,3 +841,5 @@ const CourseContent: React.FC = () => {
 };
 
 export default CourseContent;
+
+
