@@ -20,6 +20,8 @@ import VIDEO_LESSON_PLAYER from "../assets/icons/video-lesson-player.png";
 import READING_ARTICLE_ICON from "../assets/icons/reading-article-icon.png";
 import ASSESSMENT_ICON from "../assets/icons/assessment-icon.png";
 import REPORT_ICON from "../assets/icons/report.png";
+import LEARNERS_ICON from "../assets/icons/learners.png";
+import BOOK_ICON_STATIC from "../assets/icons/book.png";
 
 export const IMAGES = {
   HERO: HERO,
@@ -47,5 +49,7 @@ export const IMAGES = {
     READING_ARTICLE_ICON: READING_ARTICLE_ICON,
     ASSESSMENT_ICON: ASSESSMENT_ICON,
     REPORT_ICON: REPORT_ICON,
+    LEARNERS_ICON: LEARNERS_ICON,
+    BOOK_ICON_STATIC: BOOK_ICON_STATIC,
   },
 };
