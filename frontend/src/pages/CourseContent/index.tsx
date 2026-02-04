@@ -313,9 +313,9 @@ const CourseContent: React.FC = () => {
     <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
       <CourseContentHeader />
 
-      <div className="flex bg-[#f8f9fa] min-h-[calc(100vh-64px)] overflow-hidden">
+      <div className="flex bg-white min-h-[calc(100vh-64px)] overflow-hidden">
         {/* ================= LEFT SIDEBAR ================= */}
-        <aside className="w-[350px] border-r border-[#dadce0] bg-white overflow-y-auto flex flex-col shrink-0 custom-scrollbar relative z-10 h-[calc(100vh-64px)]">
+        <aside className="w-[350px] border rounded-b-3xl border-[#dadce0] bg-white overflow-y-auto flex flex-col shrink-0 custom-scrollbar relative z-10 h-[calc(100vh-64px)]">
           {/* Top Course Title Block */}
           <div className="p-4 py-8 border-b border-[#dadce0] sticky top-0 bg-white z-10">
             <div className="flex justify-between items-start gap-3">
@@ -423,40 +423,14 @@ const CourseContent: React.FC = () => {
                               {lesson.title}
                             </p>
                             <div className="flex items-center gap-2 mt-1.5">
-                              {lesson.type?.toLowerCase() === "video" ? (
-                                <svg
-                                  className="w-3.5 h-3.5 text-[#5f6368]"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                                  />
-                                </svg>
-                              ) : (
-                                <svg
-                                  className="w-3.5 h-3.5 text-[#5f6368]"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                  />
-                                </svg>
-                              )}
-                              <span className="text-[11px] text-[#5f6368] font-medium uppercase tracking-wider">
-                                {lesson.type || "Lesson"} •{" "}
+                              <span className="text-[11px] text-[#5f6368] font-medium">
+                                {(lesson.type || "Lesson")
+                                  .toString()
+                                  .toLowerCase()
+                                  .replace(/^./, (c) => c.toUpperCase())}{" "}
                                 {lesson.duration
-                                  ? `${Math.floor(lesson.duration / 60)}m`
-                                  : "5m"}
+                                  ? `${Math.floor(lesson.duration / 60)} min`
+                                  : "5 min"}
                               </span>
                             </div>
                           </div>
@@ -841,5 +815,16 @@ const CourseContent: React.FC = () => {
 };
 
 export default CourseContent;
+
+
+
+
+
+
+
+
+
+
+
 
 

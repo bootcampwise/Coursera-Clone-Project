@@ -529,7 +529,9 @@ const CourseLearning: React.FC = () => {
                                   <div className="flex items-center gap-2 text-[12px] text-[#5f6368]">
                                     <span>
                                       {lesson.type} •{" "}
-                                      {lesson.duration || "5 min"}
+                                      {lesson.duration
+                                        ? `${Math.floor(lesson.duration / 60)} min`
+                                        : "5 min"}
                                     </span>
                                   </div>
 
@@ -704,3 +706,7 @@ const CourseLearning: React.FC = () => {
 };
 
 export default CourseLearning;
+
+
+
+
