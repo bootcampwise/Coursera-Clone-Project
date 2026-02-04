@@ -1,6 +1,10 @@
 import React from "react";
 
-const BillingInfo: React.FC = () => {
+interface BillingInfoProps {
+  name?: string;
+}
+
+const BillingInfo: React.FC<BillingInfoProps> = ({ name }) => {
   return (
     <div className="mb-8">
       <h2 className="text-[20px] leading-[28px] font-normal text-[#1f1f1f] mb-6">
@@ -15,7 +19,7 @@ const BillingInfo: React.FC = () => {
           </label>
           <input
             type="text"
-            defaultValue="Zainab Murtaza"
+            defaultValue={name || ""}
             className="w-full h-[48px] px-4 border border-[#8c8c8c] rounded-[4px] text-[16px] text-[#1f1f1f] focus:outline-none focus:border-[#0056D2] focus:ring-1 focus:ring-[#0056D2]"
           />
         </div>

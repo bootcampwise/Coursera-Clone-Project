@@ -145,3 +145,33 @@ export const getAdminCourseCatalog = asyncHandler(
     res.json(courses);
   },
 );
+
+export const uploadCourseThumbnail = asyncHandler(
+  async (req: Request & { user?: any; file?: Express.Multer.File }, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role || "";
+
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    if (!req.file) {
+      res.status(400).json({ message: "Thumbnail file is required" });
+      return;
+    }
+
+    await courseService.verifyCourseOwnership(id as string, userId, userRole);
+
+    const base64 = req.file.buffer.toString("base64");
+    const dataUrl = `data:${req.file.mimetype};base64,${base64}`;
+
+    const updated = await courseService.updateCourseThumbnail(
+      id as string,
+      dataUrl,
+    );
+
+    res.json(updated);
+  },
+);

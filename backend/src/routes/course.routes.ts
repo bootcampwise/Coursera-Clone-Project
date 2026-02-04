@@ -7,12 +7,18 @@ import {
   deleteCourse,
   getInstructorCourses,
   getAdminCourseCatalog,
+  uploadCourseThumbnail,
 } from "../controllers/course.controller";
 import { getEnrollmentStatus } from "../controllers/enrollment.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { requireRole } from "../middlewares/role.middleware";
+import multer from "multer";
 
 const router = Router();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 // Public routes - Static paths first
 router.get("/", getAllCourses);
@@ -53,6 +59,13 @@ router.delete(
   authMiddleware,
   requireRole(["instructor", "admin"]),
   deleteCourse,
+);
+router.post(
+  "/:id/thumbnail",
+  authMiddleware,
+  requireRole(["instructor", "admin"]),
+  upload.single("thumbnail"),
+  uploadCourseThumbnail,
 );
 
 // Parameterized routes - AFTER specific routes to avoid catching them

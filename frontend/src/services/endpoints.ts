@@ -17,6 +17,7 @@ export const ENDPOINTS = {
   COURSES: "/courses",
   COURSES_SEARCH: "/courses/search",
   COURSES_BY_ID: (id: string) => `/courses/${id}`,
+  COURSES_THUMBNAIL: (id: string) => `/courses/${id}/thumbnail`,
   COURSES_ENROLLMENT_STATUS: (id: string) => `/courses/${id}/enrollment-status`,
   COURSES_ADMIN_CATALOG: "/courses/admin/catalog",
   COURSES_INSTRUCTOR: "/courses/instructor/my",

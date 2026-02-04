@@ -36,6 +36,7 @@ const CreateCourse: React.FC = () => {
     description: "",
     outcomes: "",
   });
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEditMode);
@@ -60,6 +61,7 @@ const CreateCourse: React.FC = () => {
             description: data.description || "",
             outcomes: data.outcomes || "",
           });
+          setThumbnailFile(null);
         } catch (error) {
           toast.error("Failed to fetch course details");
         } finally {
@@ -107,9 +109,15 @@ const CreateCourse: React.FC = () => {
 
       if (isEditMode && id) {
         await courseApi.updateCourse(id, payload);
+        if (thumbnailFile) {
+          await courseApi.uploadCourseThumbnail(id, thumbnailFile);
+        }
         toast.success("Course updated successfully");
       } else {
         const newCourse = await courseApi.createCourse(payload);
+        if (thumbnailFile && newCourse?.id) {
+          await courseApi.uploadCourseThumbnail(newCourse.id, thumbnailFile);
+        }
         toast.success("Course created successfully");
         navigate(
           location.pathname.includes("/admin")
@@ -253,6 +261,23 @@ const CreateCourse: React.FC = () => {
                   </select>
                 </div>
               )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Course Thumbnail
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setThumbnailFile(e.target.files?.[0] || null)
+                  }
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  Upload a course thumbnail image (stored as base64 for now).
+                </p>
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

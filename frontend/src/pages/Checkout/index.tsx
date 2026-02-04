@@ -5,11 +5,14 @@ import BillingInfo from "./components/BillingInfo";
 import PaymentMethods from "./components/PaymentMethods";
 import OrderSummary from "./components/OrderSummary";
 import { courseApi } from "../../services/courseApi";
+import api from "../../services/apiClient";
+import { ENDPOINTS } from "../../services/endpoints";
 
 const Checkout: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const [course, setCourse] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [studentName, setStudentName] = useState<string>("");
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -27,6 +30,18 @@ const Checkout: React.FC = () => {
 
     fetchCourse();
   }, [courseId]);
+
+  useEffect(() => {
+    const fetchMe = async () => {
+      try {
+        const response = await api.get(ENDPOINTS.USERS_ME);
+        setStudentName(response.data?.name || "");
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+    fetchMe();
+  }, []);
 
   if (isLoading) {
     return (
@@ -67,7 +82,7 @@ const Checkout: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
           {/* Left Column: Billing & Payment */}
           <div className="lg:col-span-7">
-            <BillingInfo />
+            <BillingInfo name={studentName} />
             <div className="my-8 border-t border-[#e7e7e7]"></div>
             <PaymentMethods course={course} />
           </div>

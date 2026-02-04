@@ -404,3 +404,14 @@ export const verifyCourseOwnership = async (
   }
   return course;
 };
+
+export const updateCourseThumbnail = async (
+  id: string,
+  thumbnail: string,
+) => {
+  const updatedCourse = await prisma.course.update({
+    where: { id },
+    data: { thumbnail },
+  });
+  return updatedCourse;
+};

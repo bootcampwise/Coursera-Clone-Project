@@ -46,6 +46,17 @@ export const courseApi = {
     return response.data;
   },
 
+  uploadCourseThumbnail: async (id: string, file: File) => {
+    const formData = new FormData();
+    formData.append("thumbnail", file);
+    const response = await instructorApi.post(
+      ENDPOINTS.COURSES_THUMBNAIL(id),
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return response.data;
+  },
+
   deleteCourse: async (id: string) => {
     const response = await instructorApi.delete(ENDPOINTS.COURSES_BY_ID(id));
     return response.data;
