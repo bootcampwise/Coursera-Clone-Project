@@ -1,107 +1,116 @@
-import React from "react";
+import React, { useState } from "react";
+import { IMAGES } from "../../../constants/images";
 
-const CourseSeries: React.FC = () => {
-  const courses = [
-    {
-      title: "Start Effective Prompting Essentials",
-      type: "Course • 1 of 4",
-      image:
-        "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=300",
-    },
-    {
-      title: "Design Prompts for Everyday Tasks",
-      type: "Course • 2 of 4",
-      image:
-        "https://images.unsplash.com/photo-1620712943543-bcc4628c9757?auto=format&fit=crop&q=80&w=300",
-    },
-    {
-      title: "Speed Up Data Analysis and Presentation",
-      type: "Course • 3 of 4",
-      image:
-        "https://images.unsplash.com/photo-1551288049-bbda48658a7e?auto=format&fit=crop&q=80&w=300",
-    },
-    {
-      title: "Use Generative AI as an Expert Partner",
-      type: "Course • 4 of 4",
-      image:
-        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&q=80&w=300",
-    },
-  ];
+interface CourseSeriesItem {
+  id: string;
+  title: string;
+  thumbnail?: string;
+}
+
+interface CourseSeriesProps {
+  courses: CourseSeriesItem[];
+}
+
+const CourseSeries: React.FC<CourseSeriesProps> = ({ courses }) => {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
+
+  const handleToggle = (index: number) => {
+    setExpandedIndex((prev) => (prev === index ? null : index));
+  };
 
   return (
     <section>
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-[28px] font-bold text-[#1f1f1f]">
+        <h2 className="text-[28px] font-normal text-[#1f1f1f]">
           Specialization - 4 course series
         </h2>
       </div>
 
-      <p className="text-[15px] text-gray-700 max-w-[800px] mb-8 leading-relaxed">
-        Around the world, people are transforming their lives through Google
-        Workspace. This specialization provides you with the skills to
-        effectively use the most popular Google Workspace tools.
+      <p className="text-[15px] text-gray-700 max-w-[800px] mb-2 leading-relaxed">
+        Want to use generative AI tools but not sure where to start? Google
+        Prompting Essentials teaches you how to give clear and specific
+        instructions to generative AI - known as prompting. In 5 easy steps,
+        you'll learn how to prompt effectively and unlock more of AI's
+        potential.
       </p>
+      <button className="text-[15px] text-[#0056D2] hover:underline mb-8">
+        Read more
+      </button>
 
-      <div className="space-y-4">
+      <div className="w-full border border-gray-200 rounded-[10px] overflow-hidden bg-white">
         {courses.map((course, index) => (
-          <div
-            key={index}
-            className="flex items-center gap-6 p-4 rounded-[8px] border border-gray-100 bg-white hover:bg-gray-50 transition-all cursor-pointer group shadow-sm"
-          >
-            <div className="w-[120px] h-[80px] shrink-0 rounded-[4px] overflow-hidden">
-              <img
-                src={course.image}
-                alt={course.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <div className="flex-1">
-              <span className="text-[12px] font-bold text-gray-500 uppercase tracking-wider">
-                {course.type}
-              </span>
-              <h3 className="text-[18px] font-bold text-[#1f1f1f] group-hover:text-[#0056D2] transition-colors line-clamp-1">
-                {course.title}
-              </h3>
-            </div>
-            <div className="text-gray-400 group-hover:text-[#0056D2] transition-colors pr-2">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+          <div key={course.id}>
+            <div className="flex items-center gap-6 px-8 py-5">
+              <div className="w-[188px] h-[68px] shrink-0 rounded-[4px] overflow-hidden bg-gray-100">
+                {course.thumbnail && (
+                  <img
+                    src={course.thumbnail}
+                    alt={course.title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-[14px] font-semibold text-[#1f1f1f] line-clamp-1">
+                  {course.title}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => handleToggle(index)}
+                  className="flex items-center gap-2 text-[12px] text-gray-500 hover:text-[#1f1f1f] mt-1"
+                >
+                  <span>Course {index + 1}</span>
+                  <span className="text-gray-500 text-3xl">·</span>
+                  <span>2 hours</span>
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleToggle(index)}
+                className="text-[#0056D2] hover:text-[#00419e] transition-colors"
+                aria-label={expandedIndex === index ? "Collapse" : "Expand"}
               >
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className={`transition-transform ${
+                    expandedIndex === index ? "rotate-180" : ""
+                  }`}
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
             </div>
+            {index !== courses.length - 1 && (
+              <div className="h-0.5 bg-gray-100 mx-5"></div>
+            )}
           </div>
         ))}
-      </div>
 
-      <div className="mt-8 p-6 bg-blue-50/50 rounded-[8px] flex items-center gap-6 border border-blue-100">
-        <div className="w-[50px] h-[50px] bg-white rounded-full flex items-center justify-center shadow-sm">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#0056D2"
-            strokeWidth="2"
-          >
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-          </svg>
-        </div>
-        <div>
-          <p className="text-[14px] text-gray-800">
-            <span className="font-bold">Earn a career certificate</span>
-            <br />
-            Upon completion, you will receive a digital certificate that you can
-            share on your professional network.
-          </p>
+        <div className="h-0.5 bg-gray-100 mx-5"></div>
+        <div className="flex items-center gap-4 px-5 py-6 mb-4">
+          <div className="w-[36px] h-[36px] bg-[#F2F6FD] rounded-[8px] flex items-center justify-center">
+            <img
+              src={IMAGES.UI.EARN_CERTIFICATE_ICON}
+              alt=""
+              className="w-5 h-5 object-contain"
+            />
+          </div>
+          <div>
+            <p className="text-[14px] text-[#1f1f1f] font-semibold">
+              Earn a career certificate
+            </p>
+            <p className="text-[12px] text-gray-600">
+              Add this credential to your LinkedIn profile, resume, or CV. Share
+              it on social media and in your performance review.
+            </p>
+          </div>
         </div>
       </div>
     </section>

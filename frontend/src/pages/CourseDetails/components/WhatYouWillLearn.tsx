@@ -1,7 +1,7 @@
 import React from "react";
 
 interface WhatYouWillLearnProps {
-  outcomes?: string;
+  outcomes?: string | string[];
   description: string;
 }
 
@@ -9,33 +9,53 @@ const WhatYouWillLearn: React.FC<WhatYouWillLearnProps> = ({
   outcomes,
   description,
 }) => {
-  const points = outcomes
-    ? outcomes.split(";").map((p) => p.trim())
-    : [description.substring(0, 100)];
+  const safeDescription = description || "";
+  const normalizeOutcomes = (value?: string | string[]) => {
+    if (!value) return [];
+    if (Array.isArray(value)) {
+      return value.map((p) => p.trim()).filter(Boolean);
+    }
+    return value
+      .split(/\r?\n|;|•|- /g)
+      .map((p) => p.trim())
+      .filter(Boolean);
+  };
+
+  const points = normalizeOutcomes(outcomes);
+  const displayPoints =
+    points.length > 0
+      ? points
+      : safeDescription
+          .substring(0, 100)
+          .split(/\r?\n|;|•|- /g)
+          .map((p) => p.trim())
+          .filter(Boolean);
+
+  if (displayPoints.length === 0) return null;
 
   return (
     <section>
-      <h2 className="text-[24px] font-bold text-[#1f1f1f] mb-6">
+      <h2 className="text-[20px] font-normal text-[#1f1f1f] mb-4">
         What you will learn
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-        {points.map((point, index) => (
-          <div key={index} className="flex items-start gap-4">
-            <div className="mt-1 shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3">
+        {displayPoints.map((point, index) => (
+          <div key={index} className="flex items-start gap-3">
+            <div className="mt-1 shrink-0 ">
               <svg
-                width="20"
-                height="20"
+                width="18"
+                height="18"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#0056D2"
-                strokeWidth="3"
+                stroke="#1f1f1f"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </div>
-            <p className="text-[15px] text-gray-700 leading-normal">{point}</p>
+            <p className="text-[14px] font-normal text-gray-700 leading-snug">{point}</p>
           </div>
         ))}
       </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { courseApi } from "../../../services/courseApi";
+import { IMAGES } from "../../../constants/images";
 
 interface CourseHeroProps {
   course: any;
@@ -53,31 +54,36 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
   };
 
   return (
-    <section className="bg-gradient-to-r from-white via-white to-blue-50 relative overflow-hidden pt-12 pb-20 border-b border-gray-100 px-4 md:px-0">
-      <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 items-center px-4 md:px-8">
+    <section className="bg-[#F2F6FD] relative overflow-hidden pt-16 pb-20 border-b border-gray-100 px-4 md:px-0">
+      <div className="max-w-[1200px]  grid grid-cols-1 lg:grid-cols-2 items-center px-4 md:px-8">
         <div className="z-10">
           {/* Logo */}
-          <div className="mb-6 flex items-center gap-2">
-            {course.instructor?.avatarUrl && (
-              <img
-                src={course.instructor.avatarUrl}
-                alt={course.instructor.name}
-                className="h-[32px] w-auto rounded-full"
-              />
-            )}
-            <span className="font-bold text-gray-700">
-              {course.instructor?.name}
-            </span>
+          <div className="mb-6 flex items-center">
+            <img
+              src={IMAGES.LOGOS.GOOGLE_WORDMARK}
+              alt="Google"
+              className="h-[28px] w-auto"
+            />
           </div>
 
           {/* Title */}
-          <h1 className="text-[40px] md:text-[56px] font-bold text-[#1f1f1f] leading-[1.1] mb-6 tracking-tight">
+          <h1 className="text-[40px] md:text-[56px] font-normal text-[#202225] leading-[1.1] mb-6 tracking-tight">
             {course.title}
           </h1>
 
-          <p className="text-[16px] text-gray-700 leading-relaxed mb-8 max-w-[600px]">
+          <p className="text-[16px] text-gray-700 leading-relaxed mb-5 max-w-[600px]">
             {course.subtitle || course.description?.substring(0, 150) + "..."}
           </p>
+
+          <div className="flex items-center gap-2 text-[14px] text-gray-700 mb-8">
+            <img
+              src={IMAGES.LOGOS.GOOGLE_LOGO}
+              alt="Google"
+              className="w-4 h-4 object-contain"
+            />
+            <span className="text-[#1f1f1f]">Instructor:</span>
+            <span>{course.instructor?.name || "Google career certificates"}</span>
+          </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <button
@@ -87,13 +93,6 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
             >
               {getButtonText()}
             </button>
-            <div className="text-[14px]">
-              <span className="text-gray-600">Starts Oct 24</span>
-              <br />
-              <button className="text-[#0056D2] font-bold hover:underline">
-                Financial aid available
-              </button>
-            </div>
           </div>
 
           <p className="mt-4 text-[14px] text-gray-500">

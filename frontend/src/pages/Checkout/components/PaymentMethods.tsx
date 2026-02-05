@@ -80,7 +80,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ course }) => {
             ? "Enrolling..."
             : course.price === 0
               ? "Enroll Now"
-              : "Pay & Enroll"}
+              : "Start free trial"}
         </Button>
         <span className="text-[16px] text-[#1f1f1f] font-normal">
           {course.price === 0

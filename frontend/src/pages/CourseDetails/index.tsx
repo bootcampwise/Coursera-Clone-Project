@@ -6,9 +6,11 @@ import CourseInfoBar from "./components/CourseInfoBar";
 import CourseTabs from "./components/CourseTabs";
 import WhatYouWillLearn from "./components/WhatYouWillLearn";
 import SkillsGain from "./components/SkillsGain";
+import DetailsToKnow from "./components/DetailsToKnow";
 import AdvanceExpertise from "./components/AdvanceExpertise";
 import CourseSeries from "./components/CourseSeries";
 import CareerTestimonials from "./components/CareerTestimonials";
+import CourseSeriesSideCard from "./components/CourseSeriesSideCard";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { courseApi } from "../../services/courseApi";
@@ -21,6 +23,7 @@ const CourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [course, setCourse] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [seriesCourses, setSeriesCourses] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -38,6 +41,23 @@ const CourseDetails: React.FC = () => {
 
     fetchCourse();
   }, [id]);
+
+  useEffect(() => {
+    const fetchSeriesCourses = async () => {
+      if (!course?.id) return;
+      try {
+        const result = await courseApi.getCourses({ limit: 6 });
+        const items = (result?.courses || [])
+          .filter((c: any) => c.id !== course.id)
+          .slice(0, 4);
+        setSeriesCourses(items);
+      } catch (error) {
+        console.error("Error fetching course series:", error);
+      }
+    };
+
+    fetchSeriesCourses();
+  }, [course?.id]);
 
   if (isLoading) {
     return (
@@ -123,31 +143,43 @@ const CourseDetails: React.FC = () => {
       <main>
         <CourseHero course={course} />
 
-        <div className="max-w-[1240px] mx-auto px-4 md:px-8 relative -mt-10 z-10">
+        <div className="max-w-[1340px]  px-4 md:px-8 relative -mt-10 z-10">
           <CourseInfoBar course={course} />
         </div>
 
-        <div className="max-w-[1240px] mx-auto px-4 md:px-8 py-12">
+        <div className="max-w-[1240px]  px-4 md:px-8 py-12">
           <CourseTabs />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-12">
+          <div className="mt-12">
             {/* Main Content */}
-            <div className="lg:col-span-8 space-y-16">
+            <div className="max-w-[860px] space-y-12">
               <WhatYouWillLearn
                 outcomes={course.outcomes}
                 description={course.description}
               />
               <SkillsGain />
-              <AdvanceExpertise />
-              <CourseSeries />
-              <CareerTestimonials />
+              <DetailsToKnow />
             </div>
-
-            {/* Sidebar */}
-            <aside className="hidden lg:block lg:col-span-4">
-              <Sidebar course={course} />
-            </aside>
           </div>
+        </div>
+
+        <div className="max-w-[1340px]  px-4 md:px-8 mt-12">
+          <AdvanceExpertise thumbnailUrl={course.thumbnail} />
+        </div>
+
+        <div className="max-w-[1340px]  px-4 md:px-8 py-12">
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            <div className="flex-1 min-w-0 space-y-12">
+              <CourseSeries courses={seriesCourses} />
+            </div>
+            <div className="w-full lg:w-[340px] shrink-0 lg:mt-[214px]">
+              <CourseSeriesSideCard instructorName={course.instructor?.name} />
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-[1340px]  px-4 md:px-8 pb-12">
+          <CareerTestimonials />
         </div>
       </main>
 
