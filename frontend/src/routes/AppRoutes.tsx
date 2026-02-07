@@ -33,6 +33,7 @@ import AccountSettings from "../pages/AccountSettings/index";
 import CourseCertificate from "../pages/CourseCertificate/index";
 import UpdatesPage from "../pages/Updates/UpdatesPage";
 import Accomplishments from "../pages/Accomplishments/index";
+import CertificateVerify from "../pages/CertificateVerify/index";
 
 import AdminInstructorLogin from "../pages/Auth/AdminInstructorLogin";
 import AdminProtectedRoute from "../components/auth/AdminProtectedRoute";
@@ -58,6 +59,7 @@ const AppRoutes: React.FC = () => (
         element={<CourseAssessmentResult />}
       />
       <Route path="/accomplishments" element={<Accomplishments />} />
+      <Route path="/verify/:code" element={<CertificateVerify />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/account/settings" element={<AccountSettings />} />

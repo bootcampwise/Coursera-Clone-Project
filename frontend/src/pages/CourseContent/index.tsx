@@ -206,6 +206,7 @@ const CourseContent: React.FC = () => {
             lastPlayed: currentTimeInt,
             completed:
               alreadyCompleted || isNearEnd || currentTimeInt >= duration - 1,
+            videoDuration: duration,
           },
         );
 
@@ -226,12 +227,13 @@ const CourseContent: React.FC = () => {
   const handlePause = async () => {
     if (!videoRef.current || !progressData?.enrollmentId || !lessonId) return;
     const currentTimeInt = Math.floor(videoRef.current.currentTime);
+    const duration = Math.floor(videoRef.current.duration || 0);
 
     try {
       await enrollmentApi.updateLessonProgress(
         progressData.enrollmentId,
         lessonId,
-        { lastPlayed: currentTimeInt },
+        { lastPlayed: currentTimeInt, videoDuration: duration || undefined },
       );
     } catch (err) {
       console.error("Failed to save pause progress", err);
@@ -250,7 +252,7 @@ const CourseContent: React.FC = () => {
           {
             completed: true,
             forceComplete:
-              currentLesson?.type?.toLowerCase() !== "assessment",
+              currentLesson?.type?.toLowerCase() === "reading",
           },
         );
       }
@@ -260,7 +262,11 @@ const CourseContent: React.FC = () => {
 
       if (currentIndex !== -1 && currentIndex < allLessons.length - 1) {
         const nextLesson = allLessons[currentIndex + 1];
-        navigate(`/learn/${courseId}/lecture/${nextLesson.id}`);
+        if (nextLesson.type?.toLowerCase() === "assessment") {
+          navigate(`/learn/${courseId}/assessment/${nextLesson.id}`);
+        } else {
+          navigate(`/learn/${courseId}/lecture/${nextLesson.id}`);
+        }
         const newProgress = await enrollmentApi.getCourseProgress(
           courseId as string,
         );
@@ -504,6 +510,36 @@ const CourseContent: React.FC = () => {
                         className="w-full h-full"
                         onTimeUpdate={handleTimeUpdate}
                         onPause={handlePause}
+                        onEnded={async () => {
+                          if (
+                            !progressData?.enrollmentId ||
+                            !lessonId ||
+                            !videoRef.current
+                          ) {
+                            return;
+                          }
+                          const duration = Math.floor(
+                            videoRef.current.duration || 0,
+                          );
+                          try {
+                            await enrollmentApi.updateLessonProgress(
+                              progressData.enrollmentId,
+                              lessonId!,
+                              {
+                                lastPlayed: duration,
+                                completed: true,
+                                videoDuration: duration || undefined,
+                              },
+                            );
+                            const newProgress =
+                              await enrollmentApi.getCourseProgress(
+                                courseId as string,
+                              );
+                            setProgressData(newProgress);
+                          } catch (err) {
+                            console.error("Failed to complete video", err);
+                          }
+                        }}
                         autoPlay={false}
                         preload="metadata"
                       />
@@ -780,13 +816,16 @@ const CourseContent: React.FC = () => {
               <button
                 onClick={handleNext}
                 disabled={
-                  currentLesson.type?.toLowerCase() === "assessment" &&
-                  !isLessonCompleted(currentLesson.id)
+                  (currentLesson.type?.toLowerCase() === "assessment" &&
+                    !isLessonCompleted(currentLesson.id)) ||
+                  (currentLesson.type?.toLowerCase() === "video" &&
+                    !isLessonCompleted(currentLesson.id))
                 }
                 className={`flex items-center gap-2 px-4 py-2 text-[12px] sm:px-5 sm:py-2.5 sm:text-[13px] lg:px-6 lg:text-[14px] rounded-[4px] font-bold transition-colors ${
                   isLessonCompleted(currentLesson.id)
                     ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
-                    : currentLesson.type?.toLowerCase() === "assessment"
+                    : currentLesson.type?.toLowerCase() === "assessment" ||
+                        currentLesson.type?.toLowerCase() === "video"
                       ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                       : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
                 }`}
@@ -795,6 +834,8 @@ const CourseContent: React.FC = () => {
                   ? "Go to next item"
                   : currentLesson.type?.toLowerCase() === "assessment"
                     ? "Locked (Pass to continue)"
+                    : currentLesson.type?.toLowerCase() === "video"
+                      ? "Go to next item"
                     : "Mark as completed"}
                 <svg
                   className="w-4 h-4"

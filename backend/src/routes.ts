@@ -7,6 +7,7 @@ import reviewRoutes from "./routes/review.routes";
 import analyticsRoutes from "./routes/analytics.routes";
 import moduleRoutes from "./routes/module.routes";
 import lessonRoutes from "./routes/lesson.routes";
+import certificateRoutes from "./routes/certificate.routes";
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use("/api/v1/courses", courseRoutes);
 router.use("/api/v1/enrollments", enrollmentRoutes);
 router.use("/api/v1/reviews", reviewRoutes);
 router.use("/api/v1/analytics", analyticsRoutes);
+router.use("/api/v1/certificates", certificateRoutes);
 // Curriculum Builder Routes - Mounted at root /api/v1 because individual files define full or sub paths
 // moduleRoutes defines /courses/:courseId/modules and /modules/:id
 // lessonRoutes defines /modules/:moduleId/lessons and /lessons/:id

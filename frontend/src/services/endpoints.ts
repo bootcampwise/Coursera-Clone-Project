@@ -42,4 +42,10 @@ export const ENDPOINTS = {
   // Analytics
   ANALYTICS_ADMIN: "/analytics/admin/overview",
   ANALYTICS_INSTRUCTOR: "/analytics/instructor/overview",
+
+  // Certificates
+  CERTIFICATES_MY: "/certificates/my",
+  CERTIFICATES_BY_ID: (id: string) => `/certificates/${id}`,
+  CERTIFICATES_DOWNLOAD: (id: string) => `/certificates/${id}/download`,
+  CERTIFICATES_VERIFY: (code: string) => `/certificates/verify/${code}`,
 };

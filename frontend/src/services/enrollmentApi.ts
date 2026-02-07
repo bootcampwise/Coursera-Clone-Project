@@ -38,6 +38,8 @@ export const enrollmentApi = {
       lastPlayed?: number;
       passed?: boolean;
       forceComplete?: boolean;
+      score?: number;
+      videoDuration?: number;
     },
   ) => {
     const response = await api.patch(

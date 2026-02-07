@@ -23,6 +23,7 @@ interface AnalyticsData {
     totalCourses: number;
     totalEnrollments: number;
     totalReviews: number;
+    totalCertificates?: number;
     totalRevenue: number;
   };
   recentSignups: any[];

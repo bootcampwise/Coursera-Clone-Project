@@ -4,6 +4,7 @@ import Footer from "../../components/home/Footer";
 import { enrollmentApi } from "../../services/enrollmentApi";
 import { reviewApi } from "../../services/reviewApi";
 import { Link, useNavigate } from "react-router-dom";
+import { certificateApi } from "../../services/certificateApi";
 
 const MyLearning: React.FC = () => {
   const [activeTab, setActiveTab] = useState("In Progress");
@@ -15,6 +16,9 @@ const MyLearning: React.FC = () => {
   const [reviewComment, setReviewComment] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [certificatesByCourseId, setCertificatesByCourseId] = useState<
+    Record<string, any>
+  >({});
   const navigate = useNavigate();
 
   const tabs = ["In Progress", "Saved", "Completed"];
@@ -25,6 +29,17 @@ const MyLearning: React.FC = () => {
       try {
         const data = await enrollmentApi.getMyEnrollments();
         setEnrollments(data);
+        try {
+          const certificates = await certificateApi.getMyCertificates();
+          const map: Record<string, any> = {};
+          (certificates || []).forEach((c: any) => {
+            if (c.courseId) map[c.courseId] = c;
+          });
+          setCertificatesByCourseId(map);
+        } catch (certErr) {
+          console.error("Error fetching certificates:", certErr);
+          setCertificatesByCourseId({});
+        }
       } catch (error) {
         console.error("Error fetching enrollments:", error);
       } finally {
@@ -185,11 +200,12 @@ const MyLearning: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {enrollment.completed && (
+                      {enrollment.completed &&
+                        certificatesByCourseId[enrollment.course.id] && (
                         <button
                           onClick={() =>
                             navigate(
-                              `/accomplishments/certificate/${enrollment.course.id}`,
+                              `/accomplishments/certificate/${certificatesByCourseId[enrollment.course.id].id}`,
                             )
                           }
                           className="px-6 py-[10px] border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-blue-50 transition-colors shadow-sm bg-transparent"
@@ -224,7 +240,9 @@ const MyLearning: React.FC = () => {
                   {enrollment.completed && (
                     <div className="mt-3 text-[12px] text-[#5f6368]">
                       Completed on{" "}
-                      {new Date(enrollment.updatedAt).toLocaleDateString()}
+                      {new Date(
+                        enrollment.completedAt || enrollment.updatedAt,
+                      ).toLocaleDateString()}
                     </div>
                   )}
                   {enrollment.completed && enrollment.hasReviewed && (

@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import { issueCertificateForEnrollment } from "./certificate.service";
 
 export const enrollUser = async (userId: string, courseId: string) => {
   // Check if course exists
@@ -206,6 +207,8 @@ export const updateLessonProgress = async (
     lastPlayed?: number;
     passed?: boolean;
     forceComplete?: boolean;
+    score?: number;
+    videoDuration?: number;
   },
 ) => {
   const enrollment = await prisma.enrollment.findUnique({
@@ -215,8 +218,14 @@ export const updateLessonProgress = async (
   if (!enrollment) throw new Error("Enrollment not found");
   if (enrollment.userId !== userId) throw new Error("Unauthorized");
 
-  const { completed: requestedCompleted, lastPlayed, passed, forceComplete } =
-    data;
+  const {
+    completed: requestedCompleted,
+    lastPlayed,
+    passed,
+    forceComplete,
+    score,
+    videoDuration,
+  } = data;
 
   // Enforce assessment and video completion rules
   let completed = requestedCompleted;
@@ -239,11 +248,12 @@ export const updateLessonProgress = async (
     }
 
     if (lesson?.type === "VIDEO" && !forceComplete) {
-      const duration = lesson.duration ?? 0;
-      const lastPlayed =
+      const duration = lesson.duration ?? videoDuration ?? 0;
+      const resolvedLastPlayed =
         lastPlayed ?? existingProgress?.lastPlayed ?? 0;
       const watchedEnough =
-        duration > 0 && lastPlayed >= Math.floor(duration * 0.98);
+        duration > 0 &&
+        resolvedLastPlayed >= Math.floor(duration * 0.98);
       if (!watchedEnough) completed = false;
     }
   }
@@ -259,12 +269,16 @@ export const updateLessonProgress = async (
     update: {
       ...(typeof lastPlayed === "number" ? { lastPlayed } : {}),
       completed,
+      ...(typeof passed === "boolean" ? { passed } : {}),
+      ...(typeof score === "number" ? { score } : {}),
     },
     create: {
       enrollmentId,
       lessonId,
       ...(typeof lastPlayed === "number" ? { lastPlayed } : {}),
       completed,
+      ...(typeof passed === "boolean" ? { passed } : {}),
+      ...(typeof score === "number" ? { score } : {}),
     },
   });
 
@@ -314,8 +328,15 @@ export const updateLessonProgress = async (
     data: {
       progress: newProgress,
       completed: isCompleted,
+      ...(isCompleted && !enrollment.completed
+        ? { completedAt: new Date() }
+        : {}),
     },
   });
+
+  if (!enrollment.completed && isCompleted) {
+    await issueCertificateForEnrollment(enrollmentId);
+  }
 
   return progress;
 };

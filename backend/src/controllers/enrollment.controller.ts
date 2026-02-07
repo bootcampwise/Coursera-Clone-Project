@@ -114,7 +114,9 @@ export const getStudentCourseProgress = asyncHandler(
 export const updateLessonProgress = asyncHandler(
   async (req: Request & { user?: any }, res: Response) => {
     const { enrollmentId, lessonId } = req.params;
-    const { completed, lastPlayed, passed, forceComplete } = req.body;
+    const { completed, lastPlayed, passed, forceComplete, score } = req.body;
+    const normalizedScore =
+      typeof score === "string" ? Number(score) : score;
     const userId = req.user?.id;
 
     if (!userId) {
@@ -126,7 +128,13 @@ export const updateLessonProgress = asyncHandler(
       userId,
       enrollmentId as string,
       lessonId as string,
-      { completed, lastPlayed, passed, forceComplete },
+      {
+        completed,
+        lastPlayed,
+        passed,
+        forceComplete,
+        score: Number.isFinite(normalizedScore) ? normalizedScore : undefined,
+      },
     );
     res.json(updatedProgress);
   },

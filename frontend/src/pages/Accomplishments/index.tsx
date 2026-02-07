@@ -1,17 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/common/Header";
 import AccomplishmentItem from "../../components/accomplishments/AccomplishmentItem";
 import CourseCarousel from "../../components/accomplishments/CourseCarousel";
 import DegreeCard from "../../components/accomplishments/DegreeCard";
 import {
-  accomplishments,
   googlePromoRecommendations,
   topPicks,
   recentlyViewed,
   degrees,
 } from "./mockData";
+import { certificateApi } from "../../services/certificateApi";
 
 const Accomplishments: React.FC = () => {
+  const [certificateItems, setCertificateItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        const certs = await certificateApi.getMyCertificates();
+        const items = (certs || []).map((c: any) => ({
+          id: c.id,
+          title: c.courseTitle,
+          type: c.partnerName || c.course?.instructor?.name || "Course",
+          image:
+            c.imageUrl ||
+            c.course?.thumbnail ||
+            "https://s3.amazonaws.com/coursera_assets/meta_images/generated/CERTIFICATE_LANDING_PAGE/CERTIFICATE_LANDING_PAGE~2J3W9X4YK5Z7/CERTIFICATE_LANDING_PAGE~2J3W9X4YK5Z7.jpeg",
+          grade:
+            typeof c.grade === "number" ? `${c.grade.toFixed(2)}%` : undefined,
+        }));
+        setCertificateItems(items);
+      } catch (err) {
+        console.error("Failed to fetch certificates", err);
+      }
+    };
+    fetchCertificates();
+  }, []);
+
   return (
     <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
       {/* 1. Navigation */}
@@ -85,7 +110,7 @@ const Accomplishments: React.FC = () => {
           <div className="h-px bg-border w-full mb-2"></div>
 
           <div className="flex flex-col">
-            {accomplishments.map((item) => (
+            {certificateItems.map((item) => (
               <AccomplishmentItem key={item.id} accomplishment={item} />
             ))}
           </div>

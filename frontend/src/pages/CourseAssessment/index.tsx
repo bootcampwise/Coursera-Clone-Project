@@ -90,11 +90,15 @@ const CourseAssessment: React.FC = () => {
     const isPassed = finalScore >= assessment.parsedContent.passingScore;
 
     try {
-      if (isPassed && enrollment?.enrollmentId) {
+      if (enrollment?.enrollmentId) {
         await enrollmentApi.updateLessonProgress(
           enrollment.enrollmentId,
           assessmentId!,
-          { completed: true, passed: true },
+          {
+            completed: isPassed,
+            passed: isPassed,
+            score: finalScore,
+          },
         );
       }
 

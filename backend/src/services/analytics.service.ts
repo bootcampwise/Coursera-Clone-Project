@@ -6,12 +6,14 @@ export const getAdminAnalytics = async () => {
     totalCourses,
     totalEnrollments,
     totalReviews,
+    totalCertificates,
     recentSignups,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.course.count(),
     prisma.enrollment.count(),
     prisma.review.count(),
+    prisma.certificate.count(),
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,
@@ -43,6 +45,7 @@ export const getAdminAnalytics = async () => {
       totalCourses,
       totalEnrollments,
       totalReviews,
+      totalCertificates,
       totalRevenue,
     },
     recentSignups,
@@ -58,7 +61,13 @@ export const getInstructorAnalytics = async (instructorId: string) => {
 
   const courseIds = courses.map((c) => c.id);
 
-  const [totalEnrollments, totalReviews, enrollmentsByCourse, reviews] =
+  const [
+    totalEnrollments,
+    totalReviews,
+    enrollmentsByCourse,
+    reviews,
+    certificatesByCourse,
+  ] =
     await Promise.all([
       prisma.enrollment.count({ where: { courseId: { in: courseIds } } }),
       prisma.review.count({ where: { courseId: { in: courseIds } } }),
@@ -70,6 +79,11 @@ export const getInstructorAnalytics = async (instructorId: string) => {
       prisma.review.findMany({
         where: { courseId: { in: courseIds } },
         select: { rating: true },
+      }),
+      prisma.certificate.groupBy({
+        by: ["courseId"],
+        where: { courseId: { in: courseIds } },
+        _count: true,
       }),
     ]);
 
@@ -100,9 +114,13 @@ export const getInstructorAnalytics = async (instructorId: string) => {
     },
     courses: courses.map((c) => {
       const enrollment = enrollmentsByCourse.find((e) => e.courseId === c.id);
+      const certificates = certificatesByCourse.find(
+        (e) => e.courseId === c.id,
+      );
       return {
         ...c,
         students: enrollment?._count || 0,
+        certificates: certificates?._count || 0,
       };
     }),
   };

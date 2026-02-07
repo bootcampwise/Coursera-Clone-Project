@@ -22,6 +22,7 @@ model User {
   enrollments  Enrollment[]
   reviews      Review[]
   submissions  Submission[]
+  certificates Certificate[]
 }
 
 model LessonProgress {
@@ -32,6 +33,8 @@ model LessonProgress {
   lessonId     String     @db.ObjectId
   completed    Boolean    @default(false)
   lastPlayed   Int        @default(0) // Seconds watched
+  passed       Boolean?
+  score        Float?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
@@ -58,6 +61,7 @@ model Course {
   enrollments  Enrollment[]
   reviews      Review[]
   assessments  Assessment[]
+  certificates Certificate[]
 }
 
 model Module {
@@ -113,10 +117,34 @@ model Enrollment {
   courseId    String   @db.ObjectId
   progress    Int      @default(0) // Percentage or count of lessons completed
   completed   Boolean  @default(false)
+  completedAt DateTime?
   lastAccessed DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   lessonProgress LessonProgress[]
+}
+
+model Certificate {
+  id               String   @id @map("_id") @default(auto()) @db.ObjectId
+  user             User     @relation(fields: [userId], references: [id])
+  userId           String   @db.ObjectId
+  course           Course   @relation(fields: [courseId], references: [id])
+  courseId         String   @db.ObjectId
+  issuedAt         DateTime @default(now())
+  certificateNumber String  @unique
+  verificationCode String   @unique
+  pdfUrl           String?
+  imageUrl         String?
+  learnerName      String
+  courseTitle      String
+  partnerName      String?
+  grade            Float?
+  durationHours    Float?
+  durationMinutes  Int?
+  verifiedIdentity Boolean  @default(false)
+  revokedAt        DateTime?
+
+  @@unique([userId, courseId])
 }
 
 model Review {
