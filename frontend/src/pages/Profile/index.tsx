@@ -1,340 +1,1342 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
+import Button from "../../components/common/Button";
 import ProfileHeader from "../../components/layout/ProfileHeader";
 import Footer from "../../components/home/Footer";
+import { IMAGES } from "../../constants/images";
+import type { RootState } from "../../app/store";
+import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
+import {
+  userApi,
+  type WorkExperienceInput,
+  type WorkExperience,
+  type Education,
+  type EducationInput,
+  type ProfileCertificate,
+  type ProfileCertificateInput,
+} from "../../services/userApi";
+import { certificateApi } from "../../services/certificateApi";
 
-const Profile: React.FC = () => {
+const EditIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+
+const PaperclipIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.2a2 2 0 0 1-2.82-2.83l8.48-8.48" />
+  </svg>
+);
+
+const PlusIcon = ({ size = 14 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+const GraduationCapIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M22 10 12 5 2 10l10 5 10-5z" />
+    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+interface CompletedCourseCertificate {
+  id: string;
+  courseTitle?: string;
+  issuedAt?: string;
+}
+
+const UserProfile: React.FC = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
+  const displayName = user?.name || "Learner";
+  const displayInitials = user?.name ? getInitials(user.name) : "L";
+  const avatarBg = user?.name ? getAvatarColor(user.name) : "#A64AC9";
+  const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>([]);
+  const [isWorkModalOpen, setIsWorkModalOpen] = useState(false);
+  const [editingWorkId, setEditingWorkId] = useState<string | null>(null);
+  const [isLoadingWork, setIsLoadingWork] = useState(false);
+  const [isSavingWork, setIsSavingWork] = useState(false);
+  const [isDeletingWorkId, setIsDeletingWorkId] = useState<string | null>(null);
+  const [educations, setEducations] = useState<Education[]>([]);
+  const [profileCertificates, setProfileCertificates] = useState<
+    ProfileCertificate[]
+  >([]);
+  const [completedCourses, setCompletedCourses] = useState<
+    CompletedCourseCertificate[]
+  >([]);
+  const [isCredentialModalOpen, setIsCredentialModalOpen] = useState(false);
+  const [credentialModalType, setCredentialModalType] = useState<
+    "selector" | "education" | "certificate"
+  >("selector");
+  const [editingEducationId, setEditingEducationId] = useState<string | null>(
+    null,
+  );
+  const [editingProfileCertificateId, setEditingProfileCertificateId] =
+    useState<string | null>(null);
+  const [isLoadingCredentials, setIsLoadingCredentials] = useState(false);
+  const [isLoadingCompletedCourses, setIsLoadingCompletedCourses] =
+    useState(false);
+  const [isSavingCredential, setIsSavingCredential] = useState(false);
+  const [isDeletingCredentialId, setIsDeletingCredentialId] = useState<
+    string | null
+  >(null);
+  const [educationForm, setEducationForm] = useState<EducationInput>({
+    instituteName: "",
+    degreeDetails: "",
+    startDate: "",
+    endDate: "",
+  });
+  const [certificateForm, setCertificateForm] = useState<ProfileCertificateInput>(
+    {
+      certificateName: "",
+      completionDate: "",
+    },
+  );
+  const [workForm, setWorkForm] = useState<WorkExperienceInput>({
+    title: "",
+    company: "",
+    location: "",
+    employmentType: "",
+    startDate: "",
+    endDate: "",
+    isCurrent: false,
+    description: "",
+  });
+
+  const isWorkFormValid = useMemo(
+    () =>
+      Boolean(
+        workForm.title.trim() &&
+          workForm.company.trim() &&
+          workForm.startDate.trim(),
+      ),
+    [workForm.company, workForm.startDate, workForm.title],
+  );
+
+  const isEducationFormValid = useMemo(
+    () =>
+      Boolean(
+        educationForm.instituteName.trim() &&
+          educationForm.degreeDetails.trim() &&
+          educationForm.startDate.trim() &&
+          educationForm.endDate.trim(),
+      ),
+    [
+      educationForm.degreeDetails,
+      educationForm.endDate,
+      educationForm.instituteName,
+      educationForm.startDate,
+    ],
+  );
+
+  const isCertificateFormValid = useMemo(
+    () =>
+      Boolean(
+        certificateForm.certificateName.trim() &&
+          certificateForm.completionDate.trim(),
+      ),
+    [certificateForm.certificateName, certificateForm.completionDate],
+  );
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setIsLoadingWork(true);
+        setIsLoadingCredentials(true);
+        setIsLoadingCompletedCourses(true);
+        const [workItems, educationItems, certificateItems, completedItems] =
+          await Promise.all([
+            userApi.getMyWorkExperiences(),
+            userApi.getMyEducations(),
+            userApi.getMyProfileCertificates(),
+            certificateApi.getMyCertificates(),
+          ]);
+        setWorkExperiences(Array.isArray(workItems) ? workItems : []);
+        setEducations(Array.isArray(educationItems) ? educationItems : []);
+        setProfileCertificates(
+          Array.isArray(certificateItems) ? certificateItems : [],
+        );
+        setCompletedCourses(Array.isArray(completedItems) ? completedItems : []);
+      } catch (error) {
+        console.error("Failed to fetch profile data", error);
+      } finally {
+        setIsLoadingWork(false);
+        setIsLoadingCredentials(false);
+        setIsLoadingCompletedCourses(false);
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
+  const resetWorkForm = () => {
+    setEditingWorkId(null);
+    setWorkForm({
+      title: "",
+      company: "",
+      location: "",
+      employmentType: "",
+      startDate: "",
+      endDate: "",
+      isCurrent: false,
+      description: "",
+    });
+  };
+
+  const openAddWorkModal = () => {
+    resetWorkForm();
+    setIsWorkModalOpen(true);
+  };
+
+  const openEditWorkModal = (item: WorkExperience) => {
+    setEditingWorkId(item.id);
+    setWorkForm({
+      title: item.title || "",
+      company: item.company || "",
+      location: item.location || "",
+      employmentType: item.employmentType || "",
+      startDate: item.startDate || "",
+      endDate: item.endDate || "",
+      isCurrent: Boolean(item.isCurrent),
+      description: item.description || "",
+    });
+    setIsWorkModalOpen(true);
+  };
+
+  const handleSaveWorkExperience = async () => {
+    if (!isWorkFormValid) return;
+    try {
+      setIsSavingWork(true);
+      const payload: WorkExperienceInput = {
+        title: workForm.title.trim(),
+        company: workForm.company.trim(),
+        location: workForm.location?.trim() || "",
+        employmentType: workForm.employmentType?.trim() || "",
+        startDate: workForm.startDate,
+        endDate: workForm.isCurrent ? "" : workForm.endDate || "",
+        isCurrent: Boolean(workForm.isCurrent),
+        description: workForm.description?.trim() || "",
+      };
+      if (editingWorkId) {
+        const updated = await userApi.updateMyWorkExperience(editingWorkId, payload);
+        setWorkExperiences((prev) =>
+          prev.map((item) => (item.id === editingWorkId ? updated : item)),
+        );
+        toast.success("Work experience updated");
+      } else {
+        const created = await userApi.addMyWorkExperience(payload);
+        setWorkExperiences((prev) => [created, ...prev]);
+        toast.success("Work experience added");
+      }
+      setIsWorkModalOpen(false);
+      resetWorkForm();
+    } catch (error) {
+      console.error("Failed to save work experience", error);
+      toast.error("Failed to save work experience");
+    } finally {
+      setIsSavingWork(false);
+    }
+  };
+
+  const handleDeleteWorkExperience = async (id: string) => {
+    const ok = window.confirm(
+      "Are you sure you want to delete this work experience?",
+    );
+    if (!ok) return;
+    try {
+      setIsDeletingWorkId(id);
+      await userApi.deleteMyWorkExperience(id);
+      setWorkExperiences((prev) => prev.filter((item) => item.id !== id));
+      toast.success("Work experience deleted");
+    } catch (error) {
+      console.error("Failed to delete work experience", error);
+      toast.error("Failed to delete work experience");
+    } finally {
+      setIsDeletingWorkId(null);
+    }
+  };
+
+  const formatMonthYear = (value?: string) => {
+    if (!value) return "";
+    const [year, month] = value.split("-");
+    const monthNumber = Number(month);
+    if (!year || !month || Number.isNaN(monthNumber)) return value;
+    const date = new Date(Number(year), monthNumber - 1, 1);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const formatCompletionDate = (value?: string) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const resetEducationForm = () => {
+    setEditingEducationId(null);
+    setEducationForm({
+      instituteName: "",
+      degreeDetails: "",
+      startDate: "",
+      endDate: "",
+    });
+  };
+
+  const resetCertificateForm = () => {
+    setEditingProfileCertificateId(null);
+    setCertificateForm({
+      certificateName: "",
+      completionDate: "",
+    });
+  };
+
+  const closeCredentialModal = () => {
+    setIsCredentialModalOpen(false);
+    setCredentialModalType("selector");
+    resetEducationForm();
+    resetCertificateForm();
+  };
+
+  const openCredentialSelectionModal = () => {
+    setCredentialModalType("selector");
+    resetEducationForm();
+    resetCertificateForm();
+    setIsCredentialModalOpen(true);
+  };
+
+  const openAddEducationModal = () => {
+    resetEducationForm();
+    setCredentialModalType("education");
+    setIsCredentialModalOpen(true);
+  };
+
+  const openEditEducationModal = (item: Education) => {
+    setEditingEducationId(item.id);
+    setEducationForm({
+      instituteName: item.instituteName || "",
+      degreeDetails: item.degreeDetails || "",
+      startDate: item.startDate || "",
+      endDate: item.endDate || "",
+    });
+    setCredentialModalType("education");
+    setIsCredentialModalOpen(true);
+  };
+
+  const openAddCertificateModal = () => {
+    resetCertificateForm();
+    setCredentialModalType("certificate");
+    setIsCredentialModalOpen(true);
+  };
+
+  const openEditCertificateModal = (item: ProfileCertificate) => {
+    setEditingProfileCertificateId(item.id);
+    setCertificateForm({
+      certificateName: item.certificateName || "",
+      completionDate: item.completionDate || "",
+    });
+    setCredentialModalType("certificate");
+    setIsCredentialModalOpen(true);
+  };
+
+  const handleSaveEducation = async () => {
+    if (!isEducationFormValid) return;
+
+    try {
+      setIsSavingCredential(true);
+      const payload: EducationInput = {
+        instituteName: educationForm.instituteName.trim(),
+        degreeDetails: educationForm.degreeDetails.trim(),
+        startDate: educationForm.startDate,
+        endDate: educationForm.endDate,
+      };
+
+      if (editingEducationId) {
+        const updated = await userApi.updateMyEducation(editingEducationId, payload);
+        setEducations((prev) =>
+          prev.map((item) => (item.id === editingEducationId ? updated : item)),
+        );
+        toast.success("Education updated");
+      } else {
+        const created = await userApi.addMyEducation(payload);
+        setEducations((prev) => [created, ...prev]);
+        toast.success("Education added");
+      }
+      closeCredentialModal();
+    } catch (error) {
+      console.error("Failed to save education", error);
+      toast.error("Failed to save education");
+    } finally {
+      setIsSavingCredential(false);
+    }
+  };
+
+  const handleSaveCertificate = async () => {
+    if (!isCertificateFormValid) return;
+
+    try {
+      setIsSavingCredential(true);
+      const payload: ProfileCertificateInput = {
+        certificateName: certificateForm.certificateName.trim(),
+        completionDate: certificateForm.completionDate,
+      };
+
+      if (editingProfileCertificateId) {
+        const updated = await userApi.updateMyProfileCertificate(
+          editingProfileCertificateId,
+          payload,
+        );
+        setProfileCertificates((prev) =>
+          prev.map((item) =>
+            item.id === editingProfileCertificateId ? updated : item,
+          ),
+        );
+        toast.success("Certificate updated");
+      } else {
+        const created = await userApi.addMyProfileCertificate(payload);
+        setProfileCertificates((prev) => [created, ...prev]);
+        toast.success("Certificate added");
+      }
+      closeCredentialModal();
+    } catch (error) {
+      console.error("Failed to save certificate", error);
+      toast.error("Failed to save certificate");
+    } finally {
+      setIsSavingCredential(false);
+    }
+  };
+
+  const handleDeleteEducation = async (id: string) => {
+    const ok = window.confirm("Are you sure you want to delete this education?");
+    if (!ok) return;
+
+    try {
+      setIsDeletingCredentialId(id);
+      await userApi.deleteMyEducation(id);
+      setEducations((prev) => prev.filter((item) => item.id !== id));
+      toast.success("Education deleted");
+    } catch (error) {
+      console.error("Failed to delete education", error);
+      toast.error("Failed to delete education");
+    } finally {
+      setIsDeletingCredentialId(null);
+    }
+  };
+
+  const handleDeleteCertificate = async (id: string) => {
+    const ok = window.confirm("Are you sure you want to delete this certificate?");
+    if (!ok) return;
+
+    try {
+      setIsDeletingCredentialId(id);
+      await userApi.deleteMyProfileCertificate(id);
+      setProfileCertificates((prev) => prev.filter((item) => item.id !== id));
+      toast.success("Certificate deleted");
+    } catch (error) {
+      console.error("Failed to delete certificate", error);
+      toast.error("Failed to delete certificate");
+    } finally {
+      setIsDeletingCredentialId(null);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#f5f7f8] font-sans text-[#1f1f1f]">
+    <div className="min-h-screen bg-[#F2F5FA]">
       <ProfileHeader />
 
-      <main className="max-w-[1120px] mx-auto px-4 md:px-8 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-[320px,1fr] gap-x-12 gap-y-10 items-start">
-          {/* Left Sidebar */}
-          <aside className="space-y-6">
-            {/* Personal Details Card */}
-            <section className="bg-white rounded-2xl border border-[#e1e1e1] p-8 text-center relative">
-              <button className="absolute top-4 right-4 text-[#0056D2] hover:bg-blue-50 p-1 rounded transition-colors bg-transparent border-none cursor-pointer">
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-              </button>
-              <p className="text-[13px] font-medium text-[#5f6368] mb-1">
-                Personal details
-              </p>
-              <div className="w-24 h-24 rounded-full bg-[#9b4dca] mx-auto flex items-center justify-center text-white text-[42px] font-bold mb-8">
-                Z
+      <main className="max-w-7xl mx-auto p-6 md:p-10 lg:p-14">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[5fr_13fr]">
+          <aside className="col-span-1">
+            <div className="rounded-[12px] bg-white px-6 py-8 flex flex-col items-center text-center mb-5">
+              <div className="relative w-full mb-6">
+                <p className="font-normal text-[22px] leading-[19px] text-[#121A37]">
+                  Personal details
+                </p>
+                <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[#0056D2] hover:text-[#0049af] bg-transparent border-none cursor-pointer p-0">
+                  <EditIcon />
+                </button>
               </div>
-              <h2 className="text-[20px] font-bold text-[#1f1f1f] mb-10">
-                Zainab Murtaza
-              </h2>
-              <button className="w-full py-2.5 px-4 rounded-lg border border-[#0056D2] text-[13px] font-bold text-[#0056D2] hover:bg-[#e6f0ff] transition-all mb-6 flex items-center justify-center gap-2 bg-transparent cursor-pointer">
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
-                  <polyline points="16 6 12 2 8 6"></polyline>
-                  <line x1="12" y1="2" x2="12" y2="15"></line>
-                </svg>
-                Share profile link
-              </button>
-              <button className="text-[12px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer">
+
+              <div
+                className="mb-6 flex items-center justify-center rounded-full text-white font-normal text-[64px] w-[160px] h-[160px] overflow-hidden"
+                style={{ backgroundColor: avatarBg }}
+              >
+                {user?.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={displayName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  displayInitials
+                )}
+              </div>
+
+              <p className="mb-6 font-normal text-[28px] leading-[22px] text-[#0E164E]">
+                {displayName}
+              </p>
+
+              <Button
+                variant="outline"
+                className="w-full max-w-[260px] h-[62px] text-[18px] font-normal mb-4 flex items-center justify-center gap-2 border-[#155ED3] text-[#155ED3] hover:bg-transparent px-4"
+              >
+                <PaperclipIcon />
+                <span>Share profile link</span>
+              </Button>
+
+              <button className="font-normal text-[18px] leading-[16px] text-[#0459D5] bg-transparent border-none cursor-pointer">
                 Update profile visibility
               </button>
-            </section>
+            </div>
 
-            {/* Highlights Card */}
-            <section className="bg-white rounded-2xl border border-[#e1e1e1] p-6">
-              <h3 className="text-[14px] font-bold text-[#1f1f1f] mb-4">
+            <div className="rounded-[12px] bg-white px-6 py-6 mb-5">
+              <p className="mb-4 font-semibold text-[22px] leading-[20px] text-[#000000] text-left">
                 Highlights
-              </h3>
-              <div className="flex gap-4">
+              </p>
+
+              <div className="flex items-start gap-4">
                 <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_'G'_logo.svg"
+                  src={IMAGES.LOGOS.GOOGLE_LOGO}
                   alt="Google"
-                  className="w-8 h-8 shrink-0"
+                  className="w-[40px] h-[40px] flex-shrink-0 object-contain"
                 />
-                <div>
-                  <p className="text-[13px] font-bold text-[#1f1f1f] leading-snug">
-                    Google Prompting Essentials Specialization (Google)
+
+                <div className="flex flex-col gap-1">
+                  <p className="font-normal text-[14px] leading-[15px] text-[#0F1014]">
+                    Google Prompting Essentials
                   </p>
-                  <button className="text-[12px] font-bold text-[#0056D2] hover:underline mt-1 block w-max bg-transparent border-none cursor-pointer p-0">
-                    View on Profile
+                  <p className="font-normal text-[14px] leading-[15px] text-[#0F1014]">
+                    Specialization (Google)
+                  </p>
+                  <button className="mt-1 font-normal text-[14px] leading-[13px] text-[#055CD5] text-left bg-transparent border-none cursor-pointer p-0">
+                    View certificate
                   </button>
                 </div>
               </div>
-            </section>
+            </div>
 
-            {/* Work Preferences Card */}
-            <section className="bg-white rounded-2xl border border-[#e1e1e1] p-6 space-y-4">
-              <p className="text-[13px] text-[#5f6368] leading-normal">
+            <div className="rounded-[12px] bg-white px-6 py-6 flex flex-col items-center text-center mb-5">
+              <p className="font-normal text-[16px] leading-[17px] text-[#5F6A8B] mb-5">
                 Let recruiters know what role you&apos;re looking for to make
                 sure you find opportunities that are right for you.
               </p>
-              <button className="w-full py-2.5 rounded-lg border border-[#e1e1e1] text-[13px] font-bold text-[#0056D2] hover:bg-gray-50 transition-all flex items-center justify-center gap-2 bg-transparent cursor-pointer">
-                <span className="text-xl leading-none">+</span> Add work
-                preferences
-              </button>
-            </section>
 
-            {/* Additional Info Card */}
-            <section className="bg-white rounded-2xl border border-[#e1e1e1] p-6 space-y-4">
-              <p className="text-[13px] text-[#5f6368] leading-normal">
+              <Button
+                variant="outline"
+                className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-[#0661D6] text-[#0661D6] hover:bg-transparent px-4"
+              >
+                <PlusIcon />
+                <span>Add work preferences</span>
+              </Button>
+            </div>
+
+            <div className="rounded-[12px] bg-white px-6 py-6 flex flex-col items-center text-center mb-5">
+              <p className="mb-4 font-normal text-[22px] leading-[18px] text-[#1E1014]">
+                Additional info
+              </p>
+
+              <p className="mb-6 font-normal text-[16px] leading-[17px] text-[#616B8B]">
                 Help recruiters get to know you better by describing what makes
                 you a great candidate and sharing other links.
               </p>
-              <button className="w-full py-2.5 rounded-lg border border-[#e1e1e1] text-[13px] font-bold text-[#0056D2] hover:bg-gray-50 transition-all flex items-center justify-center gap-2 bg-transparent cursor-pointer">
-                <span className="text-xl leading-none">+</span> Add additional
-                info
-              </button>
-            </section>
+
+              <Button
+                variant="outline"
+                className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-[#0162D7] text-[#0162D7] hover:bg-transparent px-4"
+              >
+                <PlusIcon />
+                <span>Add additional info</span>
+              </Button>
+            </div>
           </aside>
 
-          {/* Right Main Content */}
-          <div className="space-y-10">
-            {/* Experience Section */}
-            <section className="space-y-6">
-              <h2 className="text-[20px] font-bold text-[#1f1f1f]">
+          <div className="col-span-1">
+            <section>
+              <p className="mb-6 font-normal text-[28px] leading-[24px] text-[#1D161A]">
                 Experience
-              </h2>
+              </p>
 
-              {/* Projects Card */}
-              <div className="bg-white rounded-2xl border border-[#e1e1e1] p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-[16px] font-bold">Projects</h3>
-                    <span className="text-[#5f6368] cursor-help">ⓘ</span>
-                  </div>
-                  <button className="text-[13px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer p-0">
+              <div className="rounded-[12px] bg-white px-6 py-10 mb-5">
+                <div className="mb-4 flex items-center gap-2">
+                  <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                    Projects
+                  </p>
+                  <img
+                    src={IMAGES.UI.EXCLAMATORY_ICON}
+                    alt="Info"
+                    className="w-[16px] h-[16px] object-contain"
+                  />
+                </div>
+
+                <div className="rounded-[8px] bg-[#F3F6FB] px-5 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mt-12">
+                  <p className="font-normal text-[17px] leading-[22px] text-[#62688A] max-w-[600px]">
+                    Showcase your skills to recruiters with job-relevant
+                    projects.
+                    <br />
+                    Add projects here to demonstrate your technical expertise
+                    and ability to solve real-world problems.
+                  </p>
+
+                  <button className="font-normal text-[15px] leading-[15px] text-[#046BD9] whitespace-nowrap bg-transparent border-none cursor-pointer p-0">
                     Browse Projects
                   </button>
                 </div>
-                <div className="bg-[#f0f4f9] rounded-xl p-6 border border-[#e1e1e1] border-dashed">
-                  <p className="text-[13px] text-[#5f6368] max-w-[500px] leading-[1.8]">
-                    Showcase your skills to recruiters with job-relevant
-                    projects. Add projects here to demonstrate your technical
-                    expertise and ability to solve real-world problems.
-                  </p>
-                </div>
+              </div>
+            </section>
+
+            <div className="rounded-[12px] bg-white px-6 py-6">
+              <div className="mb-4 flex items-center gap-2">
+                <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                  Work history
+                </p>
               </div>
 
-              {/* Work History Card */}
-              <div className="bg-white rounded-2xl border border-[#e1e1e1] p-8">
-                <h3 className="text-[16px] font-bold mb-4">Work history</h3>
-                <div className="bg-[#f0f4f9] rounded-xl p-6 border border-[#e1e1e1] border-dashed">
-                  <p className="text-[13px] text-[#5f6368] mb-6 leading-relaxed">
+              <div className="rounded-[8px] bg-[#F3F6FB] px-5 py-6 flex flex-col gap-4 mt-12">
+                {isLoadingWork ? (
+                  <p className="font-normal text-[15px] leading-[24px] text-[#62688A]">
+                    Loading work experience...
+                  </p>
+                ) : workExperiences.length > 0 ? (
+                  <div className="space-y-4">
+                    {workExperiences.map((item) => (
+                      <div
+                        key={item.id}
+                        className="bg-white border border-[#e1e6f0] rounded-[8px] p-4"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-[17px] leading-[22px] text-[#1A181F] font-medium">
+                            {item.title}
+                          </p>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => openEditWorkModal(item)}
+                              className="text-[12px] font-medium text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer p-0"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteWorkExperience(item.id)}
+                              disabled={isDeletingWorkId === item.id}
+                              className="text-[12px] font-medium text-[#c02626] hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
+                            >
+                              {isDeletingWorkId === item.id ? "Deleting..." : "Delete"}
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-[15px] leading-[20px] text-[#3E4A6D] mt-1">
+                          {item.company}
+                          {item.location ? `, ${item.location}` : ""}
+                        </p>
+                        <p className="text-[13px] leading-[18px] text-[#7A849F] mt-1">
+                          {item.startDate}
+                          {" - "}
+                          {item.isCurrent ? "Present" : item.endDate || "Present"}
+                          {item.employmentType ? ` | ${item.employmentType}` : ""}
+                        </p>
+                        {item.description ? (
+                          <p className="text-[14px] leading-[22px] text-[#62688A] mt-2">
+                            {item.description}
+                          </p>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="font-normal text-[17px] leading-[28px] text-[#62688A] max-w-[650px]">
                     Add your past work experience here. If you&apos;re just
                     starting out, you can add internships or volunteer
                     experience instead.
                   </p>
-                  <button className="py-2.5 px-6 rounded-lg border border-[#0056D2] text-[13px] font-bold text-[#0056D2] hover:bg-white transition-all flex items-center justify-center gap-2 bg-transparent cursor-pointer">
-                    <span className="text-xl leading-none text-[#0056D2]">
-                      +
-                    </span>{" "}
-                    Add work experience
-                  </button>
+                )}
+
+                <Button
+                  variant="outline"
+                  onClick={openAddWorkModal}
+                  className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-[#0661D6] text-[#0661D6] hover:bg-transparent px-4"
+                >
+                  <PlusIcon />
+                  <span>Add work experience</span>
+                </Button>
+              </div>
+            </div>
+
+            <section>
+              <p className="mb-6 font-normal text-[28px] leading-[24px] text-[#1D161A] mt-12">
+                Education
+              </p>
+
+              <div className="rounded-[12px] bg-white px-6 py-10">
+                <div className="mb-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                      Credentials
+                    </p>
+                    <img
+                      src={IMAGES.UI.EXCLAMATORY_ICON}
+                      alt="Info"
+                      className="w-[16px] h-[16px] object-contain"
+                    />
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={openCredentialSelectionModal}
+                    className="h-[32px] px-4 text-[14px] font-normal flex items-center gap-2 border-[#046BD9] text-[#046BD9] hover:bg-transparent"
+                  >
+                    <PlusIcon size={12} />
+                    <span>Add</span>
+                  </Button>
                 </div>
+                {isLoadingCredentials ? (
+                  <p className="font-normal text-[15px] text-[#62688A]">
+                    Loading credentials...
+                  </p>
+                ) : educations.length === 0 && profileCertificates.length === 0 ? (
+                  <p className="font-normal text-[15px] text-[#62688A]">
+                    Add your education or certification details to show your
+                    credentials.
+                  </p>
+                ) : (
+                  <div className="space-y-6">
+                    {educations.map((item) => (
+                      <div key={item.id} className="flex items-start gap-4">
+                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded bg-[#F3F6FB] text-[#1f1f1f]">
+                          <GraduationCapIcon />
+                        </div>
+
+                        <div className="flex-1">
+                          <p className="font-normal text-[15px] text-[#1A181F]">
+                            {item.instituteName}
+                          </p>
+
+                          <p className="font-normal text-[14px] text-[#62688A]">
+                            {item.degreeDetails}
+                          </p>
+
+                          <p className="font-normal text-[13px] text-[#8A90A8]">
+                            {formatMonthYear(item.startDate)} -{" "}
+                            {formatMonthYear(item.endDate)}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => openEditEducationModal(item)}
+                            className="text-[12px] font-medium text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer p-0"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteEducation(item.id)}
+                            disabled={isDeletingCredentialId === item.id}
+                            className="text-[12px] font-medium text-[#c02626] hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
+                          >
+                            {isDeletingCredentialId === item.id ? "Deleting..." : "Delete"}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {profileCertificates.map((item) => (
+                      <div key={item.id} className="flex items-start gap-4">
+                        <img
+                          src={IMAGES.LOGOS.GOOGLE_LOGO}
+                          alt="Google"
+                          className="w-[40px] h-[40px] object-contain"
+                        />
+
+                        <div className="flex-1">
+                          <p className="font-normal text-[15px] text-[#1A181F]">
+                            {item.certificateName}
+                          </p>
+
+                          <button
+                            type="button"
+                            className="mt-1 font-normal text-[14px] text-[#046BD9] bg-transparent border-none cursor-pointer p-0"
+                          >
+                            View certificate
+                          </button>
+
+                          <p className="mt-1 font-normal text-[13px] text-[#8A90A8]">
+                            Completed {formatMonthYear(item.completionDate)}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => openEditCertificateModal(item)}
+                            className="text-[12px] font-medium text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer p-0"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteCertificate(item.id)}
+                            disabled={isDeletingCredentialId === item.id}
+                            className="text-[12px] font-medium text-[#c02626] hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
+                          >
+                            {isDeletingCredentialId === item.id ? "Deleting..." : "Delete"}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </section>
 
-            {/* Education Section */}
-            <section className="space-y-6">
-              <h2 className="text-[20px] font-bold text-[#1f1f1f]">
-                Education
-              </h2>
+            <section>
+              <p className="mb-6 font-normal text-[28px] leading-[24px] text-[#1D161A] mt-12">
+                Courses
+              </p>
 
-              {/* Credentials Card */}
-              <div className="bg-white rounded-2xl border border-[#e1e1e1] p-8 space-y-8">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-[16px] font-bold">Credentials</h3>
-                    <span className="text-[#5f6368] cursor-help">ⓘ</span>
-                  </div>
-                  <button className="py-2 px-6 rounded-lg border border-[#0056D2] text-[13px] font-bold text-[#0056D2] hover:bg-blue-50 transition-all flex items-center justify-center gap-2 bg-transparent cursor-pointer">
-                    <span className="text-xl leading-none">+</span> Add
-                  </button>
-                </div>
-
-                {/* Education Item 1 */}
-                <div className="flex gap-4 group relative">
-                  <button className="absolute top-0 right-0 text-[#0056D2] p-2 hover:bg-blue-50 rounded bg-transparent border-none cursor-pointer">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                  </button>
-                  <div className="w-12 h-12 bg-white rounded flex items-center justify-center border border-[#e1e1e1] shrink-0 p-1 shadow-sm overflow-hidden">
-                    <svg
-                      width="32"
-                      height="32"
-                      viewBox="0 0 64 64"
-                      fill="currentColor"
-                    >
-                      <path
-                        d="M32 8L2 22v20c0 10 30 14 30 14s30-4 30-14V22L32 8z"
-                        fill="#1f1f1f"
-                      />
-                      <path
-                        d="M32 16l-20 8.7V38c0 4.3 10 7.3 20 8.7V16z"
-                        fill="#4a4a4a"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="text-[15px] font-bold">
-                      University of Agriculture, Faisalabad
-                    </h4>
-                    <p className="text-[13px] text-[#1f1f1f] mt-1 pr-10">
-                      Bachelor&apos;s degree in Computer Science, graduated June
-                      2025
-                    </p>
-                    <p className="text-[12px] text-[#5f6368] mt-1">
-                      September 2021 - June 2025
-                    </p>
-                  </div>
-                </div>
-
-                {/* Education Item 2 */}
-                <div className="flex gap-4 group relative">
-                  <button className="absolute top-0 right-0 text-[#0056D2] p-2 hover:bg-blue-50 rounded bg-transparent border-none cursor-pointer">
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                  </button>
+              <div className="rounded-[12px] bg-white px-6 py-10">
+                <div className="mb-4 flex items-center gap-2">
+                  <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                    Courses
+                  </p>
                   <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_'G'_logo.svg"
-                    alt="Google"
-                    className="w-12 h-12 shrink-0"
+                    src={IMAGES.UI.EXCLAMATORY_ICON}
+                    alt="Info"
+                    className="w-[16px] h-[16px] object-contain"
                   />
-                  <div>
-                    <h4 className="text-[15px] font-bold leading-snug">
-                      Google Prompting Essentials Specialization (Google)
-                    </h4>
-                    <button className="text-[13px] text-[#0056D2] font-bold hover:underline mt-1 block w-max bg-transparent border-none cursor-pointer p-0">
-                      View certificate
-                    </button>
-                    <p className="text-[12px] text-[#5f6368] mt-1">
-                      Completed August 2025
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Courses List Card */}
-              <div className="bg-white rounded-2xl border border-[#e1e1e1] p-8 space-y-8">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-[16px] font-bold">Courses</h3>
-                  <span className="text-[#5f6368] cursor-help">ⓘ</span>
                 </div>
 
-                {/* Course List */}
-                <div className="space-y-10">
-                  {[
-                    {
-                      title: "Speed Up Data Analysis and Presentation Building",
-                      tags: [],
-                    },
-                    { title: "Start Writing Prompts like a Pro", tags: [] },
-                    {
-                      title: "Foundations of User Experience (UX) Design",
-                      tags: [
-                        "User Experience Design",
-                        "User Research",
-                        "UX Design",
-                      ],
-                    },
-                  ].map((course, idx) => (
-                    <div
-                      key={idx}
-                      className="flex gap-4 pb-8 border-b border-[#f0f0f0] last:border-0 last:pb-0"
-                    >
-                      <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_'G'_logo.svg"
-                        alt="Google"
-                        className="w-12 h-12 shrink-0"
-                      />
-                      <div className="flex-1 space-y-3">
-                        <p className="text-[12px] font-bold text-[#5f6368]">
-                          Google · Course
-                        </p>
-                        <h4 className="text-[16px] font-bold text-[#1f1f1f] hover:text-[#0056D2] hover:underline cursor-pointer">
-                          {course.title}
-                        </h4>
-                        <button className="text-[13px] text-[#0056D2] font-bold hover:underline bg-transparent border-none cursor-pointer p-0">
-                          View certificate
-                        </button>
+                {isLoadingCompletedCourses ? (
+                  <p className="font-normal text-[15px] text-[#62688A]">
+                    Loading completed courses...
+                  </p>
+                ) : completedCourses.length === 0 ? (
+                  <p className="font-normal text-[15px] text-[#62688A]">
+                    Complete a course on Coursera to see it here.
+                  </p>
+                ) : (
+                  <div className="space-y-6">
+                    {completedCourses.map((item) => (
+                      <div key={item.id} className="flex items-start gap-4">
+                        <img
+                          src={IMAGES.LOGOS.GOOGLE_LOGO}
+                          alt="Google"
+                          className="w-[40px] h-[40px] object-contain"
+                        />
 
-                        {course.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            {course.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="px-3 py-1.5 bg-[#f0f4f9] rounded-full text-[12px] font-medium text-[#1f1f1f]"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            <button className="text-[12px] font-bold text-[#0056D2] hover:underline ml-1 bg-transparent border-none cursor-pointer p-0">
-                              + 5 more
-                            </button>
-                          </div>
-                        )}
-
-                        <p className="text-[12px] text-[#5f6368] font-bold">
-                          Completed August 2025
-                        </p>
+                        <div className="flex-1">
+                          <p className="font-normal text-[15px] text-[#1A181F]">
+                            {item.courseTitle || "Course"}
+                          </p>
+                          <p className="font-normal text-[14px] text-[#62688A]">
+                            Google Course
+                          </p>
+                          <button
+                            type="button"
+                            className="mt-1 font-normal text-[14px] text-[#046BD9] bg-transparent border-none cursor-pointer p-0"
+                          >
+                            View certificate
+                          </button>
+                          <p className="mt-1 font-normal text-[13px] text-[#8A90A8]">
+                            Completed {formatCompletionDate(item.issuedAt)}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-
-                <button className="w-full text-center text-[13px] font-bold text-[#1f1f1f] hover:bg-gray-50 py-4 transition-all bg-transparent border-t border-[#f0f0f0] cursor-pointer">
-                  Show all 5 courses ▾
-                </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </section>
           </div>
         </div>
       </main>
 
+      {isWorkModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-4 overflow-y-auto">
+          <button
+            type="button"
+            aria-label="Close modal backdrop"
+            className="absolute inset-0 bg-black/35 border-none cursor-default"
+            onClick={() => {
+              setIsWorkModalOpen(false);
+              resetWorkForm();
+            }}
+          />
+
+          <div className="relative w-full max-w-[640px] max-h-[calc(100vh-2rem)] bg-white rounded-[10px] border border-[#dfe3eb] shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#eef1f5]">
+              <h3 className="text-[20px] font-medium text-[#1A181F]">
+                {editingWorkId ? "Edit work experience" : "Add work experience"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsWorkModalOpen(false);
+                  resetWorkForm();
+                }}
+                className="w-9 h-9 rounded-[6px] border border-[#dfe3eb] text-[#6a7390] hover:bg-[#f4f7fc] bg-transparent cursor-pointer flex items-center justify-center"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto flex-1">
+              <div className="md:col-span-2">
+                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                  Job title
+                </label>
+                <input
+                  type="text"
+                  value={workForm.title}
+                  onChange={(e) =>
+                    setWorkForm((prev) => ({ ...prev, title: e.target.value }))
+                  }
+                  placeholder="e.g. Frontend Developer"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                  Company
+                </label>
+                <input
+                  type="text"
+                  value={workForm.company}
+                  onChange={(e) =>
+                    setWorkForm((prev) => ({ ...prev, company: e.target.value }))
+                  }
+                  placeholder="e.g. Google"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                  Employment type
+                </label>
+                <input
+                  type="text"
+                  value={workForm.employmentType}
+                  onChange={(e) =>
+                    setWorkForm((prev) => ({
+                      ...prev,
+                      employmentType: e.target.value,
+                    }))
+                  }
+                  placeholder="e.g. Full-time"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  value={workForm.location}
+                  onChange={(e) =>
+                    setWorkForm((prev) => ({ ...prev, location: e.target.value }))
+                  }
+                  placeholder="e.g. Lahore"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                  Start date
+                </label>
+                <input
+                  type="month"
+                  value={workForm.startDate}
+                  onChange={(e) =>
+                    setWorkForm((prev) => ({ ...prev, startDate: e.target.value }))
+                  }
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                  End date
+                </label>
+                <input
+                  type="month"
+                  value={workForm.endDate}
+                  onChange={(e) =>
+                    setWorkForm((prev) => ({ ...prev, endDate: e.target.value }))
+                  }
+                  disabled={Boolean(workForm.isCurrent)}
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2] disabled:bg-[#f3f5fa] disabled:text-[#9aa3ba]"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="inline-flex items-center gap-2 text-[13px] text-[#3f4b6b] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(workForm.isCurrent)}
+                    onChange={(e) =>
+                      setWorkForm((prev) => ({
+                        ...prev,
+                        isCurrent: e.target.checked,
+                        endDate: e.target.checked ? "" : prev.endDate,
+                      }))
+                    }
+                    className="w-4 h-4 accent-[#0056D2]"
+                  />
+                  I currently work here
+                </label>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                  Description
+                </label>
+                <textarea
+                  value={workForm.description}
+                  onChange={(e) =>
+                    setWorkForm((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Describe your responsibilities and achievements"
+                  className="w-full px-3 py-2.5 rounded-[6px] border border-[#d4dae6] text-[14px] resize-y focus:outline-none focus:border-[#0056D2]"
+                />
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-[#eef1f5] flex items-center justify-end gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsWorkModalOpen(false);
+                  resetWorkForm();
+                }}
+                className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={!isWorkFormValid || isSavingWork}
+                onClick={handleSaveWorkExperience}
+                className="h-[40px] px-5 rounded-[6px] bg-[#0056D2] text-white text-[14px] font-medium hover:bg-[#0048b3] disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
+              >
+                {isSavingWork ? "Saving..." : editingWorkId ? "Update" : "Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isCredentialModalOpen && (
+        <div className="fixed inset-0 z-[101] flex items-start md:items-center justify-center p-4 overflow-y-auto">
+          <button
+            type="button"
+            aria-label="Close modal backdrop"
+            className="absolute inset-0 bg-black/35 border-none cursor-default"
+            onClick={closeCredentialModal}
+          />
+
+          <div className="relative w-full max-w-[560px] max-h-[calc(100vh-2rem)] bg-white rounded-[10px] border border-[#dfe3eb] shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#eef1f5]">
+              <h3 className="text-[20px] font-medium text-[#1A181F]">
+                {credentialModalType === "selector"
+                  ? "Add credential"
+                  : credentialModalType === "education"
+                  ? editingEducationId
+                    ? "Edit education"
+                    : "Add education"
+                  : editingProfileCertificateId
+                  ? "Edit certificate"
+                  : "Add certificate"}
+              </h3>
+              <button
+                type="button"
+                onClick={closeCredentialModal}
+                className="w-9 h-9 rounded-[6px] border border-[#dfe3eb] text-[#6a7390] hover:bg-[#f4f7fc] bg-transparent cursor-pointer flex items-center justify-center"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            {credentialModalType === "selector" ? (
+              <div className="px-6 py-6 space-y-3">
+                <button
+                  type="button"
+                  onClick={openAddEducationModal}
+                  className="w-full rounded-[8px] border border-[#d4dae6] hover:border-[#0056D2] text-left px-4 py-3 bg-white cursor-pointer"
+                >
+                  <p className="text-[15px] font-medium text-[#1A181F]">
+                    Add education
+                  </p>
+                  <p className="text-[13px] text-[#6b7695] mt-1">
+                    Institute name, degree details, and timeline
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={openAddCertificateModal}
+                  className="w-full rounded-[8px] border border-[#d4dae6] hover:border-[#0056D2] text-left px-4 py-3 bg-white cursor-pointer"
+                >
+                  <p className="text-[15px] font-medium text-[#1A181F]">
+                    Add certificate
+                  </p>
+                  <p className="text-[13px] text-[#6b7695] mt-1">
+                    Certificate name and completion date
+                  </p>
+                </button>
+              </div>
+            ) : credentialModalType === "education" ? (
+              <>
+                <div className="px-6 py-5 grid grid-cols-1 gap-4 overflow-y-auto flex-1">
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                      Institute name
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.instituteName}
+                      onChange={(e) =>
+                        setEducationForm((prev) => ({
+                          ...prev,
+                          instituteName: e.target.value,
+                        }))
+                      }
+                      placeholder="e.g. University of Agriculture, Faisalabad"
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                      Degree details
+                    </label>
+                    <input
+                      type="text"
+                      value={educationForm.degreeDetails}
+                      onChange={(e) =>
+                        setEducationForm((prev) => ({
+                          ...prev,
+                          degreeDetails: e.target.value,
+                        }))
+                      }
+                      placeholder="e.g. Bachelor's degree in Computer Science"
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                        Start date
+                      </label>
+                      <input
+                        type="month"
+                        value={educationForm.startDate}
+                        onChange={(e) =>
+                          setEducationForm((prev) => ({
+                            ...prev,
+                            startDate: e.target.value,
+                          }))
+                        }
+                        className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                        End date
+                      </label>
+                      <input
+                        type="month"
+                        value={educationForm.endDate}
+                        onChange={(e) =>
+                          setEducationForm((prev) => ({
+                            ...prev,
+                            endDate: e.target.value,
+                          }))
+                        }
+                        className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="px-6 py-4 border-t border-[#eef1f5] flex items-center justify-between gap-3 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setCredentialModalType("selector")}
+                    className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                  >
+                    Back
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={closeCredentialModal}
+                      className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!isEducationFormValid || isSavingCredential}
+                      onClick={handleSaveEducation}
+                      className="h-[40px] px-5 rounded-[6px] bg-[#0056D2] text-white text-[14px] font-medium hover:bg-[#0048b3] disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
+                    >
+                      {isSavingCredential
+                        ? "Saving..."
+                        : editingEducationId
+                        ? "Update"
+                        : "Add"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="px-6 py-5 grid grid-cols-1 gap-4 overflow-y-auto flex-1">
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                      Certificate name
+                    </label>
+                    <input
+                      type="text"
+                      value={certificateForm.certificateName}
+                      onChange={(e) =>
+                        setCertificateForm((prev) => ({
+                          ...prev,
+                          certificateName: e.target.value,
+                        }))
+                      }
+                      placeholder="e.g. Google Prompting Essentials"
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                      Completion date
+                    </label>
+                    <input
+                      type="month"
+                      value={certificateForm.completionDate}
+                      onChange={(e) =>
+                        setCertificateForm((prev) => ({
+                          ...prev,
+                          completionDate: e.target.value,
+                        }))
+                      }
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                    />
+                  </div>
+                </div>
+
+                <div className="px-6 py-4 border-t border-[#eef1f5] flex items-center justify-between gap-3 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setCredentialModalType("selector")}
+                    className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                  >
+                    Back
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={closeCredentialModal}
+                      className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      disabled={!isCertificateFormValid || isSavingCredential}
+                      onClick={handleSaveCertificate}
+                      className="h-[40px] px-5 rounded-[6px] bg-[#0056D2] text-white text-[14px] font-medium hover:bg-[#0048b3] disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
+                    >
+                      {isSavingCredential
+                        ? "Saving..."
+                        : editingProfileCertificateId
+                        ? "Update"
+                        : "Add"}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
 };
 
-export default Profile;
+export default UserProfile;

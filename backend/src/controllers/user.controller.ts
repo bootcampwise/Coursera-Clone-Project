@@ -7,6 +7,18 @@ import {
   updateUserProfile,
   deleteUser,
   adminCreateUser,
+  getMyWorkExperiences,
+  addMyWorkExperience,
+  updateMyWorkExperience,
+  deleteMyWorkExperience,
+  getMyEducations,
+  addMyEducation,
+  updateMyEducation,
+  deleteMyEducation,
+  getMyProfileCertificates,
+  addMyProfileCertificate,
+  updateMyProfileCertificate,
+  deleteMyProfileCertificate,
 } from "../services/user.service";
 import asyncHandler from "../utils/asyncHandler";
 
@@ -100,6 +112,289 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
   const user = await adminCreateUser({ name, email, password, role });
   res.status(201).json(user);
 });
+
+export const getMyWorkExperience = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const workExperiences = await getMyWorkExperiences(userId);
+    res.json(workExperiences);
+  },
+);
+
+export const addMyWorkExperienceItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const {
+      title,
+      company,
+      location,
+      employmentType,
+      startDate,
+      endDate,
+      isCurrent,
+      description,
+    } = req.body;
+
+    if (!title || !company || !startDate) {
+      res
+        .status(400)
+        .json({ message: "title, company and startDate are required" });
+      return;
+    }
+
+    const created = await addMyWorkExperience(userId, {
+      title,
+      company,
+      location,
+      employmentType,
+      startDate,
+      endDate,
+      isCurrent,
+      description,
+    });
+
+    res.status(201).json(created);
+  },
+);
+
+export const updateMyWorkExperienceItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { experienceId } = req.params;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const {
+      title,
+      company,
+      location,
+      employmentType,
+      startDate,
+      endDate,
+      isCurrent,
+      description,
+    } = req.body;
+
+    if (!title || !company || !startDate) {
+      res
+        .status(400)
+        .json({ message: "title, company and startDate are required" });
+      return;
+    }
+
+    const updated = await updateMyWorkExperience(userId, experienceId as string, {
+      title,
+      company,
+      location,
+      employmentType,
+      startDate,
+      endDate,
+      isCurrent,
+      description,
+    });
+
+    res.json(updated);
+  },
+);
+
+export const deleteMyWorkExperienceItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { experienceId } = req.params;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const deleted = await deleteMyWorkExperience(userId, experienceId as string);
+    res.json({ message: "Work experience deleted", ...deleted });
+  },
+);
+
+export const getMyEducationItems = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const educations = await getMyEducations(userId);
+    res.json(educations);
+  },
+);
+
+export const addMyEducationItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { instituteName, degreeDetails, startDate, endDate } = req.body;
+
+    if (!instituteName || !degreeDetails || !startDate || !endDate) {
+      res.status(400).json({
+        message:
+          "instituteName, degreeDetails, startDate and endDate are required",
+      });
+      return;
+    }
+
+    const created = await addMyEducation(userId, {
+      instituteName,
+      degreeDetails,
+      startDate,
+      endDate,
+    });
+
+    res.status(201).json(created);
+  },
+);
+
+export const updateMyEducationItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { educationId } = req.params;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { instituteName, degreeDetails, startDate, endDate } = req.body;
+
+    if (!instituteName || !degreeDetails || !startDate || !endDate) {
+      res.status(400).json({
+        message:
+          "instituteName, degreeDetails, startDate and endDate are required",
+      });
+      return;
+    }
+
+    const updated = await updateMyEducation(userId, educationId as string, {
+      instituteName,
+      degreeDetails,
+      startDate,
+      endDate,
+    });
+
+    res.json(updated);
+  },
+);
+
+export const deleteMyEducationItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { educationId } = req.params;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const deleted = await deleteMyEducation(userId, educationId as string);
+    res.json({ message: "Education deleted", ...deleted });
+  },
+);
+
+export const getMyProfileCertificateItems = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const certificates = await getMyProfileCertificates(userId);
+    res.json(certificates);
+  },
+);
+
+export const addMyProfileCertificateItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { certificateName, completionDate } = req.body;
+
+    if (!certificateName || !completionDate) {
+      res.status(400).json({
+        message: "certificateName and completionDate are required",
+      });
+      return;
+    }
+
+    const created = await addMyProfileCertificate(userId, {
+      certificateName,
+      completionDate,
+    });
+
+    res.status(201).json(created);
+  },
+);
+
+export const updateMyProfileCertificateItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { certificateId } = req.params;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const { certificateName, completionDate } = req.body;
+
+    if (!certificateName || !completionDate) {
+      res.status(400).json({
+        message: "certificateName and completionDate are required",
+      });
+      return;
+    }
+
+    const updated = await updateMyProfileCertificate(
+      userId,
+      certificateId as string,
+      {
+        certificateName,
+        completionDate,
+      },
+    );
+
+    res.json(updated);
+  },
+);
+
+export const deleteMyProfileCertificateItem = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { certificateId } = req.params;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    const deleted = await deleteMyProfileCertificate(
+      userId,
+      certificateId as string,
+    );
+    res.json({ message: "Profile certificate deleted", ...deleted });
+  },
+);
 
 export const deleteUserById = asyncHandler(
   async (req: Request, res: Response) => {

@@ -12,6 +12,13 @@ export const ENDPOINTS = {
   USERS_BY_ID: (id: string) => `/users/${id}`,
   USERS_UPDATE_ROLE: (id: string) => `/users/${id}/role`,
   USERS_UPDATE_PROFILE: "/users/me",
+  USERS_WORK_EXPERIENCES: "/users/me/work-experiences",
+  USERS_WORK_EXPERIENCE_BY_ID: (id: string) => `/users/me/work-experiences/${id}`,
+  USERS_EDUCATIONS: "/users/me/educations",
+  USERS_EDUCATION_BY_ID: (id: string) => `/users/me/educations/${id}`,
+  USERS_PROFILE_CERTIFICATES: "/users/me/profile-certificates",
+  USERS_PROFILE_CERTIFICATE_BY_ID: (id: string) =>
+    `/users/me/profile-certificates/${id}`,
 
   // Courses
   COURSES: "/courses",
