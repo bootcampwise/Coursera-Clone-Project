@@ -85,6 +85,23 @@ export const updateUserProfile = createAsyncThunk(
   },
 );
 
+export const changePassword = createAsyncThunk(
+  "auth/changePassword",
+  async (
+    payload: { currentPassword: string; newPassword: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await authApi.updatePassword(payload);
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update password",
+      );
+    }
+  },
+);
+
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   // Sign out from Supabase
   await supabase.auth.signOut();

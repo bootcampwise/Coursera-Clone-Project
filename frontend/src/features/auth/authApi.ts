@@ -24,3 +24,10 @@ export const syncGoogleUser = async (payload: {
   const { data } = await api.post(ENDPOINTS.USERS_SYNC_GOOGLE, payload);
   return data;
 };
+export const updatePassword = async (payload: {
+  currentPassword: string;
+  newPassword: string;
+}) => {
+  const { data } = await api.patch(ENDPOINTS.AUTH_CHANGE_PASSWORD, payload);
+  return data;
+};

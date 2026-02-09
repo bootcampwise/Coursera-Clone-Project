@@ -4,7 +4,10 @@ import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 import type { RootState } from "../../app/store";
 import { useAppDispatch } from "../../app/hooks";
-import { updateUserProfile } from "../../features/auth/authSlice";
+import {
+  updateUserProfile,
+  changePassword,
+} from "../../features/auth/authSlice";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
 import { IMAGES } from "../../constants/images";
@@ -14,6 +17,12 @@ const AccountSettings: FC = () => {
   const dispatch = useAppDispatch();
   const [fullName, setFullName] = useState(user?.name || "");
   const [isSaving, setIsSaving] = useState(false);
+  const [passwordState, setPasswordState] = useState({
+    currentPassword: "",
+    newPassword: "",
+    retypePassword: "",
+  });
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   useEffect(() => {
     setFullName(user?.name || "");
@@ -36,6 +45,41 @@ const AccountSettings: FC = () => {
       toast.error("Failed to update profile");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const { currentPassword, newPassword, retypePassword } = passwordState;
+
+    if (!currentPassword || !newPassword || !retypePassword) {
+      toast.error("All password fields are required");
+      return;
+    }
+
+    if (newPassword !== retypePassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters");
+      return;
+    }
+
+    try {
+      setIsUpdatingPassword(true);
+      await dispatch(changePassword({ currentPassword, newPassword })).unwrap();
+      toast.success("Password updated successfully");
+      setPasswordState({
+        currentPassword: "",
+        newPassword: "",
+        retypePassword: "",
+      });
+    } catch (error: any) {
+      console.error("Failed to update password", error);
+      toast.error(error || "Failed to update password");
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -259,6 +303,13 @@ const AccountSettings: FC = () => {
                     </label>
                     <input
                       type="password"
+                      value={passwordState.currentPassword}
+                      onChange={(e) =>
+                        setPasswordState({
+                          ...passwordState,
+                          currentPassword: e.target.value,
+                        })
+                      }
                       className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
                     />
                   </div>
@@ -269,6 +320,13 @@ const AccountSettings: FC = () => {
                     </label>
                     <input
                       type="password"
+                      value={passwordState.newPassword}
+                      onChange={(e) =>
+                        setPasswordState({
+                          ...passwordState,
+                          newPassword: e.target.value,
+                        })
+                      }
                       className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
                     />
                   </div>
@@ -279,6 +337,13 @@ const AccountSettings: FC = () => {
                     </label>
                     <input
                       type="password"
+                      value={passwordState.retypePassword}
+                      onChange={(e) =>
+                        setPasswordState({
+                          ...passwordState,
+                          retypePassword: e.target.value,
+                        })
+                      }
                       className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
                     />
                   </div>
@@ -287,9 +352,11 @@ const AccountSettings: FC = () => {
                 <div className="pt-2">
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                    onClick={handleChangePassword}
+                    disabled={isUpdatingPassword}
+                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Change Password
+                    {isUpdatingPassword ? "Updating..." : "Change Password"}
                   </button>
                 </div>
               </div>

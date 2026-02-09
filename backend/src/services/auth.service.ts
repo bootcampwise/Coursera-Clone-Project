@@ -54,3 +54,29 @@ export const registerUser = async ({
     },
   };
 };
+
+export const changePassword = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string,
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user || !user.passwordHash) {
+    throw new Error("User not found or using social login");
+  }
+
+  const match = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!match) {
+    throw new Error("Current password doesn't match");
+  }
+
+  const newPasswordHash = await bcrypt.hash(newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash: newPasswordHash },
+  });
+
+  return { message: "Password updated successfully" };
+};
