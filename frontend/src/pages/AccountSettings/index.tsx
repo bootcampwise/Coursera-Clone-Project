@@ -1,16 +1,48 @@
+import { useEffect, useState } from "react";
+import type { FC, FormEvent } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 import type { RootState } from "../../app/store";
+import { useAppDispatch } from "../../app/hooks";
+import { updateUserProfile } from "../../features/auth/authSlice";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
 
-const AccountSettings: React.FC = () => {
+const AccountSettings: FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useAppDispatch();
+  const [fullName, setFullName] = useState(user?.name || "");
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setFullName(user?.name || "");
+  }, [user?.name]);
+
+  const handleSaveProfile = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedName = fullName.trim();
+    if (!trimmedName) {
+      toast.error("Full name is required");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await dispatch(updateUserProfile({ name: trimmedName })).unwrap();
+      toast.success("Profile updated");
+    } catch (error) {
+      console.error("Failed to update profile", error);
+      toast.error("Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] font-sans text-[#1f1f1f]">
+    <div className="min-h-screen bg-[#F2F5FA] font-sans text-[#1f1f1f]">
       <Header />
 
-      <main className="max-w-[1140px] mx-auto px-4 md:px-12 py-10">
+      <main className="max-w-[1140px]  mx-auto px-4 md:px-12 py-10">
         <div className="flex flex-col md:flex-row gap-16 items-start">
           {/* Left Sidebar */}
           <aside className="w-full md:w-[220px] shrink-0 md:sticky md:top-24 pt-1 h-fit">
@@ -90,55 +122,43 @@ const AccountSettings: React.FC = () => {
 
           {/* Right Content */}
           <div className="flex-1 w-full bg-white rounded-[4px] border border-[#e1e1e1] p-12 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-            <h1 className="text-[32px] font-bold mb-10 text-[#1f1f1f]">
+            <h1 className="text-[30px] font-normal mb-10 text-[#1f1f1f]">
               Account
             </h1>
 
-            <form className="space-y-12">
+            <form className="space-y-2" onSubmit={handleSaveProfile}>
               {/* Name Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2">
                 <div className="space-y-2">
-                  <label className="text-[14px] font-bold text-[#1f1f1f]">
+                  <label className="text-[14px] font-normal text-[#1f1f1f]">
                     Full name <span className="text-[#C02626]">*</span>
                   </label>
                   <input
                     type="text"
-                    defaultValue={user?.name || ""}
+                    value={fullName}
+                    onChange={(event) => setFullName(event.target.value)}
                     className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] focus:outline-none focus:border-[#0056D2] transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[14px] font-bold text-[#1f1f1f]">
-                    Public name <span className="text-[#C02626]">*</span>
+                  <label className="text-[14px] font-normal text-[#1f1f1f]">
+                    Email address <span className="text-[#C02626]">*</span>
                   </label>
-                  <div className="relative">
-                    <select className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] bg-white focus:outline-none focus:border-[#0056D2] appearance-none cursor-pointer">
-                      <option>{user?.name || ""}</option>
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5f6368]">
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                      </svg>
-                    </div>
-                  </div>
+                  <input
+                    type="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] bg-[#F0F4F9] text-[#5f6368] cursor-not-allowed"
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[14px] font-bold text-[#1f1f1f]">
+                  <label className="text-[14px] font-normal text-[#1f1f1f]">
                     Timezone
                   </label>
                   <div className="relative">
                     <select className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] bg-white focus:outline-none focus:border-[#0056D2] appearance-none cursor-pointer">
-                      <option>(GMT+05:00) Asia/Karachi</option>
+                      <option>Asia/Karachi</option>
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5f6368]">
                       <svg
@@ -157,7 +177,7 @@ const AccountSettings: React.FC = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[14px] font-bold text-[#1f1f1f]">
+                  <label className="text-[14px] font-normal text-[#1f1f1f]">
                     Language
                   </label>
                   <div className="relative">
@@ -183,41 +203,48 @@ const AccountSettings: React.FC = () => {
               </div>
 
               <div className="pt-2">
-                <button className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer">
-                  Save
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isSaving ? "Saving..." : "Save"}
                 </button>
               </div>
 
-              <hr className="border-[#e1e1e1]" />
+              <hr className="border-[#e1e1e1] my-12" />
 
-              {/* Personal details Section */}
-              <div className="space-y-6">
-                <h2 className="text-[20px] font-bold text-[#1f1f1f]">
-                  Personal details
+              {/* Personal Account Section */}
+              <div className="space-y-1">
+                <h2 className="text-[18px] font-normal text-[#1f1f1f] mb-4">
+                  Personal Account
                 </h2>
-                <p className="text-[14px] text-[#5f6368] leading-relaxed max-w-[700px]">
-                  The following information will be used to help us better
-                  understand our students. This information will only be shared
-                  with your Course Instructors and Company.
+                <p className="text-[15px] text-[#1A1317] leading-relaxed max-w-[520px]">
+                  Add your personal account here, so you'll still have access
+                  to Coursera courses after you leave your current company.
                 </p>
-                <div className="space-y-2">
-                  <label className="text-[14px] font-bold text-[#1f1f1f]">
-                    Primary location (city)
-                  </label>
+                <p className="text-[15px] text-[#1A1317] font-normal">
+                  Add Alternative Email
+                </p>
+                <div className="space-y-2 max-w-[520px]">
                   <input
-                    type="text"
-                    defaultValue="Mardan, Pakistan"
-                    className="w-full h-[44px] px-4 bg-[#F0F4F9] rounded-[4px] border border-[#ced4da] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                    type="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="w-full h-[38px] px-3 bg-[#F0F4F9] rounded-[4px] border border-[#ced4da] text-[13px] text-[#5f6368] cursor-not-allowed"
                   />
                 </div>
-                <div className="pt-2">
-                  <button className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer">
+                <div className="pt-2 mb-12">
+                  <button
+                    type="button"
+                    disabled
+                    className="px-4 py-1.5 rounded-[4px] border border-[#c9d4ea] text-[#9aa8c2] text-[12px] font-bold bg-[#eef2f8] cursor-not-allowed"
+                  >
                     Save
                   </button>
                 </div>
               </div>
 
-              <hr className="border-[#e1e1e1]" />
 
               {/* Password Section */}
               <div className="space-y-8">
@@ -255,7 +282,10 @@ const AccountSettings: React.FC = () => {
                   </div>
                 </div>
                 <div className="pt-2">
-                  <button className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer">
+                  <button
+                    type="button"
+                    className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
+                  >
                     Change password
                   </button>
                 </div>
@@ -296,7 +326,10 @@ const AccountSettings: React.FC = () => {
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                     </svg>
                     Linked to Facebook
-                    <button className="ml-auto text-[13px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer">
+                    <button
+                      type="button"
+                      className="ml-auto text-[13px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer"
+                    >
                       Unlink from Facebook Account
                     </button>
                   </div>
@@ -320,7 +353,10 @@ const AccountSettings: React.FC = () => {
                     Apple
                   </h3>
                   <div className="space-y-4">
-                    <button className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer">
+                    <button
+                      type="button"
+                      className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
+                    >
                       Link my Apple account
                     </button>
                     <p className="text-[12px] italic text-[#5f6368]">
@@ -345,7 +381,10 @@ const AccountSettings: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-3 text-[14px] text-[#1f1f1f] bg-[#F0F4F9] px-4 py-3 rounded-[4px] border border-[#ced4da] font-medium">
                     {user?.email}
-                    <button className="ml-auto text-[13px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer">
+                    <button
+                      type="button"
+                      className="ml-auto text-[13px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer"
+                    >
                       Unlink my Google Account
                     </button>
                   </div>
@@ -379,7 +418,10 @@ const AccountSettings: React.FC = () => {
                     .
                   </p>
                 </div>
-                <button className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer">
+                <button
+                  type="button"
+                  className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
+                >
                   Delete Account
                 </button>
               </div>
@@ -405,7 +447,10 @@ const AccountSettings: React.FC = () => {
                     defaultValue={user?.email || ""}
                     className="flex-1 h-[44px] px-4 bg-[#F0F4F9] rounded-[4px] border border-[#ced4da] text-[15px] focus:outline-none focus:border-[#0056D2]"
                   />
-                  <button className="shrink-0 px-5 py-2.5 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer">
+                  <button
+                    type="button"
+                    className="shrink-0 px-5 py-2.5 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
+                  >
                     Send test email
                   </button>
                 </div>

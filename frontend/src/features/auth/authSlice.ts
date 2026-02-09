@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import * as authApi from "./authApi";
 import type { LoginPayload, RegisterPayload } from "./types";
 import { supabase } from "../../lib/supabase";
+import { userApi, type ProfileUpdateInput } from "../../services/userApi";
 
 interface AuthState {
   token: string | null;
@@ -65,6 +66,20 @@ export const syncGoogleUser = createAsyncThunk(
     } catch (err: any) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to sync user",
+      );
+    }
+  },
+);
+
+export const updateUserProfile = createAsyncThunk(
+  "auth/updateUserProfile",
+  async (payload: ProfileUpdateInput, { rejectWithValue }) => {
+    try {
+      const response = await userApi.updateMyProfile(payload);
+      return response;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update profile",
       );
     }
   },
@@ -142,6 +157,23 @@ const authSlice = createSlice({
         localStorage.setItem("user", JSON.stringify(user));
       })
       .addCase(syncGoogleUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(updateUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const updatedUser = {
+          ...state.user,
+          ...action.payload,
+        };
+        state.user = updatedUser as AuthState["user"];
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })

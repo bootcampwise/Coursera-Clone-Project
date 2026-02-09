@@ -39,7 +39,22 @@ export interface ProfileCertificate extends ProfileCertificateInput {
   createdAt: string;
 }
 
+export interface ProfileUpdateInput {
+  name?: string;
+}
+
 export const userApi = {
+  updateMyProfile: async (payload: ProfileUpdateInput) => {
+    const response = await api.patch(ENDPOINTS.USERS_UPDATE_PROFILE, payload);
+    return response.data as {
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      avatarUrl?: string;
+    };
+  },
+
   getMyWorkExperiences: async () => {
     const response = await api.get(ENDPOINTS.USERS_WORK_EXPERIENCES);
     return response.data as WorkExperience[];
