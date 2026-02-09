@@ -7,6 +7,7 @@ import { useAppDispatch } from "../../app/hooks";
 import { updateUserProfile } from "../../features/auth/authSlice";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
+import { IMAGES } from "../../constants/images";
 
 const AccountSettings: FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -379,29 +380,14 @@ const AccountSettings: FC = () => {
               <hr className="border-[#e1e1e1] my-10" />
 
               {/* Linked Accounts */}
-              <div className="space-y-10">
-                <h2 className="text-[20px] font-bold text-[#1f1f1f]">
+              <div className="space-y-1">
+                <h2 className="text-[18px] font-normal text-[#1f1f1f]">
                   Linked Accounts
                 </h2>
-                <p className="text-[14px] text-[#5f6368] leading-relaxed max-w-[700px]">
-                  You can use your Linked Accounts to{" "}
-                  <span className="text-[#C02626] font-bold italic">
-                    Log In
-                  </span>{" "}
-                  into your account with ease. If you wish to unlink your
-                  previously linked account, kindly follow the instructions
-                  below:{" "}
-                  <span className="text-[#0056D2] cursor-pointer hover:underline">
-                    Link or unlink an app in Gmail
-                  </span>
-                </p>
 
                 {/* Facebook Section */}
-                <div className="space-y-4">
-                  <h3 className="text-[16px] font-bold text-[#1f1f1f]">
-                    Facebook Account
-                  </h3>
-                  <div className="flex items-center gap-3 text-[14px] text-[#1f1f1f] bg-[#F0F4F9] px-4 py-3 rounded-[4px] border border-[#ced4da] font-medium">
+                <div className="space-y-2">
+                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-[#1f1f1f]">
                     <svg
                       width="20"
                       height="20"
@@ -410,26 +396,33 @@ const AccountSettings: FC = () => {
                     >
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                     </svg>
-                    Linked to Facebook
+                    Facebook
+                  </h3>
+                  <p className="text-[15px] text-[#111727] font-normal">
+                    Enable one-click login and receive more personalized course
+                    recommendations.
+                  </p>
+                  <div className="flex items-center gap-6 pt-1">
                     <button
                       type="button"
-                      className="ml-auto text-[13px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer"
+                      className="h-[38px] px-6 rounded-[4px] border border-[#ced4da] bg-[#F3F6F8] text-[#555] text-[14px] font-normal cursor-pointer hover:bg-gray-100 transition-colors"
                     >
-                      Unlink from Facebook Account
+                      Link my Facebook Account
                     </button>
+                    <span className="text-[14px] text-[#14121B]">
+                      Unlink your Google account to log in with Facebook.
+                    </span>
                   </div>
-                  <p className="text-[12px] italic text-[#5f6368]">
-                    Create a profile, so we can use your account data
-                    efficiently and recommendations.
-                  </p>
                 </div>
 
+                <hr className="h-px border-[#e1e1e1] my-10" />
+
                 {/* Apple Section */}
-                <div className="space-y-4">
-                  <h3 className="text-[16px] font-bold flex items-center gap-2 text-[#1f1f1f]">
+                <div className="space-y-2">
+                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-[#1f1f1f]">
                     <svg
-                      width="16"
-                      height="16"
+                      width="20"
+                      height="20"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                     >
@@ -437,38 +430,43 @@ const AccountSettings: FC = () => {
                     </svg>
                     Apple
                   </h3>
-                  <div className="space-y-4">
+                  <p className="text-[15px] text-[#111727] font-normal">
+                    Enable one-click login and receive more personalized course
+                    recommendations.
+                  </p>
+                  <div className="flex items-center gap-6 pt-1">
                     <button
                       type="button"
-                      className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
+                      className="h-[38px] px-6 rounded-[4px] border border-[#ced4da] bg-[#F3F6F8] text-[#555] text-[14px] font-normal cursor-pointer hover:bg-gray-100 transition-colors"
                     >
-                      Link my Apple account
+                      Link my Apple Account
                     </button>
-                    <p className="text-[12px] italic text-[#5f6368]">
-                      Link your Apple account so we can personalized
-                      recommendation.
-                    </p>
+                    <span className="text-[14px] text-[#14121B]">
+                      Unlink your Google account to log in with Apple.
+                    </span>
                   </div>
                 </div>
 
+                <hr className="h-px border-[#e1e1e1] my-10" />
+
                 {/* Google Section */}
-                <div className="space-y-4">
-                  <h3 className="text-[16px] font-bold flex items-center gap-2 text-[#1f1f1f]">
+                <div className="space-y-2">
+                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-[#1f1f1f]">
                     <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_'G'_logo.svg"
+                      src={IMAGES.LOGOS.GOOGLE_LOGO}
                       alt="Google"
-                      className="w-4 h-4"
+                      className="w-5 h-5"
                     />
                     Google
                   </h3>
-                  <p className="text-[14px] text-[#5f6368]">
-                    This User account is Linked to follow this Google account:
+                  <p className="text-[15px] text-[#111727] font-normal">
+                    Your Coursera account is currently linked to your Google
+                    account.
                   </p>
-                  <div className="flex items-center gap-3 text-[14px] text-[#1f1f1f] bg-[#F0F4F9] px-4 py-3 rounded-[4px] border border-[#ced4da] font-medium">
-                    {user?.email}
+                  <div className="pt-1">
                     <button
                       type="button"
-                      className="ml-auto text-[13px] font-bold text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer"
+                      className="h-[38px] px-5 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
                     >
                       Unlink my Google Account
                     </button>
@@ -476,75 +474,71 @@ const AccountSettings: FC = () => {
                 </div>
               </div>
 
-              <hr className="border-[#e1e1e1]" />
+              <hr className="h-px border-[#e1e1e1] my-10" />
 
-              {/* Delete account Section */}
-              <div className="space-y-6">
-                <h2 className="text-[20px] font-bold text-[#1f1f1f]">
-                  Delete account
-                </h2>
-                <div className="text-[14px] text-[#5f6368] leading-relaxed max-w-[700px] space-y-4">
-                  <p>
-                    Kindly note that deleting account is{" "}
-                    <span className="text-[#C02626] font-bold italic">
-                      permanent and cannot be undone
-                    </span>
-                    . All your data, including your certificates, will be{" "}
-                    <span className="text-[#C02626] font-bold italic">
-                      irretrievably lost
-                    </span>
-                    .
-                  </p>
-                  <p>
-                    This action cannot be undone.{" "}
-                    <span className="text-[#C02626] font-bold underline cursor-pointer">
-                      Learn more about what happens when you delete your account
-                    </span>
-                    .
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
-                >
+              {/* Delete Account Section */}
+              <div className="mt-10 space-y-3">
+                <h3 className="text-[16px] font-semibold text-[#1f1f1f]">
                   Delete Account
-                </button>
+                </h3>
+
+                <p className="max-w-[620px] text-[14px] text-[#495057] leading-[20px]">
+                  If you delete your account, your personal information will be
+                  wiped from Coursera’s{" "}
+                  <span className="text-[#0E1549]">servers</span>, all of your
+                  course activity will be anonymized and any certificates earned
+                  will be deleted. This action{" "}
+                  <span className="text-[#0E1549]">cannot</span> be undone.{" "}
+                  <span className="text-[#C02626]">
+                    Cancel any active subscriptions before you delete your
+                    account.
+                  </span>
+                </p>
+
+                <div>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                  >
+                    Delete Account
+                  </button>
+                </div>
               </div>
 
-              <hr className="border-[#e1e1e1]" />
+              <hr className="border-[#e1e1e1] my-12" />
 
-              {/* Communication email Section */}
-              <div className="space-y-6 pb-4">
-                <h2 className="text-[20px] font-bold text-[#1f1f1f]">
-                  Communication email
-                </h2>
-                <p className="text-[14px] text-[#5f6368] leading-relaxed max-w-[700px]">
-                  This email is used so Coursera can{" "}
-                  <span className="text-[#0056D2] cursor-pointer hover:underline">
-                    send test email
-                  </span>{" "}
-                  directly to you. It will not change your Account email used
-                  for log in.
+              {/* Learner Data Report Section */}
+              <div className="mt-10 space-y-4 pb-4">
+                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                  Learner Data Report
+                </h3>
+
+                <p className="max-w-[620px] text-[14px] text-[#495057] leading-[20px]">
+                  Request a report of all learner data{" "}
+                  <span className="text-[#0056D2]">stored</span> by Coursera
+                  about your account. This report will be sent to the e-mail
+                  address below.
                 </p>
-                <div className="flex items-center gap-4 max-w-[500px]">
+
+                <div className="flex items-center gap-2 max-w-[520px]">
                   <input
                     type="email"
                     defaultValue={user?.email || ""}
-                    className="flex-1 h-[44px] px-4 bg-[#F0F4F9] rounded-[4px] border border-[#ced4da] text-[15px] focus:outline-none focus:border-[#0056D2]"
+                    readOnly
+                    className="flex-1 h-[36px] px-3 bg-[#F0F4F9] rounded-[4px] border border-[#ced4da] text-[14px] text-[#1f1f1f] focus:outline-none"
                   />
+
                   <button
                     type="button"
-                    className="shrink-0 px-5 py-2.5 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
+                    className="shrink-0 px-4 py-1.5 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
                   >
-                    Send test email
+                    Send Report
                   </button>
                 </div>
-                <p className="text-[12px] italic text-[#5f6368]">
-                  Visit manage subscription to decide what types of email you
-                  get from Coursera.{" "}
-                  <span className="text-[#0056D2] cursor-pointer hover:underline">
-                    Visit page.
-                  </span>
+
+                <p className="max-w-[620px] text-[13px] text-[#6c757d]">
+                  To change email, please adjust the email settings at the top
+                  of this page.
                 </p>
               </div>
             </form>
