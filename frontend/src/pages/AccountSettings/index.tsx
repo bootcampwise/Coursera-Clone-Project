@@ -220,8 +220,8 @@ const AccountSettings: FC = () => {
                   Personal Account
                 </h2>
                 <p className="text-[15px] text-[#1A1317] leading-relaxed max-w-[520px]">
-                  Add your personal account here, so you'll still have access
-                  to Coursera courses after you leave your current company.
+                  Add your personal account here, so you'll still have access to
+                  Coursera courses after you leave your current company.
                 </p>
                 <p className="text-[15px] text-[#1A1317] font-normal">
                   Add Alternative Email
@@ -245,53 +245,138 @@ const AccountSettings: FC = () => {
                 </div>
               </div>
 
-
               {/* Password Section */}
-              <div className="space-y-8">
-                <h2 className="text-[20px] font-bold text-[#1f1f1f]">
+              <div className="space-y-2">
+                <h2 className="text-[18px] font-normal text-[#1f1f1f]">
                   Password
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <div className="space-y-3">
-                    <label className="text-[14px] font-bold text-[#1f1f1f]">
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                  <div className="space-y-1.5">
+                    <label className="text-[15px] font-normal text-[#1A1317]">
                       Current password <span className="text-[#C02626]">*</span>
                     </label>
                     <input
                       type="password"
-                      className="w-full border-b border-[#ced4da] focus:border-[#0056D2] focus:outline-none py-1.5 text-[15px] bg-transparent rounded-none transition-colors"
+                      className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
                     />
                   </div>
-                  <div className="space-y-3">
-                    <label className="text-[14px] font-bold text-[#1f1f1f]">
+
+                  <div className="space-y-1.5">
+                    <label className="text-[15px] font-normal text-[#1A1317]">
                       New password <span className="text-[#C02626]">*</span>
                     </label>
                     <input
                       type="password"
-                      className="w-full border-b border-[#ced4da] focus:border-[#0056D2] focus:outline-none py-1.5 text-[15px] bg-transparent rounded-none transition-colors"
+                      className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
                     />
                   </div>
-                  <div className="space-y-3">
-                    <label className="text-[14px] font-bold text-[#1f1f1f]">
-                      Re-type new password{" "}
-                      <span className="text-[#C02626]">*</span>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[15px] font-normal text-[#1A1317]">
+                      Retype password <span className="text-[#C02626]">*</span>
                     </label>
                     <input
                       type="password"
-                      className="w-full border-b border-[#ced4da] focus:border-[#0056D2] focus:outline-none py-1.5 text-[15px] bg-transparent rounded-none transition-colors"
+                      className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
+
                 <div className="pt-2">
                   <button
                     type="button"
-                    className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer"
+                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
                   >
-                    Change password
+                    Change Password
                   </button>
                 </div>
               </div>
 
-              <hr className="border-[#e1e1e1]" />
+              <hr className="border-[#e1e1e1] my-8" />
+
+              {/* Verify My ID Section */}
+              <div className="mt-10 space-y-2">
+                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                  Verify My ID
+                </h3>
+
+                <p className="text-[15px] text-[#1A1317] leading-[20px]">
+                  Your name,{" "}
+                  <span className="font-semibold text-[#1A1317]">
+                    Zainab Murtaza
+                  </span>
+                  , is{" "}
+                  <span className="font-semibold text-[#1A1317]">verified</span>
+                  . This is the name that will appear on your certificates.
+                </p>
+
+                <p className="text-[15px] text-[#1A1317]">
+                  If you have questions or need help with your ID Verification,{" "}
+                  <a
+                    href="#"
+                    className="text-[#0056D2] font-medium hover:underline"
+                  >
+                    visit our ID Verification support page
+                  </a>
+                  .
+                </p>
+              </div>
+
+              <hr className="border-[#e1e1e1] my-10" />
+
+              {/* Two Factor Authentication Section */}
+              <div className="mt-10 space-y-4">
+                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                  Two Factor Authentication{" "}
+                  <span className="text-[#6c757d]">(BETA)</span>
+                </h3>
+
+                {/* Constrained text width like Figma */}
+                <p className="max-w-[500px] text-[15px] text-[#1A1317] leading-[20px]">
+                  Two-Factor Authentication adds an additional layer of security
+                  to your Coursera account. Each time you log in to Coursera,
+                  you will be asked to enter a unique code that is only
+                  available on your mobile phone. This extra protection ensures
+                  that you are the only one who will have access to your
+                  Coursera account and courses.
+                </p>
+
+                <div>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                  >
+                    Enable Two-Factor Authentication?
+                  </button>
+                </div>
+              </div>
+
+              <hr className="border-[#e1e1e1] my-10" />
+
+              {/* Connected Devices Section */}
+              <div className="mt-10 space-y-4">
+                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                  Connected devices
+                </h3>
+
+                {/* Constrained text width like Figma */}
+                <p className="text-[15px] text-[#1A1317] leading-[20px]">
+                  If your account has been logged into on multiple devices, you
+                  can log out from here.
+                </p>
+
+                <div>
+                  <button
+                    type="button"
+                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                  >
+                    Log out from all devices
+                  </button>
+                </div>
+              </div>
+
+              <hr className="border-[#e1e1e1] my-10" />
 
               {/* Linked Accounts */}
               <div className="space-y-10">
