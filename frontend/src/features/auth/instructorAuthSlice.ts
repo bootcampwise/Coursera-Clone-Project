@@ -32,7 +32,8 @@ export const loginInstructor = createAsyncThunk(
         payload,
       );
       const data = response.data;
-      if (data.user.role.toLowerCase() !== "instructor") {
+      const role = data.user.role.toLowerCase();
+      if (role !== "instructor" && role !== "admin") {
         return rejectWithValue("Access restricted to instructors.");
       }
       return data;

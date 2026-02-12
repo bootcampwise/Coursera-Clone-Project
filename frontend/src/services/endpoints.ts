@@ -13,7 +13,8 @@ export const ENDPOINTS = {
   USERS_UPDATE_ROLE: (id: string) => `/users/${id}/role`,
   USERS_UPDATE_PROFILE: "/users/me",
   USERS_WORK_EXPERIENCES: "/users/me/work-experiences",
-  USERS_WORK_EXPERIENCE_BY_ID: (id: string) => `/users/me/work-experiences/${id}`,
+  USERS_WORK_EXPERIENCE_BY_ID: (id: string) =>
+    `/users/me/work-experiences/${id}`,
   USERS_EDUCATIONS: "/users/me/educations",
   USERS_EDUCATION_BY_ID: (id: string) => `/users/me/educations/${id}`,
   USERS_PROFILE_CERTIFICATES: "/users/me/profile-certificates",
@@ -23,6 +24,7 @@ export const ENDPOINTS = {
   // Courses
   COURSES: "/courses",
   COURSES_SEARCH: "/courses/search",
+  COURSES_RECENTLY_VIEWED: "/courses/recently-viewed",
   COURSES_BY_ID: (id: string) => `/courses/${id}`,
   COURSES_THUMBNAIL: (id: string) => `/courses/${id}/thumbnail`,
   COURSES_ENROLLMENT_STATUS: (id: string) => `/courses/${id}/enrollment-status`,

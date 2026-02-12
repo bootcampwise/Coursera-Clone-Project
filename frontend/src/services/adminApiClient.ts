@@ -6,7 +6,11 @@ const adminApi = axios.create({
 });
 
 adminApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("adminToken");
+  const token =
+    localStorage.getItem("adminToken") ||
+    localStorage.getItem("instructorToken") ||
+    localStorage.getItem("token") ||
+    localStorage.getItem("portalToken");
   if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

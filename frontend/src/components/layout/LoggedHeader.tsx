@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
 import type { RootState } from "../../app/store";
 import { IMAGES } from "../../constants/images";
+import { notificationApi } from "../../services/notificationApi";
 
 const LoggedHeader: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -13,10 +14,31 @@ const LoggedHeader: React.FC = () => {
   const location = useLocation();
   const isUpdatesPage = location.pathname === "/updates";
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const avatarUrl = user?.avatarUrl;
   const displayName = user?.name || "User";
+
+  // Fetch unread notification count
+  const fetchUnreadCount = async () => {
+    try {
+      const data = await notificationApi.getUnreadCount();
+      setUnreadCount(data.count || 0);
+    } catch (error) {
+      console.error("Failed to fetch unread count:", error);
+    }
+  };
+
+  // Fetch count on mount and set up polling
+  useEffect(() => {
+    fetchUnreadCount();
+    // Poll every 30 seconds for new notifications
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +59,30 @@ const LoggedHeader: React.FC = () => {
       <header className="bg-white border-b border-[#e1e1e1] h-[64px] flex items-center sticky top-0 z-50 font-sans">
         <div className="w-full px-4 md:px-8 flex items-center justify-between">
           {/* ================= LEFT SECTION ================= */}
-          <div className="flex items-center gap-4 shrink-0">
+          <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            {/* 0. Hamburger Menu (Mobile Only) */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="lg:hidden p-2 text-[#1f1f1f] hover:bg-gray-50 rounded-md border-none bg-transparent cursor-pointer"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+
             {/* 1. Grid Icon (Dots) */}
-            <button className="text-[#1f1f1f] hover:bg-gray-50 p-2 rounded-md transition-colors hidden md:block border-none bg-transparent cursor-pointer">
+            <button className="text-[#1f1f1f] hover:bg-gray-50 p-2 rounded-md transition-colors hidden lg:block border-none bg-transparent cursor-pointer">
               <svg
                 width="18"
                 height="18"
@@ -58,22 +101,18 @@ const LoggedHeader: React.FC = () => {
               </svg>
             </button>
 
-            {/* 2. Logo Logic */}
+            {/* 2. Partner Icon Only */}
             <Link to="/" className="no-underline shrink-0">
-              {isUpdatesPage ? (
-                <img src={IMAGES.LOGO} alt="Coursera" className="h-[24px]" />
-              ) : (
-                <div
-                  className="w-9 h-9 rounded-full text-white flex items-center justify-center font-sans text-[18px] font-bold"
-                  style={{ backgroundColor: "#1a4f88" }}
-                >
-                  P
-                </div>
-              )}
+              <div
+                className="w-8 h-8 md:w-9 md:h-9 rounded-full text-white flex items-center justify-center font-sans text-[16px] md:text-[18px] font-bold"
+                style={{ backgroundColor: "#1a4f88" }}
+              >
+                P
+              </div>
             </Link>
 
             {/* 3. Explore & My Learning */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden lg:flex items-center gap-6">
               <button
                 type="button"
                 onClick={() => navigate("/search")}
@@ -107,10 +146,11 @@ const LoggedHeader: React.FC = () => {
           </div>
 
           {/* ================= CENTER SECTION: SEARCH BAR ================= */}
-          <div className="hidden lg:flex flex-1 justify-center px-6">
+          <div className="flex-1 flex justify-center px-4 lg:px-6">
+            {/* Desktop Search */}
             <form
               onSubmit={handleSearch}
-              className="w-full max-w-[520px] relative flex items-center h-[44px] bg-white border border-[#ccc] rounded-full overflow-visible"
+              className="hidden lg:flex w-full max-w-[520px] relative items-center h-[44px] bg-white border border-[#ccc] rounded-full overflow-visible"
             >
               {/* Left Branding "C" Circle */}
               <div
@@ -149,13 +189,89 @@ const LoggedHeader: React.FC = () => {
                 </svg>
               </button>
             </form>
+
+            {/* Mobile Search Toggle Overlay */}
+            {isMobileSearchOpen && (
+              <div className="lg:hidden fixed inset-0 z-[60] bg-white flex items-center px-4 h-[64px]">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex-1 flex items-center gap-3"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileSearchOpen(false)}
+                    className="p-1 text-gray-500 border-none bg-transparent cursor-pointer"
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="19" y1="12" x2="5" y2="12"></line>
+                      <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                  </button>
+                  <input
+                    autoFocus
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search"
+                    className="flex-1 h-[40px] bg-transparent border-none text-[16px] text-[#1f1f1f] focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    className="p-1 text-[#1a73e8] border-none bg-transparent cursor-pointer"
+                  >
+                    <svg
+                      width="22"
+                      height="22"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
 
           {/* ================= RIGHT SECTION: GLOBE, D, PROFILE ================= */}
-          <div className="flex items-center gap-5 shrink-0">
+          <div className="flex items-center gap-3 md:gap-5 shrink-0">
+            {/* Mobile Search Button */}
+            <button
+              onClick={() => setIsMobileSearchOpen(true)}
+              className="lg:hidden text-[#1f1f1f] p-2 hover:bg-gray-50 rounded-md transition-colors bg-transparent border-none cursor-pointer"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+
             {/* Cart Icon (Updates Page Only) */}
             {isUpdatesPage && (
-              <button className="text-[#5b5b5b] hover:text-[#0056D2] p-1 hidden md:block transition-colors bg-transparent border-none cursor-pointer relative">
+              <button className="text-[#5b5b5b] hover:text-[#0056D2] p-1 hidden sm:block transition-colors bg-transparent border-none cursor-pointer relative">
                 <svg
                   width="24"
                   height="24"
@@ -177,7 +293,7 @@ const LoggedHeader: React.FC = () => {
               </button>
             )}
             {/* Globe Icon */}
-            <button className="text-[#5b5b5b] hover:text-[#0056D2] p-1 hidden md:block transition-colors bg-transparent border-none cursor-pointer">
+            <button className="text-[#5b5b5b] hover:text-[#0056D2] p-1 hidden lg:block transition-colors bg-transparent border-none cursor-pointer">
               <svg
                 width="22"
                 height="22"
@@ -194,11 +310,6 @@ const LoggedHeader: React.FC = () => {
               </svg>
             </button>
 
-            {/* D Indicator */}
-            <button className="text-[#5b5b5b] hover:text-[#0056D2] p-1 hidden md:block transition-colors bg-transparent border-none cursor-pointer font-medium text-[18px]">
-              D
-            </button>
-
             {/* Updates Bell Icon */}
             <div className="relative">
               <Link
@@ -206,8 +317,8 @@ const LoggedHeader: React.FC = () => {
                 className="text-[#5b5b5b] hover:text-[#0056D2] p-1 transition-colors bg-transparent border-none cursor-pointer relative block no-underline"
               >
                 <svg
-                  width="24"
-                  height="24"
+                  width="22"
+                  height="22"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -218,10 +329,12 @@ const LoggedHeader: React.FC = () => {
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                   <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                 </svg>
-                {/* Notification Badge */}
-                <span className="absolute top-0 right-0 h-4 w-4 bg-[#C20E0E] text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
-                  2
-                </span>
+                {/* Notification Badge - Only show if unreadCount > 0 */}
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 h-3.5 w-3.5 bg-[#C20E0E] text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </Link>
             </div>
 
@@ -282,6 +395,107 @@ const LoggedHeader: React.FC = () => {
           </div>
         </div>
       </header>
+
+      {/* ================= MOBILE NAVIGATION DRAWER ================= */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 z-[100]">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Menu Drawer */}
+          <div className="absolute left-0 top-0 bottom-0 w-[280px] max-w-[85%] bg-white p-6 overflow-y-auto animate-slide-in-left flex flex-col">
+            <div className="flex items-center justify-between mb-8">
+              <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+                <img src={IMAGES.LOGO} alt="Coursera" className="h-[20px]" />
+              </Link>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-full border-none bg-transparent cursor-pointer"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <nav className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  navigate("/search");
+                }}
+                className="flex items-center justify-between w-full p-3 text-[16px] font-medium text-[#1f1f1f] hover:bg-[#f5f7f8] rounded-lg border-none bg-transparent cursor-pointer text-left"
+              >
+                Explore
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <Link
+                to="/my-learning"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-3 text-[16px] font-medium text-[#1f1f1f] hover:bg-[#f5f7f8] rounded-lg no-underline"
+              >
+                My Learning
+              </Link>
+
+              <hr className="my-4 border-[#f0f0f0]" />
+
+              <div className="flex items-center gap-4 px-3 py-2">
+                <button className="text-[#5b5b5b] hover:text-[#0056D2] transition-colors bg-transparent border-none cursor-pointer flex items-center gap-2">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                  Language
+                </button>
+              </div>
+            </nav>
+
+            <div className="mt-auto pt-8">
+              <button
+                onClick={handleLogout}
+                className="w-full text-left p-3 text-[16px] font-medium text-red-600 hover:bg-red-50 rounded-lg border-none bg-transparent cursor-pointer"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

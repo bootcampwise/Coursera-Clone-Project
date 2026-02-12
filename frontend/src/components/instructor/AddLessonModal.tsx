@@ -7,18 +7,32 @@ interface AddLessonModalProps {
     title: string,
     type: "VIDEO" | "READING" | "ASSESSMENT",
     description?: string,
+    content?: string,
   ) => void;
-  // moduleId removed as unused
+  fixedType?: "VIDEO" | "READING" | "ASSESSMENT";
+  showContentField?: boolean;
 }
 
 const AddLessonModal: React.FC<AddLessonModalProps> = ({
   isOpen,
   onClose,
   onSave,
+  fixedType,
+  showContentField,
 }) => {
   const [title, setTitle] = useState("");
-  const [type, setType] = useState<"VIDEO" | "READING" | "ASSESSMENT">("VIDEO");
+  const [type, setType] = useState<"VIDEO" | "READING" | "ASSESSMENT">(
+    fixedType || "VIDEO",
+  );
   const [description, setDescription] = useState("");
+  const [content, setContent] = useState("");
+
+  // Update type if fixedType changes
+  React.useEffect(() => {
+    if (fixedType) {
+      setType(fixedType);
+    }
+  }, [fixedType]);
 
   if (!isOpen) return null;
 
@@ -26,10 +40,17 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
     e.preventDefault();
     if (title.trim()) {
       const cleanedDescription = description.trim();
-      onSave(title, type, cleanedDescription ? cleanedDescription : undefined);
+      const cleanedContent = content.trim();
+      onSave(
+        title,
+        type,
+        cleanedDescription ? cleanedDescription : undefined,
+        cleanedContent ? cleanedContent : undefined,
+      );
       setTitle("");
-      setType("VIDEO");
+      setType(fixedType || "VIDEO");
       setDescription("");
+      setContent("");
       onClose();
     }
   };
@@ -136,7 +157,10 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
                   <select
                     id="type"
                     name="type"
-                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border"
+                    disabled={!!fixedType}
+                    className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border ${
+                      fixedType ? "bg-gray-100 cursor-not-allowed" : ""
+                    }`}
                     value={type}
                     onChange={(e) =>
                       setType(
@@ -156,12 +180,48 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
                     "Learners will complete a multiple-choice quiz."}
                 </p>
               </div>
+
+              {showContentField && (
+                <div>
+                  <label
+                    htmlFor="content"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    {type === "ASSESSMENT"
+                      ? "Assessment JSON Content"
+                      : "Reading Content"}{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <div className="mt-1">
+                    <textarea
+                      id="content"
+                      name="content"
+                      rows={6}
+                      required
+                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border font-mono text-xs"
+                      placeholder={
+                        type === "ASSESSMENT"
+                          ? 'e.g., [{"question": "...", "options": [...], "answer": "..."}]'
+                          : "Enter lesson content (Markdown supported)..."
+                      }
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                    />
+                  </div>
+                  {type === "ASSESSMENT" && (
+                    <p className="mt-1 text-xs text-gray-400">
+                      Please enter valid JSON for the assessment.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
               <button
                 type="submit"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm"
+                disabled={showContentField && !content.trim()}
+                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Lesson
               </button>

@@ -9,6 +9,8 @@ import InstructorOverview from "../pages/Instructor/Overview";
 import InstructorCourses from "../pages/Instructor/Courses";
 import InstructorCreateCourse from "../pages/Instructor/CreateCourse";
 import InstructorVideos from "../pages/Instructor/Videos";
+import InstructorAssessments from "../pages/Instructor/Assessments";
+import InstructorReadings from "../pages/Instructor/Readings";
 import InstructorAnalytics from "../pages/Instructor/Analytics";
 import InstructorReviews from "../pages/Instructor/Reviews";
 import InstructorSettings from "../pages/Instructor/Settings";
@@ -63,7 +65,11 @@ const AppRoutes: React.FC = () => (
       <Route path="/verify/:code" element={<CertificateVerify />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/profile" element={<Profile />} />
-      <Route element={<ProtectedRoute allowedRoles={["student"]} loginPath="/login" />}>
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["student"]} loginPath="/login" />
+        }
+      >
         <Route path="/account/settings" element={<AccountSettings />} />
       </Route>
       <Route
@@ -101,6 +107,8 @@ const AppRoutes: React.FC = () => (
             element={<CurriculumBuilder />}
           />
           <Route path="videos" element={<InstructorVideos />} />
+          <Route path="assessments" element={<InstructorAssessments />} />
+          <Route path="readings" element={<InstructorReadings />} />
           <Route path="analytics" element={<InstructorAnalytics />} />
           <Route path="reviews" element={<InstructorReviews />} />
           <Route path="settings" element={<InstructorSettings />} />
@@ -122,6 +130,8 @@ const AppRoutes: React.FC = () => (
             element={<CurriculumBuilder />}
           />
           <Route path="videos" element={<InstructorVideos />} />
+          <Route path="assessments" element={<InstructorAssessments />} />
+          <Route path="readings" element={<InstructorReadings />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Route>

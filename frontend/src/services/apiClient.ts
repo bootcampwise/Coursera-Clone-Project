@@ -7,7 +7,11 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   // attach token if available
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token") ||
+    localStorage.getItem("adminToken") ||
+    localStorage.getItem("instructorToken") ||
+    localStorage.getItem("portalToken");
   if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

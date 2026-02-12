@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma";
 import { issueCertificateForEnrollment } from "./certificate.service";
+import { notificationService } from "./notification.service";
 
 export const enrollUser = async (userId: string, courseId: string) => {
   // Check if course exists
@@ -34,6 +35,24 @@ export const enrollUser = async (userId: string, courseId: string) => {
       },
     },
   });
+
+  // Create welcome notification
+  try {
+    await notificationService.createNotification(userId, {
+      type: "welcome",
+      title: `Welcome to ${enrollment.course.title}`,
+      message: `We're thrilled to have you! Start learning today and unlock your potential.`,
+      actionText: "Go to Course",
+      link: `/learn/${courseId}`,
+      imageUrl: enrollment.course.thumbnail || undefined,
+    });
+  } catch (notifError) {
+    console.error(
+      "[enrollment-service] Failed to create welcome notification:",
+      notifError,
+    );
+    // Don't fail enrollment if notification fails
+  }
 
   return enrollment;
 };
@@ -112,6 +131,7 @@ export const getCourseEnrollments = async (
   // Check ownership
   if (
     userRole.toLowerCase() !== "admin" &&
+    userRole.toLowerCase() !== "administrator" &&
     course.instructorId !== instructorId
   ) {
     throw new Error("Not authorized to view enrollments for this course");
@@ -169,9 +189,7 @@ export const getStudentCourseProgress = async (
   if (!enrollment) return null;
 
   const completedLessonIds = new Set(
-    enrollment.lessonProgress
-      .filter((p) => p.completed)
-      .map((p) => p.lessonId),
+    enrollment.lessonProgress.filter((p) => p.completed).map((p) => p.lessonId),
   );
 
   const moduleProgress = modules.map((module) => {
@@ -252,8 +270,7 @@ export const updateLessonProgress = async (
       const resolvedLastPlayed =
         lastPlayed ?? existingProgress?.lastPlayed ?? 0;
       const watchedEnough =
-        duration > 0 &&
-        resolvedLastPlayed >= Math.floor(duration * 0.98);
+        duration > 0 && resolvedLastPlayed >= Math.floor(duration * 0.98);
       if (!watchedEnough) completed = false;
     }
   }
@@ -307,16 +324,12 @@ export const updateLessonProgress = async (
       }),
     ]);
 
-  const completedLessonIds = new Set(
-    completedProgress.map((p) => p.lessonId),
-  );
+  const completedLessonIds = new Set(completedProgress.map((p) => p.lessonId));
 
   const totalModules = modules.length;
   const completedModules = modules.filter((module) => {
     if (!module.lessons || module.lessons.length === 0) return false;
-    return module.lessons.every((lesson) =>
-      completedLessonIds.has(lesson.id),
-    );
+    return module.lessons.every((lesson) => completedLessonIds.has(lesson.id));
   }).length;
 
   const newProgress =
@@ -335,6 +348,30 @@ export const updateLessonProgress = async (
   });
 
   if (!enrollment.completed && isCompleted) {
+    // Create course completion notification
+    try {
+      const courseInfo = await prisma.course.findUnique({
+        where: { id: enrollment.courseId },
+        select: { title: true },
+      });
+
+      if (courseInfo) {
+        await notificationService.createNotification(userId, {
+          type: "course_completion",
+          title: "Congratulations! Course Completed!",
+          message: `You've successfully completed ${courseInfo.title}. Your certificate is being generated.`,
+          actionText: "View Accomplishments",
+          link: "/accomplishments",
+        });
+      }
+    } catch (notifError) {
+      console.error(
+        "[enrollment-service] Failed to create completion notification:",
+        notifError,
+      );
+      // Don't fail the flow if notification fails
+    }
+
     await issueCertificateForEnrollment(enrollmentId);
   }
 

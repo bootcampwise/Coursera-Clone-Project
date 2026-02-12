@@ -1,16 +1,79 @@
 import React from "react";
 
-const Pagination: React.FC = () => {
+interface PaginationProps {
+  currentPage: number;
+  totalItems: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
+}
+
+const Pagination: React.FC<PaginationProps> = ({
+  currentPage,
+  totalItems,
+  itemsPerPage,
+  onPageChange,
+}) => {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  if (totalPages <= 1) {
+    return null;
+  }
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow + 2) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= maxPagesToShow; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push("...");
+        for (let i = totalPages - maxPagesToShow + 1; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        pages.push(1);
+        pages.push("...");
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i);
+        }
+        pages.push("...");
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
+
+  const pageNumbers = getPageNumbers();
+
   return (
-    <div className="flex items-center justify-center gap-1 mt-12 py-8 font-sans">
-      <button className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#0056D2] transition-colors">
+    <div className="flex items-center justify-center gap-0.5 sm:gap-1 mt-8 md:mt-12 py-6 md:py-8 font-sans flex-wrap">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition-colors ${
+          currentPage === 1
+            ? "text-gray-300 cursor-not-allowed"
+            : "text-gray-400 hover:text-[#0056D2]"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={2.5}
           stroke="currentColor"
-          className="w-4 h-4"
+          className="w-3 h-3 sm:w-4 sm:h-4"
         >
           <path
             strokeLinecap="round"
@@ -20,33 +83,45 @@ const Pagination: React.FC = () => {
         </svg>
       </button>
 
-      {[1, 2, 3, 4, 5].map((page) => (
-        <button
-          key={page}
-          className={`w-8 h-8 flex items-center justify-center rounded-full text-[14px] font-medium transition-all ${
-            page === 1
-              ? "bg-[#0056D2] text-white underline decoration-0"
-              : "text-gray-500 hover:bg-gray-100"
-          }`}
-        >
-          {page}
-        </button>
-      ))}
+      {pageNumbers.map((page, index) =>
+        typeof page === "number" ? (
+          <button
+            key={index}
+            onClick={() => onPageChange(page)}
+            className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-[13px] sm:text-[14px] font-medium transition-all ${
+              page === currentPage
+                ? "bg-[#0056D2] text-white underline decoration-0"
+                : "text-gray-500 hover:bg-gray-100"
+            }`}
+          >
+            {page}
+          </button>
+        ) : (
+          <span
+            key={index}
+            className="text-gray-400 mx-0.5 sm:mx-1 text-[13px] sm:text-[14px]"
+          >
+            {page}
+          </span>
+        ),
+      )}
 
-      <span className="text-gray-400 mx-1">...</span>
-
-      <button className="w-8 h-8 flex items-center justify-center rounded-full text-[14px] font-medium text-gray-500 hover:bg-gray-100">
-        18
-      </button>
-
-      <button className="w-8 h-8 flex items-center justify-center text-[#0056D2] hover:text-[#00419e] transition-colors">
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition-colors ${
+          currentPage === totalPages
+            ? "text-gray-300 cursor-not-allowed"
+            : "text-[#0056D2] hover:text-[#00419e]"
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={2.5}
           stroke="currentColor"
-          className="w-4 h-4"
+          className="w-3 h-3 sm:w-4 sm:h-4"
         >
           <path
             strokeLinecap="round"

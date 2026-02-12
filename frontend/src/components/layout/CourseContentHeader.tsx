@@ -7,13 +7,12 @@ import type { RootState } from "../../app/store";
 import { IMAGES } from "../../constants/images";
 
 const CourseContentHeader: React.FC = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const { user } = useSelector((state: RootState) => state.auth);
   const { signOut } = useGoogleAuth();
   const navigate = useNavigate();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  const displayName = user?.name || "Z";
-  const displayInitial = user?.name ? getInitials(user.name) : "Z";
+  const displayName = user?.name || "User";
 
   const handleLogout = async () => {
     await signOut();
@@ -85,9 +84,19 @@ const CourseContentHeader: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="w-9 h-9 rounded-full bg-[#00255d] flex items-center justify-center text-white font-bold text-[15px] focus:outline-none border-none cursor-pointer overflow-hidden p-0"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[15px] focus:outline-none border-none cursor-pointer overflow-hidden p-0"
+              style={{ backgroundColor: getAvatarColor(displayName) }}
             >
-              {displayInitial}
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={displayName}
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                getInitials(displayName)
+              )}
             </button>
 
             {isUserMenuOpen && (

@@ -1,83 +1,81 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
+import { notificationApi } from "../../services/notificationApi";
 
 interface UpdateItem {
-  id: number;
-  type: "certificate" | "welcome" | "general" | "announcement";
+  id: string;
+  type:
+    | "certificate"
+    | "course_completion"
+    | "welcome"
+    | "general"
+    | "announcement";
   title: string;
   message: string;
-  actionText: string; // e.g., "View Certificate", "Go to Course"
+  actionText: string;
   link: string;
-  image?: string;
+  imageUrl?: string;
   isRead: boolean;
+  createdAt: string;
 }
 
-const mockUpdates: UpdateItem[] = [
-  {
-    id: 1,
-    type: "certificate",
-    title: "Congratulations, Your Course Certificate is Ready!",
-    message:
-      "Google Data Analytics Professional Certificate. You can now download your certificate, add it to LinkedIn, and share it with your network.",
-    actionText: "View Certificate",
-    link: "#",
-    isRead: false,
-  },
-  {
-    id: 2,
-    type: "welcome",
-    title: "Welcome to Foundations: Data, Data, Everywhere",
-    message:
-      "We're thrilled to have you in the program! We've hand-picked some readings for you to get started.",
-    actionText: "Go to Course",
-    link: "#",
-    isRead: false,
-  },
-  {
-    id: 3,
-    type: "certificate",
-    title: "Congratulations, Your Course Certificate is Ready!",
-    message:
-      "Python for Everybody Specialization. Great job! Don't forget to share your achievement.",
-    actionText: "View Certificate",
-    link: "#",
-    isRead: true,
-  },
-  {
-    id: 4,
-    type: "welcome",
-    title: "Welcome to Build Window Layouts",
-    message: "Start learning today by watching 'Introduction to Layouts'.",
-    actionText: "Go to Course",
-    link: "#",
-    isRead: true,
-    image:
-      "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera-course-photos/a4/09695033c511e69b552b7b515f4e0c/Figma-1.jpg?auto=format%2Ccompress&dpr=1",
-  },
-  {
-    id: 5,
-    type: "certificate",
-    title: "Congratulations, Your Course Certificate is Ready!",
-    message: "Machine Learning Specialization. You did it! Share your success.",
-    actionText: "View Certificate",
-    link: "#",
-    isRead: true,
-  },
-  {
-    id: 6,
-    type: "general",
-    title: "Updates on your subscription",
-    message:
-      "We've made some changes to our terms of service. Please review them.",
-    actionText: "Read More",
-    link: "#",
-    isRead: true,
-  },
-];
-
 const UpdatesPage: React.FC = () => {
+  const [updates, setUpdates] = useState<UpdateItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      setLoading(true);
+      const data = await notificationApi.getNotifications();
+      setUpdates(data.notifications || []);
+      setError(null);
+    } catch (err: any) {
+      console.error("Failed to fetch notifications:", err);
+      setError(err.message || "Failed to load notifications");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNotificationClick = async (notification: UpdateItem) => {
+    try {
+      if (!notification.isRead) {
+        await notificationApi.markAsRead(notification.id);
+        // Update local state
+        setUpdates(
+          updates.map((u) =>
+            u.id === notification.id ? { ...u, isRead: true } : u,
+          ),
+        );
+      }
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days === 0) return "Today";
+    if (days === 1) return "Yesterday";
+    if (days < 7) return `${days} days ago`;
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
       <Header />
@@ -87,73 +85,102 @@ const UpdatesPage: React.FC = () => {
           Updates
         </h1>
 
-        <div className="space-y-4">
-          {mockUpdates.map((item) => (
-            <div
-              key={item.id}
-              className={`flex flex-col md:flex-row gap-4 p-6 rounded-lg border border-[#e1e1e1] ${
-                item.isRead
-                  ? "bg-[#F5F7F8]"
-                  : "bg-white border-l-4 border-l-[#0056D2]"
-              }`}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#0056D2]"></div>
+            <p className="mt-4 text-[#5f6368]">Loading notifications...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500">{error}</p>
+            <button
+              onClick={fetchNotifications}
+              className="mt-4 text-[#0056D2] hover:underline"
             >
-              <div className="shrink-0">
-                {/* Icon Logic */}
-                {item.image ? (
-                  <img
-                    src={item.image}
-                    alt=""
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                ) : item.type === "certificate" ? (
-                  <div className="w-12 h-12 rounded-full bg-[#0056D2] text-white flex items-center justify-center text-xl font-bold">
-                    C
-                  </div>
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center p-2">
-                    <svg
-                      className="w-full h-full text-gray-500"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                      />
-                    </svg>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1">
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="text-[16px] font-bold text-[#1f1f1f] leading-tight m-0">
-                    {item.title}
-                  </h3>
-                  <span className="text-[12px] text-[#5f6368] whitespace-nowrap ml-4">
-                    Jan 24
-                  </span>
+              Try again
+            </button>
+          </div>
+        ) : updates.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-[#5f6368] text-lg">No notifications yet</p>
+            <p className="text-[#5f6368] text-sm mt-2">
+              You'll see updates here when you complete courses or earn
+              certificates
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {updates.map((item) => (
+              <div
+                key={item.id}
+                className={`flex flex-col md:flex-row gap-4 p-6 rounded-lg border border-[#e1e1e1] ${
+                  item.isRead
+                    ? "bg-[#F5F7F8]"
+                    : "bg-white border-l-4 border-l-[#0056D2]"
+                }`}
+              >
+                <div className="shrink-0">
+                  {/* Icon Logic */}
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt=""
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : item.type === "certificate" ||
+                    item.type === "course_completion" ? (
+                    <div className="w-12 h-12 rounded-full bg-[#0056D2] text-white flex items-center justify-center text-xl font-bold">
+                      C
+                    </div>
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center p-2">
+                      <svg
+                        className="w-full h-full text-gray-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
 
-                <p className="text-[14px] text-[#373a3c] leading-relaxed mb-3 max-w-[90%]">
-                  {item.message}
-                </p>
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="text-[16px] font-bold text-[#1f1f1f] leading-tight m-0">
+                      {item.title}
+                    </h3>
+                    <span className="text-[12px] text-[#5f6368] whitespace-nowrap ml-4">
+                      {formatDate(item.createdAt)}
+                    </span>
+                  </div>
 
-                <div className="flex items-center">
-                  <Link
-                    to={item.link}
-                    className="text-[14px] font-bold text-[#0056D2] hover:underline no-underline"
-                  >
-                    {item.actionText}
-                  </Link>
+                  <p className="text-[14px] text-[#373a3c] leading-relaxed mb-3 max-w-[90%]">
+                    {item.message}
+                  </p>
+
+                  {item.actionText && item.link && (
+                    <div className="flex items-center">
+                      <Link
+                        to={item.link}
+                        onClick={() => handleNotificationClick(item)}
+                        className="text-[14px] font-bold text-[#0056D2] hover:underline no-underline"
+                      >
+                        {item.actionText}
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
 
       <Footer simple />

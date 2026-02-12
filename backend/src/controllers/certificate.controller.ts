@@ -35,7 +35,9 @@ export const getCertificateById = asyncHandler(
 export const verifyCertificate = asyncHandler(
   async (req: Request, res: Response) => {
     const { code } = req.params;
-    const certificate = await certificateService.verifyCertificate(code);
+    const certificate = await certificateService.verifyCertificate(
+      code as string,
+    );
     res.json(certificate);
   },
 );
@@ -66,5 +68,21 @@ export const downloadCertificate = asyncHandler(
       return;
     }
     res.sendFile(filePath);
+  },
+);
+
+export const getCertificateHtml = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    const { id } = req.params;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const html = await certificateService.getCertificateHtml(
+      id as string,
+      userId,
+    );
+    res.send(html);
   },
 );

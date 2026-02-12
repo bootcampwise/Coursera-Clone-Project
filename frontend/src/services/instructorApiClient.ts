@@ -6,7 +6,11 @@ const instructorApi = axios.create({
 });
 
 instructorApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("instructorToken");
+  const token =
+    localStorage.getItem("instructorToken") ||
+    localStorage.getItem("adminToken") ||
+    localStorage.getItem("token") ||
+    localStorage.getItem("portalToken");
   if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });

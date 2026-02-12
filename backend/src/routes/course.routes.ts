@@ -8,6 +8,7 @@ import {
   getInstructorCourses,
   getAdminCourseCatalog,
   uploadCourseThumbnail,
+  getRecentlyViewed,
 } from "../controllers/course.controller";
 import { getEnrollmentStatus } from "../controllers/enrollment.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
@@ -23,6 +24,7 @@ const upload = multer({
 // Public routes - Static paths first
 router.get("/", getAllCourses);
 router.get("/search", getAllCourses);
+router.get("/recently-viewed", authMiddleware, getRecentlyViewed);
 
 // Protected routes - Specific paths BEFORE parameterized routes
 // Instructor routes

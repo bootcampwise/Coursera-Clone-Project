@@ -1,5 +1,6 @@
 import api from "./apiClient";
 import instructorApi from "./instructorApiClient";
+import adminApi from "./adminApiClient";
 import { ENDPOINTS } from "./endpoints";
 
 export const courseApi = {
@@ -11,6 +12,11 @@ export const courseApi = {
     limit?: number;
   }) => {
     const response = await api.get(ENDPOINTS.COURSES, { params });
+    return response.data;
+  },
+
+  getRecentlyViewed: async () => {
+    const response = await api.get(ENDPOINTS.COURSES_RECENTLY_VIEWED);
     return response.data;
   },
 
@@ -36,20 +42,32 @@ export const courseApi = {
     return response.data;
   },
 
+  getAdminCourses: async () => {
+    const response = await adminApi.get(ENDPOINTS.COURSES_ADMIN_CATALOG);
+    return response.data;
+  },
+
   createCourse: async (data: any) => {
-    const response = await instructorApi.post(ENDPOINTS.COURSES, data);
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.post(ENDPOINTS.COURSES, data);
     return response.data;
   },
 
   updateCourse: async (id: string, data: any) => {
-    const response = await instructorApi.put(ENDPOINTS.COURSES_BY_ID(id), data);
+    // Use adminApi if we're on an admin route, otherwise use instructorApi
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.put(ENDPOINTS.COURSES_BY_ID(id), data);
     return response.data;
   },
 
   uploadCourseThumbnail: async (id: string, file: File) => {
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
     const formData = new FormData();
     formData.append("thumbnail", file);
-    const response = await instructorApi.post(
+    const response = await apiClient.post(
       ENDPOINTS.COURSES_THUMBNAIL(id),
       formData,
       { headers: { "Content-Type": "multipart/form-data" } },
@@ -58,7 +76,9 @@ export const courseApi = {
   },
 
   deleteCourse: async (id: string) => {
-    const response = await instructorApi.delete(ENDPOINTS.COURSES_BY_ID(id));
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.delete(ENDPOINTS.COURSES_BY_ID(id));
     return response.data;
   },
 
@@ -73,21 +93,24 @@ export const courseApi = {
     courseId: string,
     data: { title: string; order: number },
   ) => {
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
     // POST /courses/:courseId/modules
-    const response = await instructorApi.post(
-      `/courses/${courseId}/modules`,
-      data,
-    );
+    const response = await apiClient.post(`/courses/${courseId}/modules`, data);
     return response.data;
   },
 
   updateModule: async (id: string, data: { title: string }) => {
-    const response = await instructorApi.put(`/modules/${id}`, data);
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.put(`/modules/${id}`, data);
     return response.data;
   },
 
   deleteModule: async (id: string) => {
-    const response = await instructorApi.delete(`/modules/${id}`);
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.delete(`/modules/${id}`);
     return response.data;
   },
 
@@ -95,7 +118,9 @@ export const courseApi = {
     courseId: string,
     modules: { id: string; order: number }[],
   ) => {
-    const response = await instructorApi.put(
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.put(
       `/courses/${courseId}/modules/reorder`,
       { modules },
     );
@@ -103,25 +128,30 @@ export const courseApi = {
   },
 
   createLesson: async (moduleId: string, data: any) => {
-    const response = await instructorApi.post(
-      `/modules/${moduleId}/lessons`,
-      data,
-    );
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.post(`/modules/${moduleId}/lessons`, data);
     return response.data;
   },
 
   updateLesson: async (id: string, data: any) => {
-    const response = await instructorApi.put(`/lessons/${id}`, data);
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.put(`/lessons/${id}`, data);
     return response.data;
   },
 
   deleteLesson: async (id: string) => {
-    const response = await instructorApi.delete(`/lessons/${id}`);
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.delete(`/lessons/${id}`);
     return response.data;
   },
 
   reorderLessons: async (lessons: { id: string; order: number }[]) => {
-    const response = await instructorApi.put(`/lessons/reorder`, { lessons });
+    const isAdminRoute = window.location.pathname.startsWith("/admin");
+    const apiClient = isAdminRoute ? adminApi : instructorApi;
+    const response = await apiClient.put(`/lessons/reorder`, { lessons });
     return response.data;
   },
 };

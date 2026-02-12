@@ -167,7 +167,12 @@ export const updateCourse = async (
   if (!course) throw new Error("Course not found");
 
   // Check ownership (instructor can only update their own courses, admin can update any)
-  if (userRole.toLowerCase() !== "admin" && course.instructorId !== userId) {
+  const role = userRole.toLowerCase();
+  if (
+    role !== "admin" &&
+    role !== "administrator" &&
+    course.instructorId !== userId
+  ) {
     throw new Error("Not authorized to update this course");
   }
 
@@ -194,7 +199,12 @@ export const deleteCourse = async (
   if (!course) throw new Error("Course not found");
 
   // Check ownership (instructor can only delete their own courses, admin can delete any)
-  if (userRole.toLowerCase() !== "admin" && course.instructorId !== userId) {
+  const role = userRole.toLowerCase();
+  if (
+    role !== "admin" &&
+    role !== "administrator" &&
+    course.instructorId !== userId
+  ) {
     throw new Error("Not authorized to delete this course");
   }
 
@@ -399,19 +409,46 @@ export const verifyCourseOwnership = async (
 
   if (!course) throw new Error("Course not found");
 
-  if (userRole.toLowerCase() !== "admin" && course.instructorId !== userId) {
+  const role = userRole.toLowerCase();
+  if (
+    role !== "admin" &&
+    role !== "administrator" &&
+    course.instructorId !== userId
+  ) {
     throw new Error("Not authorized to modify this course");
   }
   return course;
 };
 
-export const updateCourseThumbnail = async (
-  id: string,
-  thumbnail: string,
-) => {
+export const updateCourseThumbnail = async (id: string, thumbnail: string) => {
   const updatedCourse = await prisma.course.update({
     where: { id },
     data: { thumbnail },
   });
   return updatedCourse;
+};
+
+export const getRecentlyViewedCourses = async (userId: string) => {
+  const enrollments = await prisma.enrollment.findMany({
+    where: { userId },
+    orderBy: { lastAccessed: "desc" },
+    take: 10,
+    include: {
+      course: {
+        select: {
+          id: true,
+          title: true,
+          thumbnail: true,
+          instructor: {
+            select: { name: true },
+          },
+        },
+      },
+    },
+  });
+
+  return enrollments.map((e) => ({
+    ...e.course,
+    lastAccessed: e.lastAccessed,
+  }));
 };

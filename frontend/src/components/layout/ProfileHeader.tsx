@@ -1,13 +1,47 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useGoogleAuth } from "../../hooks/useGoogleAuth";
+import type { RootState } from "../../app/store";
+import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
 
 const ProfileHeader: React.FC = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const { signOut } = useGoogleAuth();
+  const navigate = useNavigate();
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const displayName = user?.name || "User";
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <header className="bg-white border-b border-[#e1e1e1] h-[64px] flex items-center sticky top-0 z-50 font-sans">
       <div className="w-full px-4 md:px-8 flex items-center justify-between">
         {/* Left Section */}
-        <div className="flex items-center gap-4 shrink-0">
-          <button className="text-[#1f1f1f] hover:bg-gray-50 p-2 rounded-md transition-colors border-none bg-transparent cursor-pointer">
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <button className="text-[#1f1f1f] hover:bg-gray-50 p-2 rounded-md transition-colors border-none bg-transparent cursor-pointer block md:hidden">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <button className="text-[#1f1f1f] hover:bg-gray-50 p-2 rounded-md transition-colors border-none bg-transparent cursor-pointer hidden md:block">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="4" cy="4" r="2" />
               <circle cx="12" cy="4" r="2" />
@@ -20,25 +54,28 @@ const ProfileHeader: React.FC = () => {
               <circle cx="20" cy="20" r="2" />
             </svg>
           </button>
-          <Link to="/" className="shrink-0">
-            <div className="w-9 h-9 rounded-full bg-[#1a4f88] flex items-center justify-center text-white font-bold text-lg">
+          <Link to="/" className="shrink-0 scale-90 md:scale-100 no-underline">
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#1a4f88] flex items-center justify-center text-white font-bold text-[16px] md:text-[18px]">
               P
             </div>
           </Link>
         </div>
 
-        {/* Center Search Bar */}
-        <div className="flex-1 max-w-[620px] mx-10 hidden md:block">
-          <div className="relative flex items-center h-[44px] bg-white border border-[#ccc] rounded-full px-1 hover:border-[#808080] focus-within:border-[#0056D2] transition-colors">
+        {/* Center Search Bar & Mobile Transition */}
+        <div className="flex-1 max-w-[620px] mx-2 md:mx-10 relative">
+          {/* Desktop Search */}
+          <div className="hidden md:flex items-center h-[44px] bg-white border border-[#ccc] rounded-full px-1 hover:border-[#808080] focus-within:border-[#0056D2] transition-colors overflow-hidden">
             <div
-              className="ml-[2px] w-[36px] h-[36px] rounded-full flex items-center justify-center text-white font-bold text-[17px] shrink-0"
+              className="ml-[2px] w-[34px] h-[34px] rounded-full flex items-center justify-center text-white font-bold text-[17px] shrink-0"
               style={{ backgroundColor: "#1a73e8" }}
             >
               C
             </div>
             <input
               type="text"
-              placeholder="Search Coursera for Google Career Certificates - UX - Pro..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search Coursera for courses..."
               className="flex-1 px-4 bg-transparent border-none text-[14px] text-[#1f1f1f] focus:outline-none placeholder:text-[#5f6368]"
             />
             <button className="w-8 h-8 rounded-full bg-[#0056D2] flex items-center justify-center text-white shrink-0 hover:bg-[#003e9a] transition-colors border-none cursor-pointer">
@@ -57,12 +94,91 @@ const ProfileHeader: React.FC = () => {
               </svg>
             </button>
           </div>
+
+          {/* Mobile Search Overlay */}
+          {isMobileSearchOpen && (
+            <div className="fixed inset-0 bg-white z-100 flex items-center px-4 md:hidden">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setIsMobileSearchOpen(false);
+                }}
+                className="w-full flex items-center gap-3"
+              >
+                <button
+                  type="button"
+                  onClick={() => setIsMobileSearchOpen(false)}
+                  className="p-1 text-gray-500 border-none bg-transparent cursor-pointer"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                  </svg>
+                </button>
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search"
+                  className="flex-1 h-[40px] bg-transparent border-none text-[16px] text-[#1f1f1f] focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="p-1 text-[#1a73e8] border-none bg-transparent cursor-pointer"
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+              </form>
+            </div>
+          )}
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center gap-6 shrink-0 mr-2">
+        <div className="flex items-center gap-2 md:gap-6 shrink-0">
+          {/* Mobile Search Button */}
+          <button
+            onClick={() => setIsMobileSearchOpen(true)}
+            className="md:hidden text-[#1f1f1f] p-2 hover:bg-gray-50 rounded-md transition-colors bg-transparent border-none cursor-pointer"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+
           {/* Globe Icon */}
-          <button className="text-[#5f6368] hover:text-[#0056D2] transition-colors bg-transparent border-none cursor-pointer p-1">
+          <button className="text-[#5f6368] hover:text-[#0056D2] transition-colors bg-transparent border-none cursor-pointer p-1 hidden sm:block">
             <svg
               width="22"
               height="22"
@@ -78,7 +194,9 @@ const ProfileHeader: React.FC = () => {
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
           </button>
-          <button className="text-[#5f6368] hover:text-[#0056D2] transition-colors bg-transparent border-none cursor-pointer p-1">
+
+          {/* Bell Icon */}
+          <button className="text-[#5f6368] hover:text-[#0056D2] transition-colors bg-transparent border-none cursor-pointer p-1 relative">
             <svg
               width="22"
               height="22"
@@ -93,8 +211,70 @@ const ProfileHeader: React.FC = () => {
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
           </button>
-          <div className="w-8 h-8 rounded-full bg-[#1a4f88] flex items-center justify-center text-white font-bold text-sm ring-2 ring-white shadow-sm cursor-pointer">
-            Z
+          <div className="relative">
+            <button
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-white shadow-sm cursor-pointer shrink-0 overflow-hidden p-0 border-none bg-transparent"
+              style={{ backgroundColor: getAvatarColor(displayName) }}
+            >
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={displayName}
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                getInitials(displayName)
+              )}
+            </button>
+
+            {/* Dropdown Menu */}
+            {isUserMenuOpen && (
+              <>
+                <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[4px] shadow-lg border border-[#e1e1e1] py-2 z-50">
+                  <div className="px-4 py-3 border-b border-[#e1e1e1]">
+                    <p className="font-bold text-[#1f1f1f] truncate text-[14px]">
+                      {displayName}
+                    </p>
+                    <p className="text-xs text-[#5f6368] truncate">
+                      {user?.email || "user@example.com"}
+                    </p>
+                  </div>
+                  {[
+                    {
+                      label: "My Learning",
+                      action: () => navigate("/my-learning"),
+                    },
+                    { label: "Profile", action: () => navigate("/profile") },
+                    {
+                      label: "Account Settings",
+                      action: () => navigate("/account/settings"),
+                    },
+                    {
+                      label: "Accomplishments",
+                      action: () => navigate("/accomplishments"),
+                    },
+                    { label: "Log Out", action: handleLogout },
+                  ].map((item) => (
+                    <button
+                      key={item.label}
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        if (item.action) item.action();
+                      }}
+                      className="w-full text-left px-4 py-2 text-[14px] text-[#1f1f1f] hover:bg-[#f5f7f8] transition-colors border-none bg-transparent cursor-pointer"
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsUserMenuOpen(false)}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

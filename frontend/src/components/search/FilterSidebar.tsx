@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 
 interface FilterCategoryProps {
   title: string;
   items: { label: string; count: number }[];
+  selectedItems: string[];
+  onToggle: (value: string) => void;
   showMore?: boolean;
 }
 
 const FilterCategory: React.FC<FilterCategoryProps> = ({
   title,
   items,
+  selectedItems,
+  onToggle,
   showMore,
 }) => {
   return (
@@ -25,10 +29,12 @@ const FilterCategory: React.FC<FilterCategoryProps> = ({
             <div className="relative flex items-center justify-center">
               <input
                 type="checkbox"
+                checked={selectedItems.includes(item.label)}
+                onChange={() => onToggle(item.label)}
                 className="w-[18px] h-[18px] border-2 border-gray-300 rounded-[2px] text-[#0056D2] focus:ring-0 focus:ring-offset-0 cursor-pointer appearance-none checked:bg-[#0056D2] checked:border-[#0056D2] transition-all"
               />
               <svg
-                className="absolute w-3 h-3 text-white pointer-events-none hidden group-has-checked:block"
+                className={`absolute w-3 h-3 text-white pointer-events-none ${selectedItems.includes(item.label) ? "block" : "hidden"}`}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -57,10 +63,52 @@ const FilterCategory: React.FC<FilterCategoryProps> = ({
   );
 };
 
-const FilterSidebar: React.FC = () => {
+interface FilterSidebarProps {
+  filters: {
+    subjects: string[];
+    skills: string[];
+    levels: string[];
+    durations: string[];
+    products: string[];
+    educators: string[];
+    languages: string[];
+    subtitles: string[];
+  };
+  onFilterChange: (category: string, value: string) => void;
+  onClose?: () => void;
+}
+
+const FilterSidebar: React.FC<FilterSidebarProps> = ({
+  filters,
+  onFilterChange,
+  onClose,
+}) => {
   return (
-    <div className="w-[260px] shrink-0 font-sans pr-4">
-      <h2 className="text-[20px] font-bold text-[#1f1f1f] mb-6">Filter by</h2>
+    <div className="w-full font-sans pr-4 lg:pr-0">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-[20px] font-bold text-[#1f1f1f]">Filter by</h2>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Close filters"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        )}
+      </div>
 
       <div className="space-y-0">
         <FilterCategory
@@ -71,6 +119,8 @@ const FilterSidebar: React.FC = () => {
             { label: "Information Technology", count: 281 },
             { label: "Business", count: 14 },
           ]}
+          selectedItems={filters.subjects}
+          onToggle={(value) => onFilterChange("subjects", value)}
           showMore
         />
 
@@ -82,6 +132,8 @@ const FilterSidebar: React.FC = () => {
             { label: "Generative AI", count: 133 },
             { label: "Dashboard", count: 133 },
           ]}
+          selectedItems={filters.skills}
+          onToggle={(value) => onFilterChange("skills", value)}
           showMore
         />
 
@@ -91,6 +143,8 @@ const FilterSidebar: React.FC = () => {
             { label: "Advanced", count: 1110 },
             { label: "Beginner", count: 1141 },
           ]}
+          selectedItems={filters.levels}
+          onToggle={(value) => onFilterChange("levels", value)}
         />
 
         <FilterCategory
@@ -102,6 +156,8 @@ const FilterSidebar: React.FC = () => {
             { label: "3-6 Months", count: 44 },
             { label: "Less Than 21 Hours", count: 12 },
           ]}
+          selectedItems={filters.durations}
+          onToggle={(value) => onFilterChange("durations", value)}
         />
 
         <FilterCategory
@@ -114,6 +170,8 @@ const FilterSidebar: React.FC = () => {
             { label: "Specializations", count: 112 },
             { label: "Guided Projects", count: 112 },
           ]}
+          selectedItems={filters.products}
+          onToggle={(value) => onFilterChange("products", value)}
         />
 
         <FilterCategory
@@ -122,6 +180,8 @@ const FilterSidebar: React.FC = () => {
             { label: "Google", count: 1710 },
             { label: "Coursera", count: 237 },
           ]}
+          selectedItems={filters.educators}
+          onToggle={(value) => onFilterChange("educators", value)}
         />
 
         <FilterCategory
@@ -132,6 +192,8 @@ const FilterSidebar: React.FC = () => {
             { label: "Japanese", count: 113 },
             { label: "Spanish", count: 112 },
           ]}
+          selectedItems={filters.languages}
+          onToggle={(value) => onFilterChange("languages", value)}
           showMore
         />
 
@@ -143,6 +205,8 @@ const FilterSidebar: React.FC = () => {
             { label: "Arabic", count: 113 },
             { label: "German", count: 112 },
           ]}
+          selectedItems={filters.subtitles}
+          onToggle={(value) => onFilterChange("subtitles", value)}
           showMore
         />
       </div>

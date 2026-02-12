@@ -29,12 +29,16 @@ const CourseCertificate: React.FC = () => {
   const verifyUrl = certificate?.verificationCode
     ? `${window.location.origin}/verify/${certificate.verificationCode}`
     : "";
-  const apiBase = import.meta.env.VITE_API_BASE_URL || "/api/v1";
-  const backendOrigin = apiBase.replace(/\/api\/v1\/?$/, "");
-  const certificateImageUrl =
-    certificate?.imageUrl && certificate.imageUrl.startsWith("/")
-      ? `${backendOrigin}${certificate.imageUrl}`
-      : certificate?.imageUrl;
+  // Robust origin calculation
+  const backendOrigin = (() => {
+    if (import.meta.env.VITE_API_BASE_URL) {
+      return import.meta.env.VITE_API_BASE_URL.replace(/\/api\/v1\/?$/, "");
+    }
+    if (window.location.hostname === "localhost") {
+      return "http://localhost:5000";
+    }
+    return window.location.origin;
+  })();
 
   const formatCompletionDate = (value?: string) => {
     if (!value) return "N/A";
@@ -61,7 +65,9 @@ const CourseCertificate: React.FC = () => {
   const learningPoints = (() => {
     const points = normalizeOutcomes(certificate?.course?.outcomes);
     if (points.length > 0) return points;
-    return normalizeOutcomes(certificate?.course?.description?.substring(0, 100));
+    return normalizeOutcomes(
+      certificate?.course?.description?.substring(0, 100),
+    );
   })();
 
   const handleDownload = async () => {
@@ -106,9 +112,9 @@ const CourseCertificate: React.FC = () => {
     <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
       <Header />
 
-      <main className="max-w-[1140px] mx-auto  py-8">
+      <main className="max-w-[1140px] mx-auto px-4 md:px-0 py-6 md:py-8">
         {/* Breadcrumbs */}
-        <nav className="flex items-center gap-1.5 text-[13px] text-[#5f6368] mb-8 font-medium">
+        <nav className="flex items-center gap-1.5 text-[12px] md:text-[13px] text-[#5f6368] mb-6 md:mb-8 font-medium overflow-x-auto whitespace-nowrap scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           <span className="hover:underline cursor-pointer">
             Accomplishments
           </span>
@@ -127,7 +133,7 @@ const CourseCertificate: React.FC = () => {
           <span className="text-[#1f1f1f]">Course Certificate</span>
         </nav>
 
-        <h1 className="text-[36px] font-normal mb-8 text-[#1f1f1f]">
+        <h1 className="text-[28px] md:text-[36px] font-normal mb-8 text-[#1f1f1f] leading-tight">
           {certificate?.courseTitle || "Course Certificate"}
         </h1>
 
@@ -135,16 +141,16 @@ const CourseCertificate: React.FC = () => {
           {/* Left Column */}
           <div className="space-y-10 min-w-0 flex-1 w-full max-w-[500px]">
             {/* Completion Banner */}
-            <div className="bg-[#E3EEFF] rounded-sm p-10 flex items-start gap-10">
-              <div className="relative">
-                <div className="w-[88px] h-[88px] rounded-full bg-[#9e27b0] flex items-center justify-center text-white text-[42px] font-bold shrink-0">
+            <div className="bg-[#E3EEFF] rounded-sm p-6 md:p-10 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 md:gap-10">
+              <div className="relative shrink-0">
+                <div className="w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full bg-[#9e27b0] flex items-center justify-center text-white text-[32px] md:text-[42px] font-bold">
                   {(certificate?.learnerName || "L").charAt(0).toUpperCase()}
                 </div>
-                <div className="absolute -top-0.5 -right-0.5 w-[26px] h-[26px] bg-white rounded-full flex items-center justify-center border border-[#dadce0]">
+                <div className="absolute -top-0.5 -right-0.5 w-[22px] h-[22px] md:w-[26px] md:h-[26px] bg-white rounded-full flex items-center justify-center border border-[#dadce0]">
                   <div className="bg-white rounded-full w-full h-full flex items-center justify-center">
                     <svg
-                      width="12"
-                      height="12"
+                      width="10"
+                      height="10"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="black"
@@ -158,29 +164,23 @@ const CourseCertificate: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-4">
-                <h2 className="text-[24px] font-normal text-[#1f1f1f]">
+                <h2 className="text-[20px] md:text-[24px] font-normal text-[#1f1f1f]">
                   Completed by{" "}
                   <span className="font-bold">
                     {certificate?.learnerName || "Learner"}
                   </span>
                 </h2>
                 <div className="space-y-1.5 text-[15px] text-[#1f1f1f]">
-                  <p>
-                    {formatCompletionDate(certificate?.issuedAt)}
-                  </p>
+                  <p>{formatCompletionDate(certificate?.issuedAt)}</p>
                   <p>
                     {typeof certificate?.durationMinutes === "number" &&
-                    certificate.durationMinutes > 0 ? (
-                      certificate.durationMinutes < 60 ? (
-                        `${certificate.durationMinutes} minutes (approximately)`
-                      ) : (
-                        `${certificate.durationHours} hours (approximately)`
-                      )
-                    ) : certificate?.durationHours ? (
-                      `${certificate.durationHours} hours (approximately)`
-                    ) : (
-                      "N/A"
-                    )}
+                    certificate.durationMinutes > 0
+                      ? certificate.durationMinutes < 60
+                        ? `${certificate.durationMinutes} minutes (approximately)`
+                        : `${certificate.durationHours} hours (approximately)`
+                      : certificate?.durationHours
+                        ? `${certificate.durationHours} hours (approximately)`
+                        : "N/A"}
                   </p>
                   <p>
                     {typeof certificate?.grade === "number"
@@ -192,10 +192,12 @@ const CourseCertificate: React.FC = () => {
                   <span className="font-bold">
                     {certificate?.learnerName || "This learner"}'s
                   </span>{" "}
-                  account is verified.{" "} Coursera{" "}
+                  account is verified. Coursera{" "}
+                  <span className="font-bold text-[#0056D2]">certifies</span>
+                  their{" "}
                   <span className="font-bold text-[#0056D2]">
-                    certifies  
-                  </span>their{" "}<span className="font-bold text-[#0056D2]">successful completion of</span>{" "}
+                    successful completion of
+                  </span>{" "}
                   <span className="font-bold text-[#1f1f1f]">
                     {certificate?.courseTitle || "this course"}
                   </span>
@@ -204,7 +206,7 @@ const CourseCertificate: React.FC = () => {
             </div>
 
             {/* Course Summary */}
-            <div className="flex items-start gap-2 pt-1">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 pt-1">
               <div className="w-[64px] h-[68px] shrink-0">
                 <img
                   src={IMAGES.LOGOS.GOOGLE_LOGO}
@@ -213,13 +215,13 @@ const CourseCertificate: React.FC = () => {
                 />
               </div>
               <div className="space-y-0.5">
-                <h3 className="text-[20px] font-normal text-[#1f1f1f] leading-tight mb-1">
+                <h3 className="text-[18px] md:text-[20px] font-normal text-[#1f1f1f] leading-tight mb-1">
                   {certificate?.courseTitle || "Course"}
                 </h3>
-                <p className="text-[14px] text-[#5f6368] font-medium">
+                <p className="text-[13px] md:text-[14px] text-[#5f6368] font-medium">
                   {certificate?.partnerName || "Provider"}
                 </p>
-                <div className="flex items-center gap-1.5 py-1">
+                <div className="flex items-center justify-center sm:justify-start gap-1.5 py-1">
                   <div className="flex text-[#f5c22b] gap-[3px]">
                     {[...Array(5)].map((_, i) => (
                       <svg
@@ -233,10 +235,10 @@ const CourseCertificate: React.FC = () => {
                       </svg>
                     ))}
                   </div>
-                  <span className="text-[14px] font-bold text-[#1f1f1f] ml-0.5">
+                  <span className="text-[13px] md:text-[14px] font-bold text-[#1f1f1f] ml-0.5">
                     4.8
                   </span>
-                  <span className="text-[14px] text-[#5f6368]">
+                  <span className="text-[13px] md:text-[14px] text-[#5f6368]">
                     (74,715 ratings)
                   </span>
                 </div>
@@ -244,7 +246,7 @@ const CourseCertificate: React.FC = () => {
             </div>
 
             {/* Learning + Skills Container */}
-            <div className="bg-white rounded-sm border border-[#e8eaed] p-10 space-y-10">
+            <div className="bg-white rounded-sm border border-[#e8eaed] p-6 md:p-10 space-y-8 md:space-y-10">
               {/* What you will learn */}
               <div>
                 <h3 className="text-[16px] font-normal tracking-widest uppercase text-[#1f1f1f] mb-8">
@@ -314,14 +316,13 @@ const CourseCertificate: React.FC = () => {
 
           {/* Right Column */}
           <div className="space-y-6 md:sticky md:top-24 mt-10 md:mt-0 w-full max-w-[600px]">
-            <div className="bg-white rounded  border border-[#B3B3B5] border-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)] overflow-hidden">
-              <img
-                src={
-                  certificateImageUrl ||
-                  "https://s3.amazonaws.com/coursera_assets/meta_images/generated/CERTIFICATE_LANDING_PAGE/CERTIFICATE_LANDING_PAGE~2J3W9X4YK5Z7/CERTIFICATE_LANDING_PAGE~2J3W9X4YK5Z7.jpeg"
-                }
-                alt="Certificate"
-                className="w-full h-auto max-h-[340px] "
+            <div className="bg-white rounded border border-[#B3B3B5] border-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)] overflow-hidden relative aspect-[4/3] sm:aspect-auto">
+              <iframe
+                src={`${backendOrigin}/api/v1/certificates/${id}/html?token=${localStorage.getItem("token") || localStorage.getItem("adminToken") || ""}`}
+                title="Certificate Preview"
+                className="w-full h-[300px] sm:h-[420px] border-none"
+                style={{ overflow: "hidden" }}
+                scrolling="no"
               />
             </div>
             <div className="space-y-4 pt-2">

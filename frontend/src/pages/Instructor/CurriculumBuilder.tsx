@@ -123,6 +123,7 @@ const CurriculumBuilder: React.FC = () => {
     title: string,
     type: "VIDEO" | "READING" | "ASSESSMENT",
     description?: string,
+    content?: string,
   ) => {
     if (!currentModuleId) return;
 
@@ -136,10 +137,15 @@ const CurriculumBuilder: React.FC = () => {
         type,
         order,
         description,
+        content,
       });
 
       const typeLabel =
-        type === "VIDEO" ? "Video" : type === "READING" ? "Reading" : "Assessment";
+        type === "VIDEO"
+          ? "Video"
+          : type === "READING"
+            ? "Reading"
+            : "Assessment";
       toast.success(`${typeLabel} lesson added`);
       setIsAddLessonModalOpen(false);
       setCurrentModuleId(null);

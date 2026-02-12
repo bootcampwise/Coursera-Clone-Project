@@ -2,7 +2,9 @@ import path from "path";
 import fs from "fs";
 import crypto from "crypto";
 import puppeteer from "puppeteer";
+import ejs from "ejs";
 import { prisma } from "../config/prisma";
+import { notificationService } from "./notification.service";
 
 const CERT_DIR = path.join(__dirname, "../../uploads/certificates");
 const RIBBON_LOGO_CANDIDATES = [
@@ -22,6 +24,16 @@ const loadRibbonLogoDataUrl = () => {
 
 const RIBBON_LOGO_DATA_URL = loadRibbonLogoDataUrl();
 
+const CERTIFICATE_COURSE_SELECT = {
+  id: true,
+  thumbnail: true,
+  description: true,
+  outcomes: true,
+  difficulty: true,
+  category: true,
+  instructor: { select: { id: true, name: true } },
+};
+
 const ensureCertDir = () => {
   if (!fs.existsSync(CERT_DIR)) {
     fs.mkdirSync(CERT_DIR, { recursive: true });
@@ -29,7 +41,10 @@ const ensureCertDir = () => {
 };
 
 const randomCode = (length: number) =>
-  crypto.randomBytes(Math.ceil(length / 2)).toString("hex").slice(0, length);
+  crypto
+    .randomBytes(Math.ceil(length / 2))
+    .toString("hex")
+    .slice(0, length);
 
 const generateUniqueCode = async (
   field: "certificateNumber" | "verificationCode",
@@ -81,8 +96,7 @@ const computeCourseGrade = async (enrollmentId: string) => {
     .map((p) => p.score as number);
   if (assessmentScores.length === 0) return null;
   const avg =
-    assessmentScores.reduce((sum, v) => sum + v, 0) /
-    assessmentScores.length;
+    assessmentScores.reduce((sum, v) => sum + v, 0) / assessmentScores.length;
   return Math.round(avg * 100) / 100;
 };
 
@@ -104,320 +118,27 @@ const buildVerificationUrl = (code: string) => {
   return `${base}/${code}`;
 };
 
-const buildCertificateHtml = (data: {
+const renderCertificateHtml = async (data: {
   partnerName?: string;
   learnerName: string;
   courseTitle: string;
   issuedAt: Date;
   verificationUrl: string;
 }) => {
+  const templatePath = path.join(__dirname, "../templates/certificate.ejs");
   const issuedDate = data.issuedAt.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
-  const sealMarkup = RIBBON_LOGO_DATA_URL
-    ? `<img src="${RIBBON_LOGO_DATA_URL}" alt="Coursera seal" class="seal-image" />`
-    : `<div class="seal-fallback">coursera</div>`;
 
-  return `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" />
-<style>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: #ffffff;
-    font-family: "Georgia", "Times New Roman", serif;
-  }
-
-  .page {
-    --side-inset: 90px;
-     --v-space: 20px;
-    width: 1200px;
-    height: 846px;
-    padding: 48px var(--side-inset);
-    position: relative;
-    background:
-      radial-gradient(circle at 20% 40%, rgba(0,0,0,0.03), transparent 40%),
-      radial-gradient(circle at 80% 60%, rgba(0,0,0,0.03), transparent 40%),
-      #ffffff;
-  }
-
-  
-
-  /* ========================= */
-/* Inner decorative border   */
-/* ========================= */
-
-.page::before {
-  content: "";
-  position: absolute;
-  inset: 8px;              /* VERY tight – matches Figma */
-  border: 4px solid #c9c9cc;
-  pointer-events: none;
-}
-
-/* Corner ornaments */
-.page::after {
-  content: "";
-  position: absolute;
-  inset: 8px;
-  pointer-events: none;
-
-  background:
-    /* top-left */
-    linear-gradient(#c9c9cc, #c9c9cc) left top / 12px 1px no-repeat,
-    linear-gradient(#c9c9cc, #c9c9cc) left top / 1px 12px no-repeat,
-
-    /* top-right */
-    linear-gradient(#c9c9cc, #c9c9cc) right top / 12px 1px no-repeat,
-    linear-gradient(#c9c9cc, #c9c9cc) right top / 1px 12px no-repeat,
-
-    /* bottom-left */
-    linear-gradient(#c9c9cc, #c9c9cc) left bottom / 12px 1px no-repeat,
-    linear-gradient(#c9c9cc, #c9c9cc) left bottom / 1px 12px no-repeat,
-
-    /* bottom-right */
-    linear-gradient(#c9c9cc, #c9c9cc) right bottom / 12px 1px no-repeat,
-    linear-gradient(#c9c9cc, #c9c9cc) right bottom / 1px 12px no-repeat;
-}
-
-
-  /* Google logo */
-  .google {
-    font-family: Arial, sans-serif;
-    font-size: 128px;
-    font-weight: 700;
-    letter-spacing: -0.8px;
-    line-height: 1;
-    margin-bottom: 24px;
-  }
-  .g1 { color:#4285F4; }
-  .g2 { color:#EA4335; }
-  .g3 { color:#FBBC05; }
-  .g4 { color:#4285F4; }
-  .g5 { color:#34A853; }
-  .g6 { color:#EA4335; }
-
-
-  .issued,
-.completed,
-.authorized {
-  font-family: Arial, sans-serif;
-  font-size: 24px;
-  font-weight: 400;
-  color: #6b6b6b;
-}
-
-
-  .issued {
-    margin-top: var(--v-space);
-  }
-
-  .name {
-  margin-top: var(--v-space);
-  font-size: 48px;
-  font-weight: 400;
-}
-
-  .completed {
-   margin-top: var(--v-space);
-  }
-
- .course {
-  margin-top: var(--v-space);
-  font-size: 32px;
-  font-weight: 400;
-}
-
-  .authorized {
-    margin-top: var(--v-space);
-    max-width: 560px;
-  }
-
-  /* Signature */
-  .signature {
-    position: absolute;
-    bottom: 120px;
-    left: 90px;
-  }
-.sig-line {
-  font-family: "Segoe Script", "Brush Script MT", cursive;
-  font-size: 26px;
-  font-weight: 700;
-  padding-bottom: 6px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  width: 260px;            /* slightly wider */
-  white-space: nowrap;     /* ✅ forces single line */
-}
-
-
-  .sig-name {
-  margin-top: 10px;
-  font-family: Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 400;
-  color: #555;
-}
-
-.sig-title {
-  margin-top: 6px;
-  font-family: Arial, sans-serif;
-  font-size: 18px;
-  font-weight: 400;
-  color: #6b6b6b;
-}
-
-
-    /* ========================= */
-  /* Ribbon - Figma matched    */
-  /* ========================= */
-  .ribbon {
-    position: absolute;
-    top: 8px;
-    right: var(--side-inset);
-    width: 200px;
-    height: 70%;
-    background: #e2e7eb;
-    border-left: 1px solid #cfd4dc;
-    text-align: center;
-    clip-path: polygon(
-      0 0,
-      100% 0,
-      100% calc(100% - 36px),
-      50% 100%,
-      0 calc(100% - 36px)
-    );
-  }
-
- .ribbon-inner {
-  width: 100%;
-  height: 100%;
-  padding: 48px 24px 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-
-  .ribbon-title {
-    margin: 0;
-    font-family: "Georgia", "Times New Roman", serif;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 2;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #000000;
-  }
-
-  .ribbon-title span {
-    display: block;
-  }
-
-  .seal {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: auto;
-    margin-bottom: 16px;
-  }
-  .seal-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-  .seal-fallback {
-    font-family: Arial, sans-serif;
-    font-weight: 700;
-    font-size: 16px;
-    color: #2c2c2c;
-    text-transform: lowercase;
-    z-index: 2;
-  }
-
-  
-  /* Footer */
-  .verify {
-    position: absolute;
-    bottom: 36px;
-    right: 56px;
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-    color: #555;
-    text-align: right;
-    width: 360px;
-    line-height: 1.5;
-  }
-  .verify a {
-    color: #1a73e8;
-    text-decoration: none;
-  }
-
-  .content {
-  max-width: 760px;
-  margin-top: 28px;
-}
-
-
-</style>
-</head>
-
-<body>
-<div class="page">
-
-  <div class="content">
-    <div class="google">
-      <span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span>
-    </div>
-    <div class="issued">${issuedDate}</div>
-
-    <div class="name">${data.learnerName}</div>
-    <div class="completed">has successfully completed</div>
-
-    <div class="course">${data.courseTitle}</div>
-    <div class="authorized">
-      an online non-credit course authorized by ${data.partnerName || "Google"} and offered through Coursera
-    </div>
-  </div>
-
-  <div class="signature">
-    <div class="sig-line">Amanda Brophy</div>
-    <div class="sig-name">Amanda Brophy</div>
-    <div class="sig-title">Global Director of Google Career Certificates</div>
-  </div>
-
-    <div class="ribbon">
-    <div class="ribbon-inner">
-      <div class="ribbon-title">
-        <span>Course</span>
-        <span>Certificate</span>
-      </div>
-      <div class="seal">${sealMarkup}</div>
-    </div>
-  </div>
-
-  <div class="verify">
-    Verify at:<br/>
-    <a href="${data.verificationUrl}">${data.verificationUrl}</a><br/>
-    Coursera has confirmed the identity of this individual and<br/>
-    their participation in the course
-  </div>
-
-</div>
-</body>
-</html>
-`;
+  return ejs.renderFile(templatePath, {
+    ...data,
+    issuedDate,
+    sealMarkup: RIBBON_LOGO_DATA_URL,
+    partnerName: data.partnerName || "Google",
+  });
 };
-
-
 
 const renderCertificateAssets = async (data: {
   certificateNumber: string;
@@ -433,7 +154,7 @@ const renderCertificateAssets = async (data: {
   const imagePath = path.join(CERT_DIR, `${fileBase}.png`);
 
   const verificationUrl = buildVerificationUrl(data.verificationCode);
-  const html = buildCertificateHtml({
+  const html = await renderCertificateHtml({
     partnerName: data.partnerName,
     learnerName: data.learnerName,
     courseTitle: data.courseTitle,
@@ -441,21 +162,52 @@ const renderCertificateAssets = async (data: {
     verificationUrl,
   });
 
-  const browser = await puppeteer.launch({
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1200, height: 850, deviceScaleFactor: 2 });
-  await page.setContent(html, { waitUntil: "networkidle0" });
-  await page.pdf({
-    path: pdfPath,
-    printBackground: true,
-    landscape: true,
-    width: "11.7in",
-    height: "8.3in",
-  });
-  await page.screenshot({ path: imagePath, fullPage: true });
-  await browser.close();
+  try {
+    const browser = await puppeteer.launch({
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+      timeout: 60000,
+    });
+    const page = await browser.newPage();
+    // Use a slightly larger viewport to ensure no clipping
+    await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 2 });
+
+    console.log(`[certificate-service] Setting content for ${fileBase}...`);
+    await page.setContent(html, { waitUntil: "load", timeout: 60000 });
+
+    // Minimal delay to ensure styles are applied
+    await new Promise((r) => setTimeout(r, 500));
+
+    console.log(`[certificate-service] Generating PDF for ${fileBase}...`);
+    await page.pdf({
+      path: pdfPath,
+      printBackground: true,
+      landscape: true,
+      width: "11.7in",
+      height: "8.3in",
+    });
+
+    console.log(
+      `[certificate-service] Generating screenshot for ${fileBase}...`,
+    );
+    await page.screenshot({ path: imagePath, fullPage: true });
+
+    await browser
+      .close()
+      .catch((e) =>
+        console.error("[certificate-service] Error closing browser:", e),
+      );
+  } catch (err: any) {
+    console.error(
+      `[certificate-service] Puppeteer failure for ${fileBase}:`,
+      err.message,
+    );
+    if (err.stack) console.error(err.stack);
+    throw err;
+  }
 
   return {
     pdfUrl: `/uploads/certificates/${fileBase}.pdf`,
@@ -509,59 +261,108 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
   const existing = await prisma.certificate.findFirst({
     where: { userId: enrollment.userId, courseId: enrollment.courseId },
   });
-  if (existing) return existing;
+
+  // If already exists, check if assets are present on disk
+  if (existing) {
+    const pdfUrl = existing.pdfUrl || "";
+    const imageUrl = existing.imageUrl || "";
+    const pdfPath = path.join(__dirname, "../../", pdfUrl.replace(/^\/+/, ""));
+    const imagePath = path.join(
+      __dirname,
+      "../../",
+      imageUrl.replace(/^\/+/, ""),
+    );
+
+    if (
+      pdfUrl &&
+      imageUrl &&
+      fs.existsSync(pdfPath) &&
+      fs.existsSync(imagePath)
+    ) {
+      return prisma.certificate.findUnique({
+        where: { id: existing.id },
+        include: { course: { select: CERTIFICATE_COURSE_SELECT } },
+      }) as any;
+    }
+    // If assets are missing, we'll try to (re)generate them below
+    console.log(
+      `[certificate-service] Assets missing for existing certificate ${existing.id}, retrying generation...`,
+    );
+  }
 
   ensureCertDir();
 
-  const certificateNumber = await generateUniqueCode(
-    "certificateNumber",
-    12,
-  );
-  const verificationCode = await generateUniqueCode(
-    "verificationCode",
-    16,
-  );
+  let certificate = existing;
+  if (!certificate) {
+    const certificateNumber = await generateUniqueCode("certificateNumber", 12);
+    const verificationCode = await generateUniqueCode("verificationCode", 16);
 
-  const duration = await computeCourseDuration(enrollment.courseId);
-  const grade = await computeCourseGrade(enrollmentId);
+    const duration = await computeCourseDuration(enrollment.courseId);
+    const grade = await computeCourseGrade(enrollmentId);
 
-  const certificate = await prisma.certificate.create({
-    data: {
-      userId: enrollment.userId,
-      courseId: enrollment.courseId,
-      issuedAt: enrollment.completedAt || new Date(),
-      certificateNumber,
-      verificationCode,
-      learnerName: enrollment.user.name,
-      courseTitle: enrollment.course.title,
-      partnerName: enrollment.course.instructor?.name || undefined,
-      durationHours: duration?.hours ?? undefined,
-      durationMinutes: duration?.minutes ?? undefined,
-      grade: grade ?? undefined,
-      verifiedIdentity: false,
-    },
-  });
+    certificate = await prisma.certificate.create({
+      data: {
+        userId: enrollment.userId,
+        courseId: enrollment.courseId,
+        issuedAt: enrollment.completedAt || new Date(),
+        certificateNumber,
+        verificationCode,
+        learnerName: enrollment.user.name,
+        courseTitle: enrollment.course.title,
+        partnerName: enrollment.course.instructor?.name || undefined,
+        durationHours: duration?.hours ?? undefined,
+        durationMinutes: duration?.minutes ?? undefined,
+        grade: grade ?? undefined,
+        verifiedIdentity: false,
+      },
+    });
+
+    // Create notification for certificate generation
+    try {
+      await notificationService.createNotification(enrollment.userId, {
+        type: "certificate",
+        title: "Congratulations, Your Course Certificate is Ready!",
+        message: `${enrollment.course.title}. You can now download your certificate, add it to LinkedIn, and share it with your network.`,
+        actionText: "View Certificate",
+        link: `/accomplishments/certificate/${certificate.id}`,
+      });
+    } catch (notifError) {
+      console.error(
+        "[certificate-service] Failed to create notification:",
+        notifError,
+      );
+      // Don't fail the whole operation if notification fails
+    }
+  }
 
   try {
     const assets = await renderCertificateAssets({
-      certificateNumber,
-      verificationCode,
+      certificateNumber: certificate.certificateNumber,
+      verificationCode: certificate.verificationCode,
       learnerName: certificate.learnerName,
       courseTitle: certificate.courseTitle,
       partnerName: certificate.partnerName || undefined,
       issuedAt: certificate.issuedAt,
     });
 
+    console.log(`[certificate-service] Assets generated for ${certificate.id}`);
     return prisma.certificate.update({
       where: { id: certificate.id },
       data: {
         pdfUrl: assets.pdfUrl,
         imageUrl: assets.imageUrl,
       },
+      include: { course: { select: CERTIFICATE_COURSE_SELECT } },
     });
   } catch (err) {
-    console.error("Failed to render certificate assets", err);
-    return certificate;
+    console.error(
+      `[certificate-service] Failed to render certificate assets for ${certificate.id}:`,
+      err,
+    );
+    return prisma.certificate.findUnique({
+      where: { id: certificate.id },
+      include: { course: { select: CERTIFICATE_COURSE_SELECT } },
+    }) as any;
   }
 };
 
@@ -571,42 +372,70 @@ export const getMyCertificates = async (userId: string) => {
     orderBy: { issuedAt: "desc" },
     include: {
       course: {
-        select: {
-          id: true,
-          thumbnail: true,
-          description: true,
-          outcomes: true,
-          difficulty: true,
-          category: true,
-          instructor: { select: { id: true, name: true } },
-        },
+        select: CERTIFICATE_COURSE_SELECT,
       },
     },
   });
-  const updates = await Promise.all(
-    certificates.map(async (cert) => {
-      if (typeof cert.grade === "number") return cert;
+
+  const finalCerts = [];
+  for (let cert of certificates) {
+    // 1. Self-heal: Check for missing assets
+    const pdfUrl = cert.pdfUrl || "";
+    const imageUrl = cert.imageUrl || "";
+    const pdfPath = path.join(__dirname, "../../", pdfUrl.replace(/^\/+/, ""));
+    const imagePath = path.join(
+      __dirname,
+      "../../",
+      imageUrl.replace(/^\/+/, ""),
+    );
+
+    if (
+      !pdfUrl ||
+      !imageUrl ||
+      !fs.existsSync(pdfPath) ||
+      !fs.existsSync(imagePath)
+    ) {
+      console.log(
+        `[certificate-service] Self-healing broken certificate ${cert.id}...`,
+      );
+      try {
+        const enrollment = await prisma.enrollment.findFirst({
+          where: { userId: cert.userId, courseId: cert.courseId },
+        });
+        if (enrollment) {
+          cert = await issueCertificateForEnrollment(enrollment.id);
+        }
+      } catch (err) {
+        console.error(
+          `[certificate-service] Self-heal failed for ${cert.id}:`,
+          err,
+        );
+      }
+    }
+
+    // 2. Ensure grade is set
+    if (typeof cert.grade !== "number") {
       const grade = await computeCourseGradeByUserCourse(
         cert.userId,
         cert.courseId,
       );
-      if (typeof grade !== "number") {
-        console.log(
-          `[certificates] Grade not available for certificate ${cert.id} (user ${cert.userId}, course ${cert.courseId})`,
-        );
-        return cert;
+      if (typeof grade === "number") {
+        cert = await prisma.certificate.update({
+          where: { id: cert.id },
+          data: { grade },
+          include: {
+            course: {
+              select: CERTIFICATE_COURSE_SELECT,
+            },
+          },
+        });
       }
-      const updated = await prisma.certificate.update({
-        where: { id: cert.id },
-        data: { grade },
-      });
-      console.log(
-        `[certificates] Grade computed for certificate ${cert.id}: ${updated.grade}`,
-      );
-      return { ...cert, grade: updated.grade };
-    }),
-  );
-  return updates;
+    }
+
+    finalCerts.push(cert);
+  }
+
+  return finalCerts;
 };
 
 export const getCertificateById = async (id: string, userId: string) => {
@@ -628,8 +457,11 @@ export const getCertificateById = async (id: string, userId: string) => {
   });
   if (!cert) throw new Error("Certificate not found");
   if (cert.userId !== userId) throw new Error("Unauthorized");
-  const updates: { durationHours?: number; durationMinutes?: number; grade?: number } =
-    {};
+  const updates: {
+    durationHours?: number;
+    durationMinutes?: number;
+    grade?: number;
+  } = {};
 
   if (!cert.durationMinutes || !cert.durationHours) {
     const duration = await computeCourseDuration(cert.courseId);
@@ -687,3 +519,19 @@ export const verifyCertificate = async (verificationCode: string) => {
   };
 };
 
+export const getCertificateHtml = async (id: string, userId: string) => {
+  const cert = await prisma.certificate.findUnique({
+    where: { id },
+  });
+  if (!cert) throw new Error("Certificate not found");
+  if (cert.userId !== userId) throw new Error("Unauthorized");
+
+  const verificationUrl = buildVerificationUrl(cert.verificationCode);
+  return renderCertificateHtml({
+    partnerName: cert.partnerName || undefined,
+    learnerName: cert.learnerName,
+    courseTitle: cert.courseTitle,
+    issuedAt: cert.issuedAt,
+    verificationUrl,
+  });
+};

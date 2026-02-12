@@ -461,7 +461,7 @@ const Header: React.FC = () => {
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-4">
             <button
-              className="text-primary"
+              className="text-primary hover:bg-gray-50 p-2 rounded-md transition-colors bg-transparent border-none cursor-pointer"
               onClick={() => setIsMenuOpen(true)}
             >
               <svg
@@ -480,13 +480,27 @@ const Header: React.FC = () => {
               </svg>
             </button>
             {user ? (
-              <span className="text-primary font-bold text-sm">
-                Hi, {user.name.split(" ")[0]}
-              </span>
+              <button
+                onClick={() => setIsMenuOpen(true)}
+                className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border border-gray-200 focus:outline-none cursor-pointer p-0"
+                style={{ backgroundColor: getAvatarColor(user.name) }}
+              >
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
+                    {getInitials(user.name)}
+                  </div>
+                )}
+              </button>
             ) : (
               <button
                 onClick={openAuth}
-                className="text-primary font-bold text-sm bg-transparent border-none"
+                className="text-primary font-bold text-sm bg-transparent border-none cursor-pointer hover:underline"
               >
                 Log In
               </button>
@@ -494,116 +508,138 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Overlay */}
+        {/* ================= MOBILE NAVIGATION DRAWER ================= */}
         {isMenuOpen && (
-          <div className="fixed inset-0 z-[60] bg-white overflow-y-auto">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <Link
-                to="/"
-                onClick={() => setIsMenuOpen(false)}
-                className="no-underline"
-              >
-                <Logo />
-              </Link>
-              <button
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="p-4 flex flex-col gap-6">
-              <Button className="!bg-primary !text-white !font-bold !rounded-[4px] !w-full !py-[12px]">
-                Join for Free
-              </Button>
-
-              {/* Mobile Search */}
-              <form onSubmit={handleSearch} className="relative">
-                <input
-                  type="text"
-                  placeholder="What do you want to learn?"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-[48px] pl-4 pr-12 border border-gray-400 rounded-full text-sm"
-                />
+          <div className="md:hidden fixed inset-0 z-[100]">
+            {/* Overlay */}
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            {/* Menu Drawer */}
+            <div className="absolute left-0 top-0 bottom-0 w-[280px] max-w-[85%] bg-white p-6 overflow-y-auto animate-slide-in-left flex flex-col">
+              <div className="flex items-center justify-between mb-8">
+                <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                  <Logo />
+                </Link>
                 <button
-                  type="submit"
-                  className="absolute right-1 top-1 h-[40px] w-[40px] bg-primary text-white rounded-full flex items-center justify-center"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full border-none bg-transparent cursor-pointer"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    strokeWidth={2.5}
+                    strokeWidth={2}
                     stroke="currentColor"
-                    className="w-4 h-4"
+                    className="w-6 h-6"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                      d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
                 </button>
-              </form>
-
-              <div className="flex flex-col gap-4 text-[16px] font-medium text-gray-800">
-                <Link
-                  to="/degrees"
-                  className="border-b pb-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Online Degrees
-                </Link>
-                <Link
-                  to="/career"
-                  className="border-b pb-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Find your New Career
-                </Link>
-                <a
-                  href="#"
-                  className="border-b pb-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  For Individuals
-                </a>
-                <a
-                  href="#"
-                  className="border-b pb-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  For Businesses
-                </a>
-                <a
-                  href="#"
-                  className="border-b pb-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  For Universities
-                </a>
-                <a
-                  href="#"
-                  className="border-b pb-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  For Governments
-                </a>
               </div>
+
+              <div className="flex flex-col gap-2">
+                {!user && (
+                  <Button
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      openAuth();
+                    }}
+                    className="!bg-primary !text-white !font-bold !rounded-[4px] !w-full !py-[12px] !mb-4"
+                  >
+                    Join for Free
+                  </Button>
+                )}
+
+                <div className="flex flex-col gap-1">
+                  <Link
+                    to="/search"
+                    className="p-3 text-[16px] font-medium text-[#1f1f1f] hover:bg-[#f5f7f8] rounded-lg no-underline flex items-center justify-between"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Explore
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </Link>
+
+                  <Link
+                    to="/my-learning"
+                    className="p-3 text-[16px] font-medium text-[#1f1f1f] hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    My Learning
+                  </Link>
+                </div>
+
+                <hr className="my-4 border-[#f0f0f0]" />
+
+                <div className="flex flex-col gap-1 text-[15px] font-medium text-[#1f1f1f]">
+                  <Link
+                    to="/degrees"
+                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Online Degrees
+                  </Link>
+                  <Link
+                    to="/career"
+                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Find your New Career
+                  </Link>
+                  <a
+                    href="#"
+                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    For Individuals
+                  </a>
+                  <a
+                    href="#"
+                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    For Businesses
+                  </a>
+                  <a
+                    href="#"
+                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    For Universities
+                  </a>
+                </div>
+              </div>
+
+              {user && (
+                <div className="mt-auto pt-8">
+                  <button
+                    onClick={() => {
+                      signOut();
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left p-3 text-[16px] font-medium text-red-600 hover:bg-red-50 rounded-lg border-none bg-transparent cursor-pointer transition-colors"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

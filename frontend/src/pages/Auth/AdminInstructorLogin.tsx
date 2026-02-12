@@ -85,7 +85,10 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
       } else if (expectedRole === "instructor") {
         const result = await dispatch(loginInstructor({ email, password }));
         if (loginInstructor.fulfilled.match(result)) {
-          toast.success("Welcome back, Instructor");
+          const role = result.payload.user.role.toLowerCase();
+          toast.success(
+            `Welcome back, ${role.charAt(0).toUpperCase() + role.slice(1)}`,
+          );
           navigate("/instructor");
         } else {
           toast.error((result.payload as string) || "Login failed");
@@ -104,9 +107,9 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
           dispatch(setAdminSession(data));
           toast.success("Welcome Admin");
           navigate("/admin");
-        } else if (role === "instructor") {
+        } else if (role === "instructor" || role === "admin") {
           dispatch(setInstructorSession(data));
-          toast.success("Welcome Instructor");
+          toast.success(`Welcome ${role}`);
           navigate("/instructor");
         } else {
           toast.error("Access restricted. Please use student login.");

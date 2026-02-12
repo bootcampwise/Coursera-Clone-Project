@@ -147,7 +147,10 @@ export const getAdminCourseCatalog = asyncHandler(
 );
 
 export const uploadCourseThumbnail = asyncHandler(
-  async (req: Request & { user?: any; file?: Express.Multer.File }, res: Response) => {
+  async (
+    req: Request & { user?: any; file?: Express.Multer.File },
+    res: Response,
+  ) => {
     const { id } = req.params;
     const userId = req.user?.id;
     const userRole = req.user?.role || "";
@@ -173,5 +176,17 @@ export const uploadCourseThumbnail = asyncHandler(
     );
 
     res.json(updated);
+  },
+);
+
+export const getRecentlyViewed = asyncHandler(
+  async (req: Request & { user?: any }, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const courses = await courseService.getRecentlyViewedCourses(userId);
+    res.json(courses);
   },
 );

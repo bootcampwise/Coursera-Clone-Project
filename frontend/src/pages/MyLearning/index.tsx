@@ -99,12 +99,12 @@ const MyLearning: React.FC = () => {
         </h1>
 
         {/* Tabs */}
-        <div className="flex gap-3 mb-10">
+        <div className="flex gap-3 mb-6 md:mb-10 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-full text-[14px] font-bold transition-colors ${
+              className={`px-6 py-2 rounded-full text-[14px] font-bold transition-colors whitespace-nowrap ${
                 activeTab === tab
                   ? "bg-[#1f1f1f] text-white"
                   : "bg-white text-[#1f1f1f] border border-[#1f1f1f] hover:bg-gray-50"
@@ -126,7 +126,7 @@ const MyLearning: React.FC = () => {
             {filteredEnrollments.map((enrollment) => (
               <div
                 key={enrollment.id}
-                className="border border-[#e1e1e1] rounded-[8px] overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white flex flex-col md:flex-row p-6 gap-6"
+                className="border border-[#e1e1e1] rounded-[8px] overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white flex flex-col md:flex-row p-4 md:p-6 gap-4 md:gap-6"
               >
                 {/* Course Image */}
                 <div className="w-full md:w-[180px] h-[120px] shrink-0 rounded-[4px] overflow-hidden border border-gray-100">
@@ -148,29 +148,31 @@ const MyLearning: React.FC = () => {
                   <div>
                     <h2
                       onClick={() => navigate(`/learn/${enrollment.course.id}`)}
-                      className="text-[20px] font-bold text-[#1f1f1f] mb-1 hover:text-[#0056D2] cursor-pointer transition-colors"
+                      className="text-[18px] md:text-[20px] font-bold text-[#1f1f1f] mb-1 hover:text-[#0056D2] cursor-pointer transition-colors line-clamp-2"
                     >
                       {enrollment.course.title}
                     </h2>
-                    <p className="text-[14px] text-gray-600 mb-4">
+                    <p className="text-[13px] md:text-[14px] text-gray-600 mb-4">
                       By{" "}
                       {enrollment.course.instructor?.name ||
                         "Coursera Instructor"}
                     </p>
 
                     {/* Progress Bar */}
-                    <div className="w-full max-w-[300px] bg-gray-100 h-2 rounded-full overflow-hidden mb-2">
-                      <div
-                        className="bg-[#0056D2] h-full transition-all duration-500"
-                        style={{ width: `${enrollment.progress}%` }}
-                      ></div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 max-w-[300px] bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <div
+                          className="bg-[#0056D2] h-full transition-all duration-500"
+                          style={{ width: `${enrollment.progress}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-[12px] font-bold text-[#1f1f1f] shrink-0">
+                        {enrollment.progress}% complete
+                      </span>
                     </div>
-                    <span className="text-[12px] font-bold text-[#1f1f1f]">
-                      {enrollment.progress}% complete
-                    </span>
                   </div>
 
-                  <div className="flex items-center justify-between mt-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-6 gap-4">
                     <div className="flex items-center gap-2">
                       {enrollment.completed ? (
                         <div className="flex items-center gap-2 text-[#187541] font-bold text-[14px]">
@@ -199,20 +201,20 @@ const MyLearning: React.FC = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                       {enrollment.completed &&
                         certificatesByCourseId[enrollment.course.id] && (
-                        <button
-                          onClick={() =>
-                            navigate(
-                              `/accomplishments/certificate/${certificatesByCourseId[enrollment.course.id].id}`,
-                            )
-                          }
-                          className="px-6 py-[10px] border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-blue-50 transition-colors shadow-sm bg-transparent"
-                        >
-                          View Course Certificate
-                        </button>
-                      )}
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/accomplishments/certificate/${certificatesByCourseId[enrollment.course.id].id}`,
+                              )
+                            }
+                            className="px-6 py-[10px] border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-blue-50 transition-colors shadow-sm bg-transparent w-full sm:w-auto"
+                          >
+                            View Certificate
+                          </button>
+                        )}
                       <button
                         onClick={() => {
                           if (enrollment.completed && !enrollment.hasReviewed) {
@@ -225,7 +227,7 @@ const MyLearning: React.FC = () => {
                             navigate(`/learn/${enrollment.course.id}`);
                           }
                         }}
-                        className="px-8 py-[10px] bg-[#0056D2] text-white font-bold rounded-[4px] text-[14px] hover:bg-[#00419e] transition-colors shadow-sm"
+                        className="px-8 py-[10px] bg-[#0056D2] text-white font-bold rounded-[4px] text-[14px] hover:bg-[#00419e] transition-colors shadow-sm w-full sm:w-auto"
                       >
                         {enrollment.completed
                           ? enrollment.hasReviewed
@@ -278,8 +280,8 @@ const MyLearning: React.FC = () => {
       {isReviewOpen && reviewTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-[520px] bg-white rounded-[8px] shadow-xl border border-[#e1e1e1]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e1e1e1]">
-              <h3 className="text-[18px] font-bold text-[#1f1f1f]">
+            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-[#e1e1e1]">
+              <h3 className="text-[16px] md:text-[18px] font-bold text-[#1f1f1f]">
                 Leave a review
               </h3>
               <button
@@ -290,8 +292,8 @@ const MyLearning: React.FC = () => {
                 ×
               </button>
             </div>
-            <div className="px-6 py-5">
-              <p className="text-[14px] text-[#1f1f1f] mb-4">
+            <div className="px-4 md:px-6 py-5">
+              <p className="text-[13px] md:text-[14px] text-[#1f1f1f] mb-4 font-medium">
                 {reviewTarget.course.title}
               </p>
 

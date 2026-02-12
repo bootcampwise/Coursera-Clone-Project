@@ -34,6 +34,22 @@ import TESTIMONIAL_1 from "../assets/images/testimonial-1.png";
 import TESTIMONIAL_2 from "../assets/images/testimonial-2.png";
 import TESTIMONIAL_3 from "../assets/images/testimonial-3.png";
 import TESTIMONIAL_4 from "../assets/images/testimonial-4.png";
+import CARTOON_ICON from "../assets/icons/cartoon.png";
+import SPECIALIZATION_ICON from "../assets/icons/specialization.png";
+import HUNDERS_IMAGE from "../assets/images/hunders.jpg";
+import ILLINOIS_TECH_IMAGE from "../assets/images/illinois-tech.jpg";
+import DEGREE_IMAGE_1 from "../assets/images/degree-1.png";
+import DEGREE_IMAGE_2 from "../assets/images/degree-2.jpg";
+import EARN_DEGREE_1 from "../assets/icons/earn-degree-1.png";
+import EARN_DEGREE_2 from "../assets/icons/earn-degree-2.png";
+import EARN_DEGREE_3 from "../assets/icons/earn-degree-3.png";
+import DEGREE_ICON from "../assets/icons/degree.png";
+import MASTERTRACK_1 from "../assets/images/mastertrack-1.jpg";
+import MASTERTRACK_2 from "../assets/images/mastertrack-2.jpg";
+import MASTERTRACK_3 from "../assets/images/mastertrack-3.jpg";
+import MASTERTRACK_4 from "../assets/images/mastertrack-4.png";
+import COURSERA_PLUS from "../assets/images/coursera-plus.png";
+import DOT_ICON from "../assets/icons/dot.png";
 
 export const IMAGES = {
   HERO: HERO,
@@ -71,11 +87,35 @@ export const IMAGES = {
     EARN_CERTIFICATE_ICON: EARN_CERTIFICATE_ICON,
     TEXT_ICON_1: TEXT_ICON_1,
     TEXT_ICON_2: TEXT_ICON_2,
+    CARTOON_ICON: CARTOON_ICON,
+    SPECIALIZATION_ICON: SPECIALIZATION_ICON,
   },
   TESTIMONIALS: {
     T1: TESTIMONIAL_1,
     T2: TESTIMONIAL_2,
     T3: TESTIMONIAL_3,
     T4: TESTIMONIAL_4,
+  },
+  DEGREE: {
+    HUNDERS: HUNDERS_IMAGE,
+    ILLINOIS_TECH: ILLINOIS_TECH_IMAGE,
+    DEGREE_1: DEGREE_IMAGE_1,
+    DEGREE_2: DEGREE_IMAGE_2,
+  },
+  EARN_DEGREE: {
+    ICON_1: EARN_DEGREE_1,
+    ICON_2: EARN_DEGREE_2,
+    ICON_3: EARN_DEGREE_3,
+    DEGREE_ICON: DEGREE_ICON,
+  },
+  MASTERTRACK: {
+    MT1: MASTERTRACK_1,
+    MT2: MASTERTRACK_2,
+    MT3: MASTERTRACK_3,
+    MT4: MASTERTRACK_4,
+  },
+  COURSERA_PLUS: {
+    IMAGE: COURSERA_PLUS,
+    DOT: DOT_ICON,
   },
 };

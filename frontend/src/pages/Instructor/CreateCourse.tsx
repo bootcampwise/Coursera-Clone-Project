@@ -37,6 +37,10 @@ const CreateCourse: React.FC = () => {
     outcomes: "",
   });
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
+  const [existingThumbnail, setExistingThumbnail] = useState<string>("");
+  const [uploadMethod, setUploadMethod] = useState<"file" | "url">("file");
+  const [showThumbnailInput, setShowThumbnailInput] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEditMode);
@@ -61,6 +65,10 @@ const CreateCourse: React.FC = () => {
             description: data.description || "",
             outcomes: data.outcomes || "",
           });
+          // Store existing thumbnail
+          if (data.thumbnail) {
+            setExistingThumbnail(data.thumbnail);
+          }
           setThumbnailFile(null);
         } catch (error) {
           toast.error("Failed to fetch course details");
@@ -109,14 +117,23 @@ const CreateCourse: React.FC = () => {
 
       if (isEditMode && id) {
         await courseApi.updateCourse(id, payload);
+        // Handle thumbnail upload based on method
         if (thumbnailFile) {
           await courseApi.uploadCourseThumbnail(id, thumbnailFile);
+        } else if (thumbnailUrl.trim()) {
+          // Update course with URL thumbnail
+          await courseApi.updateCourse(id, { thumbnail: thumbnailUrl });
         }
         toast.success("Course updated successfully");
       } else {
         const newCourse = await courseApi.createCourse(payload);
         if (thumbnailFile && newCourse?.id) {
           await courseApi.uploadCourseThumbnail(newCourse.id, thumbnailFile);
+        } else if (thumbnailUrl.trim() && newCourse?.id) {
+          // Update course with URL thumbnail
+          await courseApi.updateCourse(newCourse.id, {
+            thumbnail: thumbnailUrl,
+          });
         }
         toast.success("Course created successfully");
         navigate(
@@ -266,16 +283,120 @@ const CreateCourse: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Course Thumbnail
                 </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setThumbnailFile(e.target.files?.[0] || null)
-                  }
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
+
+                {/* Show existing thumbnail or file preview */}
+                {(existingThumbnail || thumbnailFile) && !showThumbnailInput ? (
+                  <div className="space-y-3">
+                    <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                      <img
+                        src={
+                          thumbnailFile
+                            ? URL.createObjectURL(thumbnailFile)
+                            : existingThumbnail
+                        }
+                        alt="Course thumbnail"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowThumbnailInput(true)}
+                      className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-all"
+                    >
+                      Change Thumbnail
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {/* Upload method toggle */}
+                    <div className="flex gap-2 mb-3">
+                      <button
+                        type="button"
+                        onClick={() => setUploadMethod("file")}
+                        className={`flex-1 px-3 py-2 text-sm rounded-lg transition-all ${
+                          uploadMethod === "file"
+                            ? "bg-blue-50 text-blue-700 border border-blue-200"
+                            : "bg-gray-50 text-gray-600 border border-gray-200"
+                        }`}
+                      >
+                        Upload File
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setUploadMethod("url")}
+                        className={`flex-1 px-3 py-2 text-sm rounded-lg transition-all ${
+                          uploadMethod === "url"
+                            ? "bg-blue-50 text-blue-700 border border-blue-200"
+                            : "bg-gray-50 text-gray-600 border border-gray-200"
+                        }`}
+                      >
+                        Use URL
+                      </button>
+                    </div>
+
+                    {uploadMethod === "file" ? (
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null;
+                          setThumbnailFile(file);
+                          setThumbnailUrl("");
+                        }}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    ) : (
+                      <input
+                        type="url"
+                        value={thumbnailUrl}
+                        onChange={(e) => {
+                          setThumbnailUrl(e.target.value);
+                          setThumbnailFile(null);
+                        }}
+                        placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      />
+                    )}
+
+                    {/* Preview for new uploads */}
+                    {(thumbnailFile || thumbnailUrl) && (
+                      <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mt-3">
+                        <img
+                          src={
+                            thumbnailFile
+                              ? URL.createObjectURL(thumbnailFile)
+                              : thumbnailUrl
+                          }
+                          alt="Thumbnail preview"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23f3f4f6' width='400' height='300'/%3E%3Ctext fill='%236b7280' font-family='sans-serif' font-size='18' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EInvalid Image%3C/text%3E%3C/svg%3E";
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {existingThumbnail && showThumbnailInput && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowThumbnailInput(false);
+                          setThumbnailFile(null);
+                          setThumbnailUrl("");
+                        }}
+                        className="w-full px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-all"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                )}
+
                 <p className="text-xs text-gray-500 mt-2">
-                  Upload a course thumbnail image (stored as base64 for now).
+                  {!existingThumbnail && !thumbnailFile && !showThumbnailInput
+                    ? "Add a course thumbnail via file upload or URL"
+                    : "Recommended: 1200x800px, JPG or PNG"}
                 </p>
               </div>
 

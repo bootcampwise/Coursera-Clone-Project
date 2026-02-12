@@ -1,15 +1,126 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutAdmin } from "../../features/auth/adminAuthSlice";
-import type { AppDispatch } from "../../app/store";
+import type { AppDispatch, RootState } from "../../app/store";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Settings: React.FC = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const token = useSelector((state: RootState) => state.adminAuth.token);
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/users/me`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      setName(response.data.name || "");
+      setEmail(response.data.email || "");
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      toast.error("Failed to load user data");
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    if (!name.trim()) {
+      toast.error("Name cannot be empty");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/users/me`,
+        { name },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      toast.success("Profile updated successfully!");
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
+      toast.error(error.response?.data?.message || "Failed to update profile");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Please fill in all password fields");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      console.log("Attempting to change password...");
+      console.log(
+        "API URL:",
+        `${import.meta.env.VITE_API_BASE_URL}/api/auth/change-password`,
+      );
+      console.log("Token exists:", !!token);
+
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/change-password`,
+        { currentPassword, newPassword },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      console.log("Password change response:", response.data);
+      toast.success("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPasswordModal(false);
+    } catch (error: any) {
+      console.error("Full error object:", error);
+      console.error("Error response:", error.response);
+      console.error("Error data:", error.response?.data);
+      console.error("Error message:", error.response?.data?.message);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to change password";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleLogout = async () => {
     const confirmed = window.confirm("Are you sure you want to log out?");
@@ -55,7 +166,8 @@ const Settings: React.FC = () => {
               </label>
               <input
                 type="text"
-                defaultValue="Administrator"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
             </div>
@@ -65,8 +177,9 @@ const Settings: React.FC = () => {
               </label>
               <input
                 type="email"
-                defaultValue="admin@coursera.com"
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={email}
+                disabled
+                className="w-full bg-gray-100 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-500 cursor-not-allowed"
               />
             </div>
           </div>
@@ -110,7 +223,10 @@ const Settings: React.FC = () => {
                   Last changed: 14 days ago
                 </p>
               </div>
-              <button className="px-4 py-2 bg-white border border-gray-200 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all">
+              <button
+                onClick={() => setShowPasswordModal(true)}
+                className="px-4 py-2 bg-white border border-gray-200 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all"
+              >
                 Change Password
               </button>
             </div>
@@ -196,11 +312,79 @@ const Settings: React.FC = () => {
           <button className="px-6 py-2.5 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all">
             Cancel
           </button>
-          <button className="px-6 py-2.5 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm">
-            Save Changes
+          <button
+            onClick={handleUpdateProfile}
+            disabled={isLoading}
+            className="px-6 py-2.5 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
+
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-white/10 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <h3 className="text-lg font-semibold mb-4">Change Password</h3>
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Current Password
+                </label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Confirm New Password
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPasswordModal(false);
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
+                  }}
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex-1 px-4 py-2.5 bg-black text-white font-medium text-sm rounded-lg hover:bg-gray-800 transition-all disabled:opacity-50"
+                >
+                  {isLoading ? "Changing..." : "Change Password"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

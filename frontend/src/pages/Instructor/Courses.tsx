@@ -166,12 +166,6 @@ const Courses: React.FC = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex items-center gap-3">
                         <Link
-                          to={`/instructor/videos?courseId=${c.id}`}
-                          className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                        >
-                          Manage Content
-                        </Link>
-                        <Link
                           to={`/instructor/courses/${c.id}/curriculum`}
                           className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
                         >
