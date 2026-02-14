@@ -13,5 +13,54 @@ export interface User {
   name: string;
   email: string;
   avatarUrl?: string;
-  role: string; // Using string to be flexible with backend, typically 'student' | 'instructor' | 'admin'
+  role: string; 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

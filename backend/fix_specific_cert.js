@@ -17,8 +17,8 @@ async function fix() {
 
     console.log('Found certificate:', cert.id, 'for enrollment:', cert.enrollmentId);
     
-    // The issueCertificateForEnrollment logic I added checks if assets exist.
-    // Calling it again should trigger regeneration if they are missing.
+    
+    
     const updated = await issueCertificateForEnrollment(cert.enrollmentId);
     console.log('Update result:', JSON.stringify(updated, null, 2));
 

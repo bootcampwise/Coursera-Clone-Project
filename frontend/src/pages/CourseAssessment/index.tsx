@@ -102,7 +102,7 @@ const CourseAssessment: React.FC = () => {
         );
       }
 
-      // Simulate submission process for UX
+      
       setTimeout(() => {
         navigate(`/learn/${courseId}/assessment/${assessmentId}/result`, {
           state: {
@@ -129,9 +129,9 @@ const CourseAssessment: React.FC = () => {
   if (error) return <div className="p-10 text-red-600">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#1f1f1f] relative">
-      {/* ================= HEADER ================= */}
-      <header className="border-b border-[#dadce0] sticky top-0 bg-white z-50">
+    <div className="min-h-screen bg-white font-sans text-gray-dark-3 relative">
+      {}
+      <header className="border-b border-gray-medium-4 sticky top-0 bg-white z-50">
         <div className="max-w-[1000px] mx-auto px-4 md:px-6 min-h-[72px] py-4 md:py-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 w-full md:w-auto">
             <button
@@ -143,15 +143,15 @@ const CourseAssessment: React.FC = () => {
               disabled={assessmentStarted}
               className={`group flex items-center gap-1 font-bold text-[14px] bg-transparent border-none p-0 ${
                 assessmentStarted
-                  ? "text-[#9aa0a6] cursor-not-allowed"
-                  : "text-[#0056D2] cursor-pointer"
+                  ? "text-gray-medium-light-2 cursor-not-allowed"
+                  : "text-primary cursor-pointer"
               }`}
             >
               <svg
                 className={`w-5 h-5 transition-transform ${
                   assessmentStarted
-                    ? "text-[#9aa0a6]"
-                    : "text-[#0056D2] group-hover:-translate-x-1"
+                    ? "text-gray-medium-light-2"
+                    : "text-primary group-hover:-translate-x-1"
                 }`}
                 fill="none"
                 viewBox="0 0 24 24"
@@ -167,13 +167,13 @@ const CourseAssessment: React.FC = () => {
               Back
             </button>
 
-            <div className="hidden md:block border-l border-[#dadce0] h-10 mx-2"></div>
+            <div className="hidden md:block border-l border-gray-medium-4 h-10 mx-2"></div>
 
             <div className="w-full md:w-auto">
-              <h1 className="text-[16px] font-bold text-[#1f1f1f] leading-snug break-words">
+              <h1 className="text-[16px] font-bold text-gray-dark-3 leading-snug break-words">
                 {assessment.title}
               </h1>
-              <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#5f6368] mt-1 md:mt-0">
+              <div className="flex flex-wrap items-center gap-2 text-[12px] text-text-gray mt-1 md:mt-0">
                 <span>Graded Assignment</span>
                 <span className="hidden xs:inline">•</span>
                 <span>
@@ -183,9 +183,9 @@ const CourseAssessment: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-[14px] text-[#1f1f1f] font-medium w-full md:w-auto pt-2 md:pt-0 border-t md:border-none border-[#f5f5f5]">
+          <div className="flex items-center gap-2 text-[14px] text-gray-dark-3 font-medium w-full md:w-auto pt-2 md:pt-0 border-t md:border-none border-gray-very-light">
             <svg
-              className="w-5 h-5 text-[#5f6368]"
+              className="w-5 h-5 text-text-gray"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -194,17 +194,17 @@ const CourseAssessment: React.FC = () => {
               <line x1="2" y1="12" x2="22" y2="12"></line>
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
             </svg>
-            <span className="text-[#1f1f1f]">
+            <span className="text-gray-dark-3">
               Pass Score: {assessment.parsedContent.passingScore}%
             </span>
           </div>
         </div>
       </header>
 
-      {/* ================= SUBMISSION REVIEW PAGE ================= */}
+      {}
       {isSubmitting ? (
         <main className="flex flex-col items-center justify-center min-h-[calc(100vh-72px)] px-4">
-          {/* Coursera Logo Spinner */}
+          {}
           <div className="mb-8">
             <svg
               className="w-24 h-24 animate-spin"
@@ -214,20 +214,20 @@ const CourseAssessment: React.FC = () => {
             >
               <path
                 d="M50 10 A 40 40 0 0 1 90 50"
-                stroke="#0056D2"
+                stroke="currentColor"
                 strokeWidth="8"
                 strokeLinecap="round"
                 fill="none"
               />
-              <circle cx="85" cy="65" r="6" fill="#0056D2" />
+              <circle cx="85" cy="65" r="6" fill="currentColor" />
             </svg>
           </div>
 
-          {/* Text Content */}
-          <h2 className="text-[28px] font-bold text-[#1f1f1f] mb-3 text-center">
+          {}
+          <h2 className="text-[28px] font-bold text-gray-dark-3 mb-3 text-center">
             Reviewing your submission...
           </h2>
-          <p className="text-[16px] text-[#5f6368] text-center">
+          <p className="text-[16px] text-text-gray text-center">
             Hang tight! This shouldn't take too long.
           </p>
         </main>
@@ -235,10 +235,10 @@ const CourseAssessment: React.FC = () => {
         <>
           {/* ================= MAIN CONTENT ================= */}
           <main className="max-w-[850px] mx-auto px-4 md:px-6 py-6 md:py-12">
-            <h2 className="text-2xl md:text-[28px] font-bold text-[#1f1f1f] mb-2">
+            <h2 className="text-2xl md:text-[28px] font-bold text-gray-dark-3 mb-2">
               {assessment.parsedContent.title || "Assessment"}
             </h2>
-            <p className="text-[14px] text-[#5f6368] mb-8 md:mb-12">
+            <p className="text-[14px] text-text-gray mb-8 md:mb-12">
               {assessment.parsedContent.instructions}
             </p>
 
@@ -250,14 +250,14 @@ const CourseAssessment: React.FC = () => {
                   {/* Question Header */}
                   <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-2 sm:gap-0">
                     <div className="flex gap-4">
-                      <span className="text-[14px] font-normal text-[#1f1f1f] w-4 shrink-0 pt-0.5">
+                      <span className="text-[14px] font-normal text-gray-dark-3 w-4 shrink-0 pt-0.5">
                         {idx + 1}.
                       </span>
-                      <p className="text-[16px] leading-relaxed text-[#1f1f1f] font-normal max-w-[680px]">
+                      <p className="text-[16px] leading-relaxed text-gray-dark-3 font-normal max-w-[680px]">
                         {q.question}
                       </p>
                     </div>
-                    <span className="text-[14px] text-[#5f6368] font-normal sm:text-right pl-8 sm:pl-0">
+                    <span className="text-[14px] text-text-gray font-normal sm:text-right pl-8 sm:pl-0">
                       1 point
                     </span>
                   </div>
@@ -280,9 +280,9 @@ const CourseAssessment: React.FC = () => {
                             className="peer sr-only"
                           />
                           {/* Custom Radio/Checkbox Design */}
-                          <div className="w-5 h-5 rounded-full border border-[#757575] bg-white group-hover:border-[#1f1f1f] peer-checked:border-[#0056D2] peer-checked:border-[6px] transition-all"></div>
+                          <div className="w-5 h-5 rounded-full border border-gray-medium-dark bg-white group-hover:border-gray-dark-3 peer-checked:border-primary peer-checked:border-[6px] transition-all"></div>
                         </div>
-                        <span className="text-[16px] text-[#1f1f1f] leading-relaxed select-none">
+                        <span className="text-[16px] text-gray-dark-3 leading-relaxed select-none">
                           {option}
                         </span>
                       </label>
@@ -294,12 +294,12 @@ const CourseAssessment: React.FC = () => {
             </div>
 
             {/* Honor Code Section */}
-            <div className="mt-12 md:mt-16 mb-8 pt-8 border-t border-[#e1e1e1]">
-              <p className="text-[14px] font-bold text-[#1f1f1f] mb-4">
+            <div className="mt-12 md:mt-16 mb-8 pt-8 border-t border-border">
+              <p className="text-[14px] font-bold text-gray-dark-3 mb-4">
                 Coursera Honor Code{" "}
                 <a
                   href="#"
-                  className="text-[#0056D2] font-semibold no-underline hover:underline ml-1"
+                  className="text-primary font-semibold no-underline hover:underline ml-1"
                 >
                   Learn more
                 </a>
@@ -313,7 +313,7 @@ const CourseAssessment: React.FC = () => {
                     onChange={(e) => setHonorCodeAccepted(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="w-5 h-5 rounded-[2px] border border-[#757575] bg-white hover:border-[#1f1f1f] peer-checked:bg-[#0056D2] peer-checked:border-[#0056D2] flex items-center justify-center transition-all">
+                  <div className="w-5 h-5 rounded-[2px] border border-gray-medium-dark bg-white hover:border-gray-dark-3 peer-checked:bg-primary peer-checked:border-primary flex items-center justify-center transition-all">
                     <svg
                       className="w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100"
                       fill="none"
@@ -329,7 +329,7 @@ const CourseAssessment: React.FC = () => {
                     </svg>
                   </div>
                 </div>
-                <div className="text-[12px] text-[#1f1f1f] leading-relaxed">
+                <div className="text-[12px] text-gray-dark-3 leading-relaxed">
                   <span className="font-bold">
                     I, {enrollment?.studentName || "Learner"}, understand that
                     submitting work that isn&apos;t my own may result in
@@ -337,7 +337,7 @@ const CourseAssessment: React.FC = () => {
                     Coursera account.
                   </span>
                   <br />
-                  <span className="text-[#5f6368]">
+                  <span className="text-text-gray">
                     You must select the checkbox in order to submit the
                     assignment
                   </span>
@@ -353,18 +353,18 @@ const CourseAssessment: React.FC = () => {
                   !honorCodeAccepted ||
                   Object.keys(answers).length < questions.length
                 }
-                className="w-full sm:w-auto px-6 py-2 bg-[#0056D2] text-white font-bold text-[14px] rounded-[4px] hover:bg-[#00419e] disabled:bg-[#dadce0] disabled:text-[#757575] border border-[#0056D2] disabled:border-[#dadce0] transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2 bg-primary text-white font-bold text-[14px] rounded-[4px] hover:bg-primary-hover disabled:bg-gray-medium-4 disabled:text-gray-medium-dark border border-primary disabled:border-gray-medium-4 transition-colors cursor-pointer"
               >
                 Submit
               </button>
-              <button className="w-full sm:w-auto px-6 py-2 bg-white text-[#0056D2] font-bold text-[14px] rounded-[4px] border border-[#0056D2] hover:bg-[#f5f7f8] transition-colors cursor-pointer">
+              <button className="w-full sm:w-auto px-6 py-2 bg-white text-primary font-bold text-[14px] rounded-[4px] border border-primary hover:bg-surface transition-colors cursor-pointer">
                 Save Draft
               </button>
             </div>
 
             {/* Footer Actions */}
-            <div className="flex flex-wrap items-center gap-4 md:gap-6 border-t border-[#e1e1e1] pt-6 mb-12">
-              <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] bg-transparent border-none cursor-pointer">
+            <div className="flex flex-wrap items-center gap-4 md:gap-6 border-t border-border pt-6 mb-12">
+              <button className="flex items-center gap-2 text-primary font-bold text-[14px] bg-transparent border-none cursor-pointer">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -380,7 +380,7 @@ const CourseAssessment: React.FC = () => {
                 </svg>
                 Like
               </button>
-              <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] bg-transparent border-none cursor-pointer">
+              <button className="flex items-center gap-2 text-primary font-bold text-[14px] bg-transparent border-none cursor-pointer">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -396,7 +396,7 @@ const CourseAssessment: React.FC = () => {
                 </svg>
                 Dislike
               </button>
-              <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] bg-transparent border-none cursor-pointer">
+              <button className="flex items-center gap-2 text-primary font-bold text-[14px] bg-transparent border-none cursor-pointer">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -419,20 +419,20 @@ const CourseAssessment: React.FC = () => {
           {isSubmitModalOpen && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
               <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-[400px] flex flex-col items-center">
-                <h3 className="text-[20px] font-semibold text-[#1f1f1f] mb-8 text-center">
+                <h3 className="text-[20px] font-semibold text-gray-dark-3 mb-8 text-center">
                   Ready to submit?
                 </h3>
 
                 <div className="flex items-center justify-center gap-4 w-full">
                   <button
                     onClick={handleSubmitConfirm}
-                    className="px-8 py-2.5 bg-[#0056D2] text-white font-semibold text-[14px] rounded hover:bg-primary-hover transition-colors cursor-pointer border-none"
+                    className="px-8 py-2.5 bg-primary text-white font-semibold text-[14px] rounded hover:bg-primary-hover transition-colors cursor-pointer border-none"
                   >
                     Submit
                   </button>
                   <button
                     onClick={() => setIsSubmitModalOpen(false)}
-                    className="px-8 py-2.5 bg-white text-[#0056D2] font-semibold text-[14px] rounded border border-[#0056D2] hover:bg-[#f5f7f8] transition-colors cursor-pointer"
+                    className="px-8 py-2.5 bg-white text-primary font-semibold text-[14px] rounded border border-primary hover:bg-surface transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -447,3 +447,52 @@ const CourseAssessment: React.FC = () => {
 };
 
 export default CourseAssessment;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

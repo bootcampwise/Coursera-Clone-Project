@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const FAQ: React.FC = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0); // First one open by default or none? Screenshot has none expanded fully or maybe top one? Screenshot text is red on "me?"... wait. "Can I try Coursera Plus first... right for me?" The "me?" is red? Or maybe it's just selection?
-  // Actually the red text "me?" looks like a display glitch or highlight. I'll ignore the red color unless it's a specific design element.
-  // The screenshot shows collapsed items.
+  const [openIndex, setOpenIndex] = useState<number | null>(0); 
+  
+  
 
   const faqs = [
     {
@@ -106,3 +106,52 @@ const FAQ: React.FC = () => {
 };
 
 export default FAQ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -20,12 +20,12 @@ interface UpdateLessonData {
   duration?: number;
 }
 
-// Helper to validate Assessment JSON format
+
 const validateAssessmentJSON = (content: string) => {
   try {
     const data = JSON.parse(content);
 
-    // Required root keys
+    
     if (!data.title || typeof data.title !== "string")
       throw new Error("Assessment title is required.");
     if (!Array.isArray(data.questions) || data.questions.length === 0)
@@ -33,7 +33,7 @@ const validateAssessmentJSON = (content: string) => {
     if (typeof data.passingScore !== "number")
       throw new Error("Passing score must be a number.");
 
-    // Validate each question
+    
     data.questions.forEach((q: any, index: number) => {
       if (!q.question || typeof q.question !== "string")
         throw new Error(`Question ${index + 1} text is missing.`);
@@ -56,7 +56,7 @@ const validateAssessmentJSON = (content: string) => {
   }
 };
 
-// Helper to get course ID from module
+
 const getModuleCourseId = async (moduleId: string) => {
   const module = await prisma.module.findUnique({
     where: { id: moduleId },
@@ -66,7 +66,7 @@ const getModuleCourseId = async (moduleId: string) => {
   return module.courseId;
 };
 
-// Helper to get course ID from lesson
+
 const getLessonCourseId = async (lessonId: string) => {
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
@@ -85,12 +85,12 @@ export const createLesson = async (
   const courseId = await getModuleCourseId(moduleId);
   await verifyCourseOwnership(courseId, userId, userRole);
 
-  // STRICT VALIDATION: reject requests missing type
+  
   if (!data.type) {
     throw new Error("Lesson type is required");
   }
 
-  // Strict Type Enforcement: Clear unrelated fields
+  
   if (data.type === "VIDEO") {
     data.content = undefined;
   } else if (data.type === "READING") {
@@ -98,7 +98,7 @@ export const createLesson = async (
     data.duration = undefined;
   } else if (data.type === "ASSESSMENT") {
     data.videoUrl = undefined;
-    // Assessments use 'content' for JSON storage
+    
     if (data.content) {
       validateAssessmentJSON(data.content);
     }
@@ -121,16 +121,16 @@ export const updateLesson = async (
   const courseId = await getLessonCourseId(id);
   await verifyCourseOwnership(courseId, userId, userRole);
 
-  // Fetch existing lesson to determine behavior if type is not provided
+  
   const existingLesson = await prisma.lesson.findUnique({ where: { id } });
   if (!existingLesson) throw new Error("Lesson not found");
 
   const updateData: any = { ...data };
   const type = data.type || existingLesson.type;
 
-  // Enforce exclusivity based on the finalized type
+  
   if (type === "VIDEO") {
-    // Only nullify if explicitly changing to VIDEO or if already VIDEO and content is accidentally sent
+    
     if (data.type || existingLesson.type === "VIDEO") {
       updateData.content = null;
     }
@@ -140,7 +140,7 @@ export const updateLesson = async (
   } else if (type === "ASSESSMENT") {
     updateData.videoUrl = null;
     updateData.duration = null;
-    // Always validate if content is provided for an assessment
+    
     if (updateData.content) {
       validateAssessmentJSON(updateData.content);
     }
@@ -170,7 +170,7 @@ export const reorderLessons = async (
   userId: string,
   userRole: string,
 ) => {
-  // Check ownership for the first lesson to validate permission
+  
   if (lessonOrders.length > 0) {
     const courseId = await getLessonCourseId(lessonOrders[0].id);
     await verifyCourseOwnership(courseId, userId, userRole);

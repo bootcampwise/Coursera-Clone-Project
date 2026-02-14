@@ -6,7 +6,13 @@ import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
 import type { RootState } from "../../app/store";
 import { IMAGES } from "../../constants/images";
 
-const CourseContentHeader: React.FC = () => {
+export interface CourseContentHeaderProps {
+  onMobileMenuToggle?: () => void;
+}
+
+const CourseContentHeader: React.FC<CourseContentHeaderProps> = ({
+  onMobileMenuToggle,
+}) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const { signOut } = useGoogleAuth();
   const navigate = useNavigate();
@@ -20,36 +26,56 @@ const CourseContentHeader: React.FC = () => {
   };
 
   return (
-    <header className="bg-white border-b border-[#e1e1e1] h-[64px] flex items-center sticky top-0 z-50 font-sans shadow-sm">
+    <header className="bg-white border-b border-border h-[64px] flex items-center sticky top-0 z-50 font-sans shadow-sm">
       <div className="w-full px-4 flex items-center justify-between">
-        {/* ================= LEFT SECTION ================= */}
-        <div className="flex items-center gap-4 shrink-0">
-          {/* Logo */}
-          <Link to="/" className="flex items-center no-underline">
+        {}
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          {}
+          <button
+            onClick={onMobileMenuToggle}
+            className="lg:hidden p-2 text-gray-dark-3 hover:bg-gray-50 rounded-md border-none bg-transparent cursor-pointer flex items-center justify-center"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          {}
+          <Link to="/" className="flex items-center no-underline shrink-0">
             <img
               src={IMAGES.LOGO}
               alt="Coursera"
-              className="h-[24px] w-auto object-contain"
+              className="h-[16px] xs:h-[18px] md:h-[24px] w-auto object-contain"
             />
           </Link>
 
-          {/* Separator */}
-          <div className="h-[24px] w-[1px] bg-[#dadce0] mx-1"></div>
+          {}
+          <div className="h-[20px] md:h-[24px] w-[1px] bg-gray-medium-4 mx-0 md:mx-1"></div>
 
-          {/* Partner Name/Logo */}
-          <div className="flex items-center">
+          {}
+          <div className="flex items-center shrink-0">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg"
               alt="Google"
-              className="h-[22px] w-auto"
+              className="h-[14px] xs:h-[16px] md:h-[22px] w-auto"
             />
           </div>
         </div>
 
-        {/* ================= RIGHT SECTION ================= */}
-        <div className="flex items-center gap-5 shrink-0">
-          {/* Globe Icon */}
-          <button className="text-[#5f6368] hover:text-[#1f1f1f] bg-transparent border-none cursor-pointer p-1">
+        {}
+        <div className="flex items-center gap-1.5 xs:gap-2 md:gap-5 shrink-0">
+          {}
+          <button className="hidden sm:block text-text-gray hover:text-gray-dark-3 bg-transparent border-none cursor-pointer p-1">
             <svg
               width="20"
               height="20"
@@ -66,8 +92,8 @@ const CourseContentHeader: React.FC = () => {
             </svg>
           </button>
 
-          {/* Owl/Assistant Icon (Placeholder) */}
-          <button className="w-8 h-8 rounded-full bg-[#E4F2FE] flex items-center justify-center text-[#0056D2] border-none cursor-pointer">
+          {}
+          <button className="hidden sm:flex w-8 h-8 rounded-full bg-blue-light-9 flex items-center justify-center text-primary border-none cursor-pointer">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -80,7 +106,7 @@ const CourseContentHeader: React.FC = () => {
             </svg>
           </button>
 
-          {/* Profile Circle */}
+          {}
           <div className="relative">
             <button
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -101,12 +127,12 @@ const CourseContentHeader: React.FC = () => {
 
             {isUserMenuOpen && (
               <>
-                <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[4px] shadow-lg border border-[#e1e1e1] py-2 z-50">
-                  <div className="px-4 py-3 border-b border-[#e1e1e1]">
-                    <p className="font-bold text-[#1f1f1f] truncate">
+                <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[4px] shadow-lg border border-border py-2 z-50">
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="font-bold text-gray-dark-3 truncate">
                       {displayName}
                     </p>
-                    <p className="text-xs text-[#5f6368] truncate">
+                    <p className="text-xs text-text-gray truncate">
                       {user?.email || "user@example.com"}
                     </p>
                   </div>
@@ -128,7 +154,7 @@ const CourseContentHeader: React.FC = () => {
                         setIsUserMenuOpen(false);
                         if (item.action) item.action();
                       }}
-                      className="w-full text-left px-4 py-2 text-[14px] text-[#1f1f1f] hover:bg-[#f5f7f8] transition-colors border-none bg-transparent cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-[14px] text-gray-dark-3 hover:bg-surface transition-colors border-none bg-transparent cursor-pointer"
                     >
                       {item.label}
                     </button>
@@ -148,3 +174,51 @@ const CourseContentHeader: React.FC = () => {
 };
 
 export default CourseContentHeader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -14,8 +14,8 @@ const CourseTabs: React.FC = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 text-[14px] font-normal rounded-[6px] transition-all ${
                 activeTab === tab
-                  ? "bg-[#F2F6FD] text-[#0056D2] underline underline-offset-4"
-                  : "text-[#201114] hover:text-[#1f1f1f]"
+                  ? "bg-blue-light-7 text-primary underline underline-offset-4"
+                  : "text-shade-4-alt hover:text-gray-dark-3"
               }`}
             >
               {tab}
@@ -29,3 +29,53 @@ const CourseTabs: React.FC = () => {
 };
 
 export default CourseTabs;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

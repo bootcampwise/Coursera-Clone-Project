@@ -1,11 +1,11 @@
 export const ENDPOINTS = {
-  // Auth
+  
   AUTH_LOGIN: "/auth/login",
   AUTH_REGISTER: "/auth/register",
   AUTH_REFRESH: "/auth/refresh",
   AUTH_CHANGE_PASSWORD: "/auth/change-password",
 
-  // Users
+  
   USERS_SYNC_GOOGLE: "/users/sync-google",
   USERS_ME: "/users/me",
   USERS_LIST: "/users",
@@ -21,7 +21,7 @@ export const ENDPOINTS = {
   USERS_PROFILE_CERTIFICATE_BY_ID: (id: string) =>
     `/users/me/profile-certificates/${id}`,
 
-  // Courses
+  
   COURSES: "/courses",
   COURSES_SEARCH: "/courses/search",
   COURSES_RECENTLY_VIEWED: "/courses/recently-viewed",
@@ -31,7 +31,7 @@ export const ENDPOINTS = {
   COURSES_ADMIN_CATALOG: "/courses/admin/catalog",
   COURSES_INSTRUCTOR: "/courses/instructor/my",
 
-  // Enrollments
+  
   ENROLLMENTS_ENROLL: (courseId: string) => `/enrollments/${courseId}`,
   ENROLLMENTS_MY: "/enrollments/my",
   ENROLLMENTS_PROGRESS: (id: string) => `/enrollments/${id}/progress`,
@@ -42,19 +42,68 @@ export const ENDPOINTS = {
   ENROLLMENTS_LESSON_PROGRESS: (enrollmentId: string, lessonId: string) =>
     `/enrollments/${enrollmentId}/lessons/${lessonId}`,
 
-  // Reviews
+  
   REVIEWS_CREATE: (courseId: string) => `/reviews/${courseId}`,
   REVIEWS_BY_COURSE: (courseId: string) => `/reviews/course/${courseId}`,
   REVIEWS_ADMIN: "/reviews/admin",
   REVIEWS_INSTRUCTOR: "/reviews/instructor",
 
-  // Analytics
+  
   ANALYTICS_ADMIN: "/analytics/admin/overview",
   ANALYTICS_INSTRUCTOR: "/analytics/instructor/overview",
 
-  // Certificates
+  
   CERTIFICATES_MY: "/certificates/my",
   CERTIFICATES_BY_ID: (id: string) => `/certificates/${id}`,
   CERTIFICATES_DOWNLOAD: (id: string) => `/certificates/${id}/download`,
   CERTIFICATES_VERIFY: (code: string) => `/certificates/verify/${code}`,
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

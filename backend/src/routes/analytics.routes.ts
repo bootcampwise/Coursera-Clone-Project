@@ -8,7 +8,7 @@ import { requireRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
-// Admin routes
+
 router.get(
   "/admin/overview",
   authMiddleware,
@@ -16,7 +16,7 @@ router.get(
   getAdminAnalytics,
 );
 
-// Instructor routes
+
 router.get(
   "/instructor/overview",
   authMiddleware,

@@ -53,7 +53,7 @@ const MyLearning: React.FC = () => {
   const filteredEnrollments = enrollments.filter((enrollment) => {
     if (activeTab === "In Progress") return !enrollment.completed;
     if (activeTab === "Completed") return enrollment.completed;
-    return false; // Saved tab logic can be added later if needed
+    return false; 
   });
 
   const renderEmptyState = () => (
@@ -64,7 +64,7 @@ const MyLearning: React.FC = () => {
           height="40"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#ccc"
+          stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -73,7 +73,7 @@ const MyLearning: React.FC = () => {
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
         </svg>
       </div>
-      <h3 className="text-[20px] font-bold text-[#1f1f1f] mb-2">
+      <h3 className="text-[20px] font-bold text-gray-dark-3 mb-2">
         Nothing here yet
       </h3>
       <p className="text-gray-600 mb-8">
@@ -81,7 +81,7 @@ const MyLearning: React.FC = () => {
       </p>
       <Link
         to="/search"
-        className="px-8 py-3 bg-[#0056D2] text-white font-bold rounded-[4px] hover:bg-[#00419e] transition-colors"
+        className="px-8 py-3 bg-primary text-white font-bold rounded-[4px] hover:bg-primary-hover transition-colors"
       >
         Explore Courses
       </Link>
@@ -93,12 +93,12 @@ const MyLearning: React.FC = () => {
       <LoggedHeader />
 
       <main className="container mx-auto px-4 py-8 max-w-[1100px]">
-        {/* Page Title */}
-        <h1 className="text-[32px] font-bold text-[#1f1f1f] mb-6">
+        {}
+        <h1 className="text-[32px] font-bold text-gray-dark-3 mb-6">
           My Learning
         </h1>
 
-        {/* Tabs */}
+        {}
         <div className="flex gap-3 mb-6 md:mb-10 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
           {tabs.map((tab) => (
             <button
@@ -106,8 +106,8 @@ const MyLearning: React.FC = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-2 rounded-full text-[14px] font-bold transition-colors whitespace-nowrap ${
                 activeTab === tab
-                  ? "bg-[#1f1f1f] text-white"
-                  : "bg-white text-[#1f1f1f] border border-[#1f1f1f] hover:bg-gray-50"
+                  ? "bg-gray-dark-3 text-white"
+                  : "bg-white text-gray-dark-3 border border-gray-dark-3 hover:bg-gray-50"
               }`}
             >
               {tab}
@@ -117,7 +117,7 @@ const MyLearning: React.FC = () => {
 
         {isLoading ? (
           <div className="py-20 flex justify-center">
-            <div className="w-12 h-12 border-4 border-[#0056D2] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : filteredEnrollments.length === 0 ? (
           renderEmptyState()
@@ -126,9 +126,9 @@ const MyLearning: React.FC = () => {
             {filteredEnrollments.map((enrollment) => (
               <div
                 key={enrollment.id}
-                className="border border-[#e1e1e1] rounded-[8px] overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white flex flex-col md:flex-row p-4 md:p-6 gap-4 md:gap-6"
+                className="border border-border rounded-[8px] overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white flex flex-col md:flex-row p-4 md:p-6 gap-4 md:gap-6"
               >
-                {/* Course Image */}
+                {}
                 <div className="w-full md:w-[180px] h-[120px] shrink-0 rounded-[4px] overflow-hidden border border-gray-100">
                   {enrollment.course.thumbnail ? (
                     <img
@@ -143,12 +143,12 @@ const MyLearning: React.FC = () => {
                   )}
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
                     <h2
                       onClick={() => navigate(`/learn/${enrollment.course.id}`)}
-                      className="text-[18px] md:text-[20px] font-bold text-[#1f1f1f] mb-1 hover:text-[#0056D2] cursor-pointer transition-colors line-clamp-2"
+                      className="text-[18px] md:text-[20px] font-bold text-gray-dark-3 mb-1 hover:text-primary cursor-pointer transition-colors line-clamp-2"
                     >
                       {enrollment.course.title}
                     </h2>
@@ -158,15 +158,15 @@ const MyLearning: React.FC = () => {
                         "Coursera Instructor"}
                     </p>
 
-                    {/* Progress Bar */}
+                    {}
                     <div className="flex items-center gap-3">
                       <div className="flex-1 max-w-[300px] bg-gray-100 h-2 rounded-full overflow-hidden">
                         <div
-                          className="bg-[#0056D2] h-full transition-all duration-500"
+                          className="bg-primary h-full transition-all duration-500"
                           style={{ width: `${enrollment.progress}%` }}
                         ></div>
                       </div>
-                      <span className="text-[12px] font-bold text-[#1f1f1f] shrink-0">
+                      <span className="text-[12px] font-bold text-gray-dark-3 shrink-0">
                         {enrollment.progress}% complete
                       </span>
                     </div>
@@ -175,8 +175,8 @@ const MyLearning: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-6 gap-4">
                     <div className="flex items-center gap-2">
                       {enrollment.completed ? (
-                        <div className="flex items-center gap-2 text-[#187541] font-bold text-[14px]">
-                          <div className="w-5 h-5 rounded-full bg-[#187541] flex items-center justify-center">
+                        <div className="flex items-center gap-2 text-success-dark font-bold text-[14px]">
+                          <div className="w-5 h-5 rounded-full bg-success-dark flex items-center justify-center">
                             <svg
                               width="12"
                               height="12"
@@ -210,7 +210,7 @@ const MyLearning: React.FC = () => {
                                 `/accomplishments/certificate/${certificatesByCourseId[enrollment.course.id].id}`,
                               )
                             }
-                            className="px-6 py-[10px] border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-blue-50 transition-colors shadow-sm bg-transparent w-full sm:w-auto"
+                            className="px-6 py-[10px] border border-primary text-primary font-bold rounded-[4px] text-[14px] hover:bg-blue-50 transition-colors shadow-sm bg-transparent w-full sm:w-auto"
                           >
                             View Certificate
                           </button>
@@ -227,7 +227,7 @@ const MyLearning: React.FC = () => {
                             navigate(`/learn/${enrollment.course.id}`);
                           }
                         }}
-                        className="px-8 py-[10px] bg-[#0056D2] text-white font-bold rounded-[4px] text-[14px] hover:bg-[#00419e] transition-colors shadow-sm w-full sm:w-auto"
+                        className="px-8 py-[10px] bg-primary text-white font-bold rounded-[4px] text-[14px] hover:bg-primary-hover transition-colors shadow-sm w-full sm:w-auto"
                       >
                         {enrollment.completed
                           ? enrollment.hasReviewed
@@ -240,7 +240,7 @@ const MyLearning: React.FC = () => {
                     </div>
                   </div>
                   {enrollment.completed && (
-                    <div className="mt-3 text-[12px] text-[#5f6368]">
+                    <div className="mt-3 text-[12px] text-text-gray">
                       Completed on{" "}
                       {new Date(
                         enrollment.completedAt || enrollment.updatedAt,
@@ -248,7 +248,7 @@ const MyLearning: React.FC = () => {
                     </div>
                   )}
                   {enrollment.completed && enrollment.hasReviewed && (
-                    <div className="mt-2 flex items-center gap-2 text-[12px] text-[#1f1f1f] font-bold">
+                    <div className="mt-2 flex items-center gap-2 text-[12px] text-gray-dark-3 font-bold">
                       <span>Your rating:</span>
                       <div className="flex items-center gap-0.5">
                         {[1, 2, 3, 4, 5].map((value) => (
@@ -256,8 +256,8 @@ const MyLearning: React.FC = () => {
                             key={value}
                             className={`w-4 h-4 ${
                               (enrollment.myRating || 0) >= value
-                                ? "text-[#f5c22b]"
-                                : "text-[#dadce0]"
+                                ? "text-yellow-accent"
+                                : "text-border-light"
                             }`}
                             viewBox="0 0 24 24"
                             fill="currentColor"
@@ -279,26 +279,26 @@ const MyLearning: React.FC = () => {
 
       {isReviewOpen && reviewTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-[520px] bg-white rounded-[8px] shadow-xl border border-[#e1e1e1]">
-            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-[#e1e1e1]">
-              <h3 className="text-[16px] md:text-[18px] font-bold text-[#1f1f1f]">
+          <div className="w-full max-w-[520px] bg-white rounded-[8px] shadow-xl border border-border">
+            <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-border">
+              <h3 className="text-[16px] md:text-[18px] font-bold text-gray-dark-3">
                 Leave a review
               </h3>
               <button
                 onClick={() => setIsReviewOpen(false)}
-                className="text-[#5f6368] hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center text-[20px]"
+                className="text-text-gray hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center text-[20px]"
                 aria-label="Close"
               >
                 ×
               </button>
             </div>
             <div className="px-4 md:px-6 py-5">
-              <p className="text-[13px] md:text-[14px] text-[#1f1f1f] mb-4 font-medium">
+              <p className="text-[13px] md:text-[14px] text-gray-dark-3 mb-4 font-medium">
                 {reviewTarget.course.title}
               </p>
 
               <div className="mb-4">
-                <p className="text-[13px] font-bold text-[#1f1f1f] mb-2">
+                <p className="text-[13px] font-bold text-gray-dark-3 mb-2">
                   Rating
                 </p>
                 <div className="flex items-center gap-1.5">
@@ -312,8 +312,8 @@ const MyLearning: React.FC = () => {
                       <svg
                         className={`w-6 h-6 ${
                           reviewRating >= value
-                            ? "text-[#f5c22b]"
-                            : "text-[#dadce0]"
+                            ? "text-yellow-accent"
+                            : "text-border-light"
                         }`}
                         viewBox="0 0 24 24"
                         fill="currentColor"
@@ -326,14 +326,14 @@ const MyLearning: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <p className="text-[13px] font-bold text-[#1f1f1f] mb-2">
+                <p className="text-[13px] font-bold text-gray-dark-3 mb-2">
                   Review
                 </p>
                 <textarea
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
                   rows={4}
-                  className="w-full border border-[#dadce0] rounded-[6px] p-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-[#0056D2]/30"
+                  className="w-full border border-gray-medium-4 rounded-[6px] p-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-primary/30"
                   placeholder="Share your experience with this course..."
                 />
               </div>
@@ -344,10 +344,10 @@ const MyLearning: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#e1e1e1]">
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-border">
               <button
                 onClick={() => setIsReviewOpen(false)}
-                className="px-6 py-2 border border-[#dadce0] rounded-[4px] text-[14px] font-bold text-[#1f1f1f] hover:bg-gray-50"
+                className="px-6 py-2 border border-gray-medium-4 rounded-[4px] text-[14px] font-bold text-gray-dark-3 hover:bg-gray-50"
               >
                 Cancel
               </button>
@@ -389,7 +389,7 @@ const MyLearning: React.FC = () => {
                   }
                 }}
                 disabled={isSubmittingReview}
-                className="px-6 py-2 bg-[#0056D2] text-white rounded-[4px] text-[14px] font-bold hover:bg-[#00419e] disabled:opacity-60"
+                className="px-6 py-2 bg-primary text-white rounded-[4px] text-[14px] font-bold hover:bg-primary-hover disabled:opacity-60"
               >
                 {isSubmittingReview ? "Submitting..." : "Submit Review"}
               </button>
@@ -398,8 +398,8 @@ const MyLearning: React.FC = () => {
         </div>
       )}
 
-      {/* Help Button - Floating */}
-      <button className="fixed bottom-6 right-6 w-[48px] h-[48px] bg-white border border-[#e1e1e1] rounded-full shadow-lg flex items-center justify-center text-[#0056D2] hover:bg-gray-50 transition-all z-50">
+      {}
+      <button className="fixed bottom-6 right-6 w-[48px] h-[48px] bg-white border border-border rounded-full shadow-lg flex items-center justify-center text-primary hover:bg-gray-50 transition-all z-50">
         <svg
           width="24"
           height="24"
@@ -420,3 +420,53 @@ const MyLearning: React.FC = () => {
 };
 
 export default MyLearning;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -30,7 +30,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     const result = await dispatch(registerUser({ name, email, password }));
     if (registerUser.fulfilled.match(result)) {
       toast.success("Account created successfully!");
-      // Auto switch to login or show success (backend currently doesn't return token on register)
+      
       onSwitchToLogin();
     } else if (registerUser.rejected.match(result)) {
       toast.error((result.payload as string) || "Registration failed");
@@ -47,12 +47,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-100 overflow-y-auto bg-black/50 backdrop-blur-[2px] flex items-start justify-center p-4 sm:p-6 md:items-center">
-      {/* Overlay Click Area (transparent) */}
+      {}
       <div className="fixed inset-0" onClick={resetAndClose} />
 
-      {/* Modal Container */}
+      {}
       <div className="relative bg-white w-full max-w-[480px] rounded-[8px] shadow-2xl px-8 py-6 md:px-12 md:py-8 animate-in fade-in zoom-in duration-200 my-auto">
-        {/* Close Button */}
+        {}
         <button
           onClick={resetAndClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10"
@@ -73,7 +73,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           </svg>
         </button>
 
-        {/* Header */}
+        {}
         <div className="mb-6">
           <h2 className="text-[28px] font-semibold text-text-primary mb-2 font-sans tracking-tight">
             Create your account
@@ -83,7 +83,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           </p>
         </div>
 
-        {/* Form */}
+        {}
         <form onSubmit={handleRegister} className="space-y-4">
           <div className="space-y-2">
             <label
@@ -184,7 +184,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           </button>
         </div>
 
-        {/* Footer Text */}
+        {}
         <div className="mt-6 space-y-4 text-[12px] text-gray-500 leading-relaxed">
           <p>
             By clicking Create Account, you agree to our{" "}
@@ -204,3 +204,52 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
 };
 
 export default RegisterModal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

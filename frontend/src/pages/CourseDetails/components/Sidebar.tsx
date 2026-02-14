@@ -7,7 +7,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ course }) => {
   return (
     <div className="space-y-8 sticky top-[120px]">
-      {/* Taught by */}
+      {}
       <div className="bg-white rounded-[8px] border border-gray-100 p-6 shadow-sm">
         <h3 className="text-[14px] font-bold text-gray-500 uppercase tracking-wider mb-4">
           Taught by
@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ course }) => {
             )}
           </div>
           <div>
-            <h4 className="text-[15px] font-bold text-[#1f1f1f]">
+            <h4 className="text-[15px] font-bold text-gray-dark-3">
               {course.instructor?.name}
             </h4>
             <p className="text-[13px] text-gray-500">Instructor</p>
@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ course }) => {
           )}
           <span className="text-sm font-medium">{course.instructor?.name}</span>
         </div>
-        <button className="text-[#0056D2] text-[13px] font-bold hover:underline">
+        <button className="text-primary text-[13px] font-bold hover:underline">
           Learn more
         </button>
       </div>
@@ -64,3 +64,53 @@ const Sidebar: React.FC<SidebarProps> = ({ course }) => {
 };
 
 export default Sidebar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

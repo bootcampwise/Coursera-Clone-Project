@@ -5,7 +5,7 @@ interface CourseInfoBarProps {
   course: any;
 }
 
-const CourseInfoBar: React.FC<CourseInfoBarProps> = ({ course }) => {
+const CourseInfoBar: React.FC<CourseInfoBarProps> = () => {
   const infoItems = [
     {
       label: "4 course series",
@@ -32,19 +32,19 @@ const CourseInfoBar: React.FC<CourseInfoBarProps> = ({ course }) => {
   ];
 
   return (
-    <div className="bg-white rounded-[12px] shadow-[0_4px_32px_rgba(0,0,0,0.08)] border border-gray-100 p-6 md:p-10 flex flex-wrap lg:flex-nowrap items-center justify-between gap-8 md:gap-4 overflow-hidden relative">
+    <div className="bg-white rounded-[12px] shadow-[0_4px_32px_rgba(0,0,0,0.08)] border border-gray-100 p-5 sm:p-6 md:p-8 flex flex-wrap lg:flex-nowrap items-stretch justify-start lg:justify-between gap-y-6 gap-x-4 sm:gap-x-8 md:gap-4 overflow-hidden relative">
       {infoItems.map((item, index) => (
         <div
           key={index}
-          className={`flex items-start flex-1 min-w-[180px] lg:min-w-0 ${
+          className={`flex items-start flex-1 min-w-[140px] sm:min-w-[180px] lg:min-w-0 ${
             index !== infoItems.length - 1
-              ? "lg:border-r border-gray-100 pr-4"
+              ? "lg:border-r border-gray-100 lg:pr-4"
               : ""
           }`}
         >
           <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-[15px] font-normal text-[#1f1f1f]">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-[14px] sm:text-[15px] font-normal text-gray-dark-3">
                 {item.label}
               </span>
               {item.withStar && (
@@ -56,13 +56,13 @@ const CourseInfoBar: React.FC<CourseInfoBarProps> = ({ course }) => {
               )}
             </div>
             {item.subLabel && (
-              <span className="text-[13px] text-gray-500 leading-tight flex items-center gap-1">
-                {item.subLabel}
+              <span className="text-[12px] sm:text-[13px] text-gray-500 leading-tight flex items-center gap-1 mt-0.5 sm:mt-1">
+                <span className="line-clamp-2">{item.subLabel}</span>
                 {item.withInfo && (
                   <img
                     src={IMAGES.UI.EXCLAMATORY_ICON}
                     alt=""
-                    className="w-3 h-3 object-contain"
+                    className="w-3 h-3 object-contain shrink-0"
                   />
                 )}
               </span>
@@ -75,3 +75,53 @@ const CourseInfoBar: React.FC<CourseInfoBarProps> = ({ course }) => {
 };
 
 export default CourseInfoBar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

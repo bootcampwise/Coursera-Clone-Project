@@ -22,14 +22,14 @@ const DegreeCard: React.FC<Props> = ({ degree }) => {
             alt={degree.university}
             className="w-5 h-5 object-contain"
           />
-          <span className="text-[12px] font-semibold text-[#1f1f1f]">
+          <span className="text-[12px] font-semibold text-gray-dark-3">
             {degree.university}
           </span>
         </div>
-        <h3 className="text-[16px] font-bold text-[#1f1f1f] mb-1 leading-snug">
+        <h3 className="text-[16px] font-bold text-gray-dark-3 mb-1 leading-snug">
           {degree.title}
         </h3>
-        <p className="text-[14px] text-[#5f6368] mt-auto">
+        <p className="text-[14px] text-text-gray mt-auto">
           {degree.description}
         </p>
       </div>
@@ -38,3 +38,52 @@ const DegreeCard: React.FC<Props> = ({ degree }) => {
 };
 
 export default DegreeCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

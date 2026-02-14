@@ -15,17 +15,25 @@ const ProfileHeader: React.FC = () => {
 
   const displayName = user?.name || "User";
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsMobileSearchOpen(false);
+    }
+  };
+
   const handleLogout = async () => {
     await signOut();
     navigate("/");
   };
 
   return (
-    <header className="bg-white border-b border-[#e1e1e1] h-[64px] flex items-center sticky top-0 z-50 font-sans">
+    <header className="bg-white border-b border-border h-[64px] flex items-center sticky top-0 z-50 font-sans">
       <div className="w-full px-4 md:px-8 flex items-center justify-between">
-        {/* Left Section */}
+        {}
         <div className="flex items-center gap-2 md:gap-4 shrink-0">
-          <button className="text-[#1f1f1f] hover:bg-gray-50 p-2 rounded-md transition-colors border-none bg-transparent cursor-pointer block md:hidden">
+          <button className="text-gray-dark-3 hover:bg-gray-50 p-2 rounded-md transition-colors border-none bg-transparent cursor-pointer block md:hidden">
             <svg
               width="24"
               height="24"
@@ -41,7 +49,7 @@ const ProfileHeader: React.FC = () => {
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
           </button>
-          <button className="text-[#1f1f1f] hover:bg-gray-50 p-2 rounded-md transition-colors border-none bg-transparent cursor-pointer hidden md:block">
+          <button className="text-gray-dark-3 hover:bg-gray-50 p-2 rounded-md transition-colors border-none bg-transparent cursor-pointer hidden md:block">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="4" cy="4" r="2" />
               <circle cx="12" cy="4" r="2" />
@@ -55,19 +63,20 @@ const ProfileHeader: React.FC = () => {
             </svg>
           </button>
           <Link to="/" className="shrink-0 scale-90 md:scale-100 no-underline">
-            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#1a4f88] flex items-center justify-center text-white font-bold text-[16px] md:text-[18px]">
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-blue-dark-3 flex items-center justify-center text-white font-bold text-[16px] md:text-[18px]">
               P
             </div>
           </Link>
         </div>
 
-        {/* Center Search Bar & Mobile Transition */}
         <div className="flex-1 max-w-[620px] mx-2 md:mx-10 relative">
-          {/* Desktop Search */}
-          <div className="hidden md:flex items-center h-[44px] bg-white border border-[#ccc] rounded-full px-1 hover:border-[#808080] focus-within:border-[#0056D2] transition-colors overflow-hidden">
+          {}
+          <form
+            onSubmit={handleSearch}
+            className="hidden md:flex items-center h-[44px] bg-white border border-stroke-light-gray rounded-full px-1 hover:border-gray-600 focus-within:border-primary transition-colors overflow-hidden"
+          >
             <div
-              className="ml-[2px] w-[34px] h-[34px] rounded-full flex items-center justify-center text-white font-bold text-[17px] shrink-0"
-              style={{ backgroundColor: "#1a73e8" }}
+              className="ml-[2px] w-[34px] h-[34px] rounded-full flex items-center justify-center text-white font-bold text-[17px] shrink-0 bg-google-blue"
             >
               C
             </div>
@@ -76,9 +85,12 @@ const ProfileHeader: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search Coursera for courses..."
-              className="flex-1 px-4 bg-transparent border-none text-[14px] text-[#1f1f1f] focus:outline-none placeholder:text-[#5f6368]"
+              className="flex-1 px-4 bg-transparent border-none text-[14px] text-gray-dark-3 focus:outline-none placeholder:text-text-gray"
             />
-            <button className="w-8 h-8 rounded-full bg-[#0056D2] flex items-center justify-center text-white shrink-0 hover:bg-[#003e9a] transition-colors border-none cursor-pointer">
+            <button
+              type="submit"
+              className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white shrink-0 hover:bg-blue-dark-accent transition-colors border-none cursor-pointer"
+            >
               <svg
                 width="16"
                 height="16"
@@ -93,16 +105,13 @@ const ProfileHeader: React.FC = () => {
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </button>
-          </div>
+          </form>
 
-          {/* Mobile Search Overlay */}
+          {}
           {isMobileSearchOpen && (
             <div className="fixed inset-0 bg-white z-100 flex items-center px-4 md:hidden">
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setIsMobileSearchOpen(false);
-                }}
+                onSubmit={handleSearch}
                 className="w-full flex items-center gap-3"
               >
                 <button
@@ -130,11 +139,11 @@ const ProfileHeader: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search"
-                  className="flex-1 h-[40px] bg-transparent border-none text-[16px] text-[#1f1f1f] focus:outline-none"
+                  className="flex-1 h-[40px] bg-transparent border-none text-[16px] text-gray-dark-3 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="p-1 text-[#1a73e8] border-none bg-transparent cursor-pointer"
+                  className="p-1 text-google-blue border-none bg-transparent cursor-pointer"
                 >
                   <svg
                     width="22"
@@ -155,12 +164,12 @@ const ProfileHeader: React.FC = () => {
           )}
         </div>
 
-        {/* Right Section */}
+        {}
         <div className="flex items-center gap-2 md:gap-6 shrink-0">
-          {/* Mobile Search Button */}
+          {}
           <button
             onClick={() => setIsMobileSearchOpen(true)}
-            className="md:hidden text-[#1f1f1f] p-2 hover:bg-gray-50 rounded-md transition-colors bg-transparent border-none cursor-pointer"
+            className="md:hidden text-gray-dark-3 p-2 hover:bg-gray-50 rounded-md transition-colors bg-transparent border-none cursor-pointer"
           >
             <svg
               width="20"
@@ -177,8 +186,8 @@ const ProfileHeader: React.FC = () => {
             </svg>
           </button>
 
-          {/* Globe Icon */}
-          <button className="text-[#5f6368] hover:text-[#0056D2] transition-colors bg-transparent border-none cursor-pointer p-1 hidden sm:block">
+          {}
+          <button className="text-text-gray hover:text-primary transition-colors bg-transparent border-none cursor-pointer p-1 hidden sm:block">
             <svg
               width="22"
               height="22"
@@ -195,8 +204,8 @@ const ProfileHeader: React.FC = () => {
             </svg>
           </button>
 
-          {/* Bell Icon */}
-          <button className="text-[#5f6368] hover:text-[#0056D2] transition-colors bg-transparent border-none cursor-pointer p-1 relative">
+          {}
+          <button className="text-text-gray hover:text-primary transition-colors bg-transparent border-none cursor-pointer p-1 relative">
             <svg
               width="22"
               height="22"
@@ -229,15 +238,15 @@ const ProfileHeader: React.FC = () => {
               )}
             </button>
 
-            {/* Dropdown Menu */}
+            {}
             {isUserMenuOpen && (
               <>
-                <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[4px] shadow-lg border border-[#e1e1e1] py-2 z-50">
-                  <div className="px-4 py-3 border-b border-[#e1e1e1]">
-                    <p className="font-bold text-[#1f1f1f] truncate text-[14px]">
+                <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[4px] shadow-lg border border-border py-2 z-50">
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="font-bold text-gray-dark-3 truncate text-[14px]">
                       {displayName}
                     </p>
-                    <p className="text-xs text-[#5f6368] truncate">
+                    <p className="text-xs text-text-gray truncate">
                       {user?.email || "user@example.com"}
                     </p>
                   </div>
@@ -263,7 +272,7 @@ const ProfileHeader: React.FC = () => {
                         setIsUserMenuOpen(false);
                         if (item.action) item.action();
                       }}
-                      className="w-full text-left px-4 py-2 text-[14px] text-[#1f1f1f] hover:bg-[#f5f7f8] transition-colors border-none bg-transparent cursor-pointer"
+                      className="w-full text-left px-4 py-2 text-[14px] text-gray-dark-3 hover:bg-surface transition-colors border-none bg-transparent cursor-pointer"
                     >
                       {item.label}
                     </button>
@@ -283,3 +292,52 @@ const ProfileHeader: React.FC = () => {
 };
 
 export default ProfileHeader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

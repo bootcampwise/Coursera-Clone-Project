@@ -79,7 +79,7 @@ const AppRoutes: React.FC = () => (
       <Route path="/updates" element={<UpdatesPage />} />
       <Route path="/my-learning" element={<MyLearning />} />
 
-      {/* Public Auth Routes */}
+      {}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/portal-login" element={<AdminInstructorLogin />} />
@@ -93,7 +93,7 @@ const AppRoutes: React.FC = () => (
       />
       <Route path="/checkout/:courseId" element={<Checkout />} />
 
-      {/* Protected Instructor Routes */}
+      {}
       <Route
         element={<InstructorProtectedRoute loginPath="/instructor-login" />}
       >
@@ -115,7 +115,7 @@ const AppRoutes: React.FC = () => (
         </Route>
       </Route>
 
-      {/* Protected Admin Routes */}
+      {}
       <Route element={<AdminProtectedRoute loginPath="/admin-login" />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Overview />} />
@@ -140,3 +140,52 @@ const AppRoutes: React.FC = () => (
 );
 
 export default AppRoutes;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,7 +16,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const location = useLocation();
 
   if (!user) {
-    // Redirect to the specified login page
+    
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
@@ -33,7 +33,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
     if (!hasRole) {
       console.log("Role mismatch. Redirecting to login.");
-      // User is logged in but doesn't have the right role
+      
       return <Navigate to={loginPath} replace />;
     }
   }
@@ -42,3 +42,51 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 };
 
 export default ProtectedRoute;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

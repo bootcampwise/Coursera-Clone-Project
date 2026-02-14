@@ -70,7 +70,7 @@ export const deleteLesson = asyncHandler(
 
 export const reorderLessons = asyncHandler(
   async (req: Request & { user?: any }, res: Response) => {
-    const { lessons } = req.body; // Array of { id, order }
+    const { lessons } = req.body; 
     const userId = req.user?.id;
     const userRole = req.user?.role;
 

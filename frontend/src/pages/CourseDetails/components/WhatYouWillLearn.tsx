@@ -35,7 +35,7 @@ const WhatYouWillLearn: React.FC<WhatYouWillLearnProps> = ({
 
   return (
     <section>
-      <h2 className="text-[20px] font-normal text-[#1f1f1f] mb-4">
+      <h2 className="text-[20px] font-normal text-gray-dark-3 mb-4">
         What you will learn
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3">
@@ -47,7 +47,7 @@ const WhatYouWillLearn: React.FC<WhatYouWillLearnProps> = ({
                 height="18"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#1f1f1f"
+                stroke="currentColor"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -64,3 +64,53 @@ const WhatYouWillLearn: React.FC<WhatYouWillLearnProps> = ({
 };
 
 export default WhatYouWillLearn;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

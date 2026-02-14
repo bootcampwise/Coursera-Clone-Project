@@ -28,7 +28,7 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Select state based on expected role or both for generic
+  
   const adminAuth = useSelector((state: RootState) => state.adminAuth);
   const instructorAuth = useSelector(
     (state: RootState) => state.instructorAuth,
@@ -50,7 +50,7 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
         ? instructorAuth.error
         : adminAuth.error || instructorAuth.error;
 
-  // Redirect if already logged in
+  
   useEffect(() => {
     if (expectedRole === "admin" && adminAuth.user) {
       navigate("/admin");
@@ -94,8 +94,8 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
           toast.error((result.payload as string) || "Login failed");
         }
       } else {
-        // Generic Login
-        // We call API manually to check role first
+        
+        
         const API_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
         const { data } = await axios.post(`${API_URL}${ENDPOINTS.AUTH_LOGIN}`, {
           email,
@@ -117,7 +117,7 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
       }
     } catch (err: any) {
       const msg = err.response?.data?.message || err.message || "Login failed";
-      // Manually set error to generic state if needed, but since we use slices, we might need a local error state for generic login if axios fails
+      
       if (!expectedRole) {
         toast.error(msg);
       }
@@ -125,16 +125,16 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F5F7F8] px-4 font-sans">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-surface px-4 font-sans">
       <div className="bg-white p-8 md:p-12 rounded-lg shadow-sm border border-gray-200 w-full max-w-md">
         <div className="text-center mb-8">
           <img src={IMAGES.LOGO} alt="Coursera" className="h-8 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-[#1f1f1f] mb-2">
+          <h1 className="text-2xl font-bold text-gray-dark-3 mb-2">
             {expectedRole
               ? `${expectedRole.charAt(0).toUpperCase() + expectedRole.slice(1)} Login`
               : "Portal Access"}
           </h1>
-          <p className="text-[#5f6368] text-sm">
+          <p className="text-text-gray text-sm">
             For Admins and Instructors only
           </p>
         </div>
@@ -165,7 +165,7 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
 
           <Button
             type="submit"
-            className="w-full bg-[#0056D2] hover:bg-[#00419e] text-white font-bold py-3 mt-4"
+            className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 mt-4"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}
@@ -173,9 +173,9 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
         </form>
 
         <div className="mt-8 text-center border-t border-gray-100 pt-6">
-          <p className="text-xs text-[#5f6368]">
+          <p className="text-xs text-text-gray">
             Not an admin or instructor?{" "}
-            <a href="/" className="text-[#0056D2] hover:underline font-medium">
+            <a href="/" className="text-primary hover:underline font-medium">
               Go to Home
             </a>
           </p>
@@ -186,3 +186,52 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
 };
 
 export default AdminInstructorLogin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

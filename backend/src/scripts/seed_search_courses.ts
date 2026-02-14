@@ -1,7 +1,7 @@
 import { prisma } from "../config/prisma";
 
 async function main() {
-  // 1. Find an instructor
+  
   let instructor = await prisma.user.findFirst({
     where: { role: "instructor" },
   });

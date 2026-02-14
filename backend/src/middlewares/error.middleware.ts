@@ -9,7 +9,7 @@ export const errorMiddleware = (
   const status = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
 
-  // Log the error for debugging
+  
   console.error(`Status: ${status}, Message: ${message}`);
   if (err.stack) console.error(err.stack);
 

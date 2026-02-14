@@ -103,9 +103,9 @@ export const changePassword = createAsyncThunk(
 );
 
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  // Sign out from Supabase
+  
   await supabase.auth.signOut();
-  // Clear local storage
+  
   localStorage.removeItem("token");
   localStorage.removeItem("user");
   return null;
@@ -155,20 +155,20 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Sync Google User
+      
       .addCase(syncGoogleUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
       .addCase(syncGoogleUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Transform backend response to match frontend state if necessary
+        
         const user = {
           id: action.payload.user.id || action.payload.user._id,
           name: action.payload.user.name,
           email: action.payload.user.email,
           avatarUrl: action.payload.user.avatarUrl,
-          role: action.payload.user.role, // Store role
+          role: action.payload.user.role, 
         };
         state.user = user;
         localStorage.setItem("user", JSON.stringify(user));
@@ -194,7 +194,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-      // Logout User
+      
       .addCase(logoutUser.fulfilled, (state) => {
         state.token = null;
         state.user = null;
@@ -205,3 +205,52 @@ const authSlice = createSlice({
 
 export const { logout, clearError } = authSlice.actions;
 export default authSlice.reducer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

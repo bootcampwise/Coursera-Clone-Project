@@ -18,7 +18,7 @@ const EarnDegreeCard: React.FC<EarnDegreeCardProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col h-full bg-white border border-[#e3e6ef] rounded-[10px] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] ${className || ""}`}
+      className={`flex flex-col h-full bg-white border border-gray-light-2-alt rounded-[10px] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] ${className || ""}`}
     >
       <div className="relative p-2 h-[140px] overflow-hidden rounded-2xl">
         <img
@@ -35,17 +35,17 @@ const EarnDegreeCard: React.FC<EarnDegreeCardProps> = ({
             alt={university}
             className="w-[18px] h-[18px] object-contain shrink-0"
           />
-          <span className="text-[12px] text-[#5B6993] font-normal leading-none truncate">
+          <span className="text-[12px] text-gray-medium-2-alt font-normal leading-none truncate">
             {university}
           </span>
         </div>
 
-        <h3 className="text-[14px] font-normal text-[#0F102F] mb-2 line-clamp-2 leading-[1.3] min-h-[40px]">
+        <h3 className="text-[14px] font-normal text-gray-darkest-2 mb-2 line-clamp-2 leading-[1.3] min-h-[40px]">
           {degree}
         </h3>
 
         <div className="mt-auto">
-          <div className="flex items-center gap-1.5 text-[#0663D6] text-[16px] font-normal mb-2">
+          <div className="flex items-center gap-1.5 text-primary-alt text-[16px] font-normal mb-2">
             <img
               src={IMAGES.EARN_DEGREE.DEGREE_ICON}
               alt="Degree"
@@ -54,7 +54,7 @@ const EarnDegreeCard: React.FC<EarnDegreeCardProps> = ({
             <span className="leading-tight">Earn a degree</span>
           </div>
 
-          <p className="text-[14px] text-[#636363] font-medium  tracking-tight leading-none opacity-80">
+          <p className="text-[14px] text-shade-2 font-medium  tracking-tight leading-none opacity-80">
             Degree
           </p>
         </div>
@@ -64,3 +64,53 @@ const EarnDegreeCard: React.FC<EarnDegreeCardProps> = ({
 };
 
 export default EarnDegreeCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

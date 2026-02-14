@@ -65,7 +65,7 @@ const CreateCourse: React.FC = () => {
             description: data.description || "",
             outcomes: data.outcomes || "",
           });
-          // Store existing thumbnail
+          
           if (data.thumbnail) {
             setExistingThumbnail(data.thumbnail);
           }
@@ -85,7 +85,7 @@ const CreateCourse: React.FC = () => {
       const fetchInstructors = async () => {
         try {
           const response = await adminApi.get("/users?role=instructor");
-          // Backend returns { users: [...], pagination: {...} }
+          
           setInstructors(response.data.users || []);
         } catch (error) {
           toast.error("Failed to load instructors");
@@ -117,11 +117,11 @@ const CreateCourse: React.FC = () => {
 
       if (isEditMode && id) {
         await courseApi.updateCourse(id, payload);
-        // Handle thumbnail upload based on method
+        
         if (thumbnailFile) {
           await courseApi.uploadCourseThumbnail(id, thumbnailFile);
         } else if (thumbnailUrl.trim()) {
-          // Update course with URL thumbnail
+          
           await courseApi.updateCourse(id, { thumbnail: thumbnailUrl });
         }
         toast.success("Course updated successfully");
@@ -130,7 +130,7 @@ const CreateCourse: React.FC = () => {
         if (thumbnailFile && newCourse?.id) {
           await courseApi.uploadCourseThumbnail(newCourse.id, thumbnailFile);
         } else if (thumbnailUrl.trim() && newCourse?.id) {
-          // Update course with URL thumbnail
+          
           await courseApi.updateCourse(newCourse.id, {
             thumbnail: thumbnailUrl,
           });
@@ -284,7 +284,7 @@ const CreateCourse: React.FC = () => {
                   Course Thumbnail
                 </label>
 
-                {/* Show existing thumbnail or file preview */}
+                {}
                 {(existingThumbnail || thumbnailFile) && !showThumbnailInput ? (
                   <div className="space-y-3">
                     <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
@@ -308,7 +308,7 @@ const CreateCourse: React.FC = () => {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {/* Upload method toggle */}
+                    {}
                     <div className="flex gap-2 mb-3">
                       <button
                         type="button"
@@ -358,7 +358,7 @@ const CreateCourse: React.FC = () => {
                       />
                     )}
 
-                    {/* Preview for new uploads */}
+                    {}
                     {(thumbnailFile || thumbnailUrl) && (
                       <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 mt-3">
                         <img
@@ -543,3 +543,52 @@ const CreateCourse: React.FC = () => {
 };
 
 export default CreateCourse;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -17,7 +17,7 @@ const FilterCategory: React.FC<FilterCategoryProps> = ({
 }) => {
   return (
     <div className="py-6 border-b border-gray-200 last:border-0">
-      <h3 className="text-[12px] font-bold text-[#1f1f1f] mb-4 uppercase tracking-[0.1em]">
+      <h3 className="text-[12px] font-bold text-gray-dark-3 mb-4 uppercase tracking-[0.1em]">
         {title}
       </h3>
       <div className="space-y-3">
@@ -31,7 +31,7 @@ const FilterCategory: React.FC<FilterCategoryProps> = ({
                 type="checkbox"
                 checked={selectedItems.includes(item.label)}
                 onChange={() => onToggle(item.label)}
-                className="w-[18px] h-[18px] border-2 border-gray-300 rounded-[2px] text-[#0056D2] focus:ring-0 focus:ring-offset-0 cursor-pointer appearance-none checked:bg-[#0056D2] checked:border-[#0056D2] transition-all"
+                className="w-[18px] h-[18px] border-2 border-gray-300 rounded-[2px] text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer appearance-none checked:bg-primary checked:border-primary transition-all"
               />
               <svg
                 className={`absolute w-3 h-3 text-white pointer-events-none ${selectedItems.includes(item.label) ? "block" : "hidden"}`}
@@ -45,7 +45,7 @@ const FilterCategory: React.FC<FilterCategoryProps> = ({
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </div>
-            <span className="text-[14px] text-[#1f1f1f] group-hover:text-[#0056D2] transition-colors flex-1 leading-tight">
+            <span className="text-[14px] text-gray-dark-3 group-hover:text-primary transition-colors flex-1 leading-tight">
               {item.label}
             </span>
             <span className="text-[12px] text-gray-500 font-normal">
@@ -54,7 +54,7 @@ const FilterCategory: React.FC<FilterCategoryProps> = ({
           </label>
         ))}
         {showMore && (
-          <button className="text-[#0056D2] text-[14px] font-bold hover:underline mt-1 text-left">
+          <button className="text-primary text-[14px] font-bold hover:underline mt-1 text-left">
             Show more
           </button>
         )}
@@ -86,7 +86,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   return (
     <div className="w-full font-sans pr-4 lg:pr-0">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-[20px] font-bold text-[#1f1f1f]">Filter by</h2>
+        <h2 className="text-[20px] font-bold text-gray-dark-3">Filter by</h2>
         {onClose && (
           <button
             onClick={onClose}
@@ -215,3 +215,52 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 };
 
 export default FilterSidebar;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

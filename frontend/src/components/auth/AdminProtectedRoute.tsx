@@ -19,7 +19,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
-  // Double check role
+  
   if (user.role.toLowerCase() !== "admin") {
     return <Navigate to={loginPath} replace />;
   }
@@ -28,3 +28,52 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
 };
 
 export default AdminProtectedRoute;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

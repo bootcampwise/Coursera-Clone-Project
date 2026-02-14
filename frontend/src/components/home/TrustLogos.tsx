@@ -1,5 +1,5 @@
 import React from "react";
-import { IMAGES } from "../../constants/images"; // Keeping this import if user wants to use it, else can remove.
+import { IMAGES } from "../../constants/images"; 
 
 const TrustLogos: React.FC = () => (
   <section className="bg-white py-12 md:py-16 border-b border-border-muted overflow-hidden">
@@ -8,7 +8,7 @@ const TrustLogos: React.FC = () => (
         Learn from 350+ top universities and companies
       </h2>
 
-      {/* Logos Row - Responsive Grid/Flex */}
+      {}
       <div className="grid grid-cols-3 md:grid-cols-4 lg:flex lg:flex-wrap items-center justify-center lg:justify-between gap-y-8 gap-x-8 md:gap-12 opacity-80">
         <img
           src={IMAGES.LOGOS.ILLINOIS}
@@ -51,3 +51,52 @@ const TrustLogos: React.FC = () => (
 );
 
 export default TrustLogos;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

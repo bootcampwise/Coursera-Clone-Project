@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { courseApi } from "../../services/courseApi";
-import api from "../../services/apiClient"; // Import base API client for upload
+import api from "../../services/apiClient"; 
 
 interface LessonRow {
   id: string;
@@ -27,7 +27,7 @@ const Videos: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
 
-  // Embed Video State
+  
   const [embedUrls, setEmbedUrls] = useState<{ [key: string]: string }>({});
   const [activeTab, setActiveTab] = useState<{
     [key: string]: "upload" | "embed";
@@ -166,7 +166,7 @@ const Videos: React.FC = () => {
               videoUrl: lesson.videoUrl,
               updatedAt: lesson.updatedAt,
             });
-            // Initialize state
+            
             nextActiveTab[lesson.id] = "upload";
             nextEmbedUrls[lesson.id] = lesson.videoUrl || "";
             nextDurationInputs[lesson.id] = formatDurationInput(
@@ -197,14 +197,14 @@ const Videos: React.FC = () => {
     try {
       const durationSec = await getVideoDuration(file);
 
-      // 1. Upload File
+      
       const uploadResponse = await api.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       const fileUrl = uploadResponse.data.url;
 
-      // 2. Update Lesson
+      
       const payload: any = { videoUrl: fileUrl };
       if (durationSec !== null) {
         payload.duration = durationSec;
@@ -538,3 +538,52 @@ const Videos: React.FC = () => {
 };
 
 export default Videos;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

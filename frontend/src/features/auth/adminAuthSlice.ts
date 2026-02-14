@@ -3,11 +3,11 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import axios from "axios"; // Use generic axios for initial login, or adminApi if we want consistent base URL
+import axios from "axios"; 
 import { ENDPOINTS } from "../../services/endpoints";
 import type { LoginPayload, User } from "./types";
 
-// Helper to use correct base URL
+
 const API_URL = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 
 interface AdminAuthState {
@@ -53,7 +53,7 @@ const adminAuthSlice = createSlice({
   name: "adminAuth",
   initialState,
   reducers: {
-    // Synchronous action to set session manually (e.g. from generic login)
+    
     setAdminSession(
       state,
       action: PayloadAction<{ user: User; token: string }>,
@@ -95,3 +95,52 @@ const adminAuthSlice = createSlice({
 
 export const { setAdminSession, clearAdminError } = adminAuthSlice.actions;
 export default adminAuthSlice.reducer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

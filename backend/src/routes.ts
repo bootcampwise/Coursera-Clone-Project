@@ -20,9 +20,7 @@ router.use("/api/v1/reviews", reviewRoutes);
 router.use("/api/v1/analytics", analyticsRoutes);
 router.use("/api/v1/certificates", certificateRoutes);
 router.use("/api/v1/notifications", notificationRoutes);
-// Curriculum Builder Routes - Mounted at root /api/v1 because individual files define full or sub paths
-// moduleRoutes defines /courses/:courseId/modules and /modules/:id
-// lessonRoutes defines /modules/:moduleId/lessons and /lessons/:id
+
 router.use("/api/v1", moduleRoutes);
 router.use("/api/v1", lessonRoutes);
 

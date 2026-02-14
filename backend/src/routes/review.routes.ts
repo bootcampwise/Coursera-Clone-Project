@@ -11,10 +11,10 @@ import { requireRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
-// Public routes
+
 router.get("/course/:courseId", getCourseReviews);
 
-// Protected routes
+
 router.get(
   "/admin",
   authMiddleware,

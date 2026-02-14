@@ -37,7 +37,7 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
       onClick={() => navigate(`/course/${id}`)}
       className="bg-white rounded-[4px] border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full font-sans group"
     >
-      {/* Image Section */}
+      {}
       <div className="relative aspect-[16/9] w-full bg-gray-50 overflow-hidden">
         <img
           src={image}
@@ -48,10 +48,10 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
           <div
             className={`absolute bottom-0 left-0 right-0 h-[24px] flex items-center px-3 text-[11px] font-bold text-white uppercase tracking-wider ${
               badge === "POPULAR"
-                ? "bg-[#981b61]"
+                ? "bg-purple-dark"
                 : badge === "NEW"
-                  ? "bg-[#0056D2]"
-                  : "bg-[#e7e7e7] text-[#1f1f1f]"
+                  ? "bg-primary"
+                  : "bg-gray-light-2-alt text-gray-dark-3"
             }`}
           >
             <span className="flex items-center gap-1">
@@ -71,9 +71,9 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
         )}
       </div>
 
-      {/* Content Section */}
+      {}
       <div className="p-4 flex flex-col flex-1">
-        {/* Partner Info */}
+        {}
         <div className="flex items-center gap-2 mb-3">
           <img
             src={partnerLogo}
@@ -85,14 +85,14 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
           </span>
         </div>
 
-        {/* Title */}
-        <h3 className="text-[16px] font-bold text-[#1f1f1f] mb-3 line-clamp-2 leading-[1.3] group-hover:text-[#0056D2] transition-colors min-h-[42px]">
+        {}
+        <h3 className="text-[16px] font-bold text-gray-dark-3 mb-3 line-clamp-2 leading-[1.3] group-hover:text-primary transition-colors min-h-[42px]">
           {title}
         </h3>
 
-        {/* Skills */}
+        {}
         <p className="text-[13px] text-gray-600 mb-4 line-clamp-2 leading-relaxed flex-1">
-          <span className="font-bold text-[#1f1f1f]">Skills you'll gain: </span>
+          <span className="font-bold text-gray-dark-3">Skills you'll gain: </span>
           {skills}
         </p>
 
@@ -104,7 +104,7 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
               height="16"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#0056D2"
+              stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -112,7 +112,7 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
               <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
               <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
             </svg>
-            <span className="text-[13px] font-bold text-[#0056D2]">
+            <span className="text-[13px] font-bold text-primary">
               Build toward a degree
             </span>
           </div>
@@ -127,7 +127,7 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
             >
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            <span className="text-[13px] font-bold text-[#1f1f1f]">
+            <span className="text-[13px] font-bold text-gray-dark-3">
               {rating}
             </span>
             <span className="text-[13px] text-gray-500">
@@ -142,3 +142,52 @@ const SearchCourseCard: React.FC<SearchCourseCardProps> = ({
 };
 
 export default SearchCourseCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

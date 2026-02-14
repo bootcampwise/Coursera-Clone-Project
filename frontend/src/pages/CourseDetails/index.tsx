@@ -95,7 +95,7 @@ const CourseDetails: React.FC = () => {
         </p>
         <Link
           to="/search"
-          className="px-8 py-3 bg-[#0056D2] text-white font-bold rounded-[4px] hover:bg-[#00419e] transition-colors"
+          className="px-8 py-3 bg-primary text-white font-bold rounded-[4px] hover:bg-primary-hover transition-colors"
         >
           Explore Other Courses
         </Link>
@@ -106,12 +106,12 @@ const CourseDetails: React.FC = () => {
     <div className="min-h-screen bg-white font-sans">
       <Header />
 
-      {/* Breadcrumbs */}
-      <div className="bg-[#f2f4f6]/30">
-        <div className="max-w-[1240px] mx-auto px-4 md:px-8 py-4 flex items-center gap-3 text-[14px] text-gray-700">
+      {}
+      <div className="bg-gray-light-4/30 border-b border-gray-100/50">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 py-3 md:py-4 flex items-center gap-2 sm:gap-3 text-[13px] sm:text-[14px] text-gray-700 overflow-x-auto whitespace-nowrap custom-scrollbar scrollbar-hide">
           <Link
             to="/"
-            className="hover:text-[#0056D2] transition-colors flex items-center"
+            className="hover:text-primary transition-colors flex items-center shrink-0"
           >
             <svg
               width="14"
@@ -127,32 +127,46 @@ const CourseDetails: React.FC = () => {
               <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
           </Link>
-          <span className="text-gray-400 font-light text-[18px]">›</span>
-          <Link to="/search" className="hover:text-[#0056D2] transition-colors">
+          <span className="text-gray-300 font-light text-[16px] sm:text-[18px] shrink-0">
+            ›
+          </span>
+          <Link
+            to="/search"
+            className="hover:text-primary transition-colors shrink-0"
+          >
             Explore
           </Link>
-          <span className="text-gray-400 font-light text-[18px]">›</span>
-          <Link to="/search" className="hover:text-[#0056D2] transition-colors">
+          <span className="text-gray-300 font-light text-[16px] sm:text-[18px] shrink-0">
+            ›
+          </span>
+          <Link
+            to="/search"
+            className="hover:text-primary transition-colors shrink-0"
+          >
             Professional Certificates
           </Link>
-          <span className="text-gray-400 font-light text-[18px]">›</span>
-          <span className="text-[#1f1f1f] line-clamp-1">{course.title}</span>
+          <span className="text-gray-300 font-light text-[16px] sm:text-[18px] shrink-0">
+            ›
+          </span>
+          <span className="text-gray-dark-3 truncate max-w-[150px] sm:max-w-none">
+            {course.title}
+          </span>
         </div>
       </div>
 
       <main>
         <CourseHero course={course} />
 
-        <div className="max-w-[1340px]  px-4 md:px-8 relative -mt-10 z-10">
+        <div className="max-w-[1340px] mx-auto px-4 sm:px-6 md:px-8 relative -mt-8 sm:-mt-10 z-10">
           <CourseInfoBar course={course} />
         </div>
 
-        <div className="max-w-[1240px]  px-4 md:px-8 py-12">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12">
           <CourseTabs />
 
-          <div className="mt-12">
-            {/* Main Content */}
-            <div className="max-w-[860px] space-y-12">
+          <div className="mt-8 md:mt-12">
+            {}
+            <div className="max-w-[860px] space-y-8 md:space-y-12">
               <WhatYouWillLearn
                 outcomes={course.outcomes}
                 description={course.description}
@@ -163,13 +177,13 @@ const CourseDetails: React.FC = () => {
           </div>
         </div>
 
-        <div className="max-w-[1340px]  px-4 md:px-8 mt-12">
+        <div className="max-w-[1340px] mx-auto px-4 sm:px-6 md:px-8 mt-8 md:mt-12">
           <AdvanceExpertise thumbnailUrl={course.thumbnail} />
         </div>
 
-        <div className="max-w-[1340px]  px-4 md:px-8 py-12">
-          <div className="flex flex-col lg:flex-row gap-8 items-start">
-            <div className="flex-1 min-w-0 space-y-12">
+        <div className="max-w-[1340px] mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-12">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+            <div className="flex-1 min-w-0 space-y-8 md:space-y-12">
               <CourseSeries courses={seriesCourses} />
             </div>
             <div className="w-full lg:w-[340px] shrink-0 lg:mt-[214px]">
@@ -178,7 +192,7 @@ const CourseDetails: React.FC = () => {
           </div>
         </div>
 
-        <div className="max-w-[1340px]  px-4 md:px-8 pb-12">
+        <div className="max-w-[1340px] mx-auto px-4 sm:px-6 md:px-8 pb-12">
           <CareerTestimonials />
         </div>
       </main>
@@ -189,3 +203,53 @@ const CourseDetails: React.FC = () => {
 };
 
 export default CourseDetails;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

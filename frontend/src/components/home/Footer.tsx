@@ -8,10 +8,10 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
   return (
     <footer className="bg-surface pt-12 md:pt-16 pb-8 border-t border-border-muted font-sans text-sm">
       <div className="container mx-auto px-4 md:px-8 max-w-[1440px]">
-        {/* Top Section Grid (Hidden in simple mode) */}
+        {}
         {!simple && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-16">
-            {/* Column 1: Skills */}
+            {}
             <div>
               <h3 className="font-bold text-text-primary mb-4 text-[16px]">
                 Skills
@@ -70,7 +70,7 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
               </ul>
             </div>
 
-            {/* Column 2: Certificates & Programs */}
+            {}
             <div>
               <h3 className="font-bold text-text-primary mb-4 text-[16px]">
                 Certificates & Programs
@@ -129,7 +129,7 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
               </ul>
             </div>
 
-            {/* Column 3: Industries & Careers */}
+            {}
             <div>
               <h3 className="font-bold text-text-primary mb-4 text-[16px]">
                 Industries & Careers
@@ -188,7 +188,7 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
               </ul>
             </div>
 
-            {/* Column 4: Career Resources */}
+            {}
             <div>
               <h3 className="font-bold text-text-primary mb-4 text-[16px]">
                 Career Resources
@@ -249,9 +249,9 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
           </div>
         )}
 
-        {/* Middle Section Grid */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
-          {/* Column 1: Coursera */}
+          {}
           <div>
             <h3 className="font-bold text-text-primary mb-4 text-[16px]">
               Coursera
@@ -340,7 +340,7 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
             </ul>
           </div>
 
-          {/* Column 2: Community */}
+          {}
           <div>
             <h3 className="font-bold text-text-primary mb-4 text-[16px]">
               Community
@@ -379,7 +379,7 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
             </ul>
           </div>
 
-          {/* Column 3: More */}
+          {}
           <div>
             <h3 className="font-bold text-text-primary mb-4 text-[16px]">
               More
@@ -448,7 +448,7 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
             </ul>
           </div>
 
-          {/* Column 4: App Stores & Certification */}
+          {}
           <div className="flex flex-col items-start gap-6">
             <img
               src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/download_on_the_app_store_badge_en.svg"
@@ -468,13 +468,13 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
           </div>
         </div>
 
-        {/* Bottom Section: Copyright & Socials */}
+        {}
         <div className="border-t border-border-muted pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-text-secondary text-[14px]">
             © 2025 Coursera Inc. All rights reserved.
           </div>
           <div className="flex items-center gap-6">
-            {/* Social Icons (Simplified for space) */}
+            {}
             <a href="#" className="text-text-primary hover:text-primary">
               <svg fill="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
                 <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
@@ -513,3 +513,51 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
 };
 
 export default Footer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

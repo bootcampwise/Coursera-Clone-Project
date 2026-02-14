@@ -68,7 +68,7 @@ const Header: React.FC = () => {
       <HomePreHeader />
       <header className="bg-background border-b border-border sticky top-0 z-50 font-sans shadow-sm">
         <div className="container mx-auto px-4 md:px-8 h-[64px] md:h-[72px] flex items-center justify-between gap-4">
-          {/* Logo & Explore */}
+          {}
           <div className="flex items-center gap-3 lg:gap-8 shrink-0">
             <Link to="/" className="shrink-0 mb-1 no-underline">
               <img src={IMAGES.LOGO} alt="Logo" className="w-24 md:w-32" />
@@ -98,7 +98,7 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Search Bar - Pill Shape (Desktop) */}
+          {}
           <form
             onSubmit={handleSearch}
             className="hidden lg:flex flex-1 max-w-[600px] mx-4 lg:mx-8"
@@ -133,7 +133,7 @@ const Header: React.FC = () => {
             </div>
           </form>
 
-          {/* Search Button for Tablets (hidden on Desktop and Small Mobile) */}
+          {}
           <div className="hidden md:flex lg:hidden items-center">
             <button
               className="text-text-secondary p-2"
@@ -156,7 +156,7 @@ const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Desktop Navigation */}
+          {}
           <div className="hidden md:flex items-center gap-3 xl:gap-6 text-sm font-medium text-text-primary shrink-0">
             <div className="flex items-center gap-3">
               {user ? (
@@ -181,7 +181,7 @@ const Header: React.FC = () => {
                     )}
                   </button>
 
-                  {/* Dropdown Menu */}
+                  {}
                   {isUserMenuOpen && (
                     <div className="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-2 border border-gray-100 z-50 animate-in fade-in zoom-in duration-75">
                       <div className="px-4 py-3 border-b border-gray-100">
@@ -215,7 +215,7 @@ const Header: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Backdrop to close menu */}
+                  {}
                   {isUserMenuOpen && (
                     <div
                       className="fixed inset-0 z-40"
@@ -242,7 +242,7 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {}
           <div className="flex md:hidden items-center gap-4">
             <button
               className="text-primary p-1"
@@ -294,7 +294,7 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Overlay */}
+        {}
         {isMenuOpen && (
           <div className="fixed inset-0 z-[60] bg-white overflow-y-auto animate-in slide-in-from-right duration-200">
             <div className="p-4 border-b border-gray-200 flex items-center justify-between h-[64px]">
@@ -347,7 +347,7 @@ const Header: React.FC = () => {
                 </Button>
               )}
 
-              {/* Mobile Search */}
+              {}
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
@@ -430,3 +430,51 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

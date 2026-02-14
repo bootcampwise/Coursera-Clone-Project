@@ -4,7 +4,7 @@ import { IMAGES } from "../../../constants/images";
 const DetailsToKnow: React.FC = () => {
   return (
     <section>
-      <h2 className="text-[20px] font-normal text-[#1f1f1f] mb-4">
+      <h2 className="text-[20px] font-normal text-gray-dark-3 mb-4">
         Details to know
       </h2>
       <div className="flex flex-wrap gap-10">
@@ -15,7 +15,7 @@ const DetailsToKnow: React.FC = () => {
             className="w-6 h-6 object-contain"
           />
           <div>
-            <p className="text-[14px] font-normal text-[#1f1f1f]">
+            <p className="text-[14px] font-normal text-gray-dark-3">
               Shareable certificate
             </p>
             <p className="text-[12px] text-gray-500">
@@ -31,10 +31,10 @@ const DetailsToKnow: React.FC = () => {
             className="w-6 h-6 object-contain"
           />
           <div>
-            <p className="text-[14px] font-normal text-[#1f1f1f]">
+            <p className="text-[14px] font-normal text-gray-dark-3">
               Taught in English
             </p>
-            <button className="text-[12px] text-[#0056D2] hover:underline">
+            <button className="text-[12px] text-primary hover:underline">
               15 languages available
             </button>
           </div>
@@ -45,3 +45,53 @@ const DetailsToKnow: React.FC = () => {
 };
 
 export default DetailsToKnow;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

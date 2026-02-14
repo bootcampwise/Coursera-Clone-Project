@@ -76,8 +76,8 @@ const Reviews: React.FC = () => {
                         key={value}
                         className={`w-4 h-4 ${
                           review.rating >= value
-                            ? "text-[#f5c22b]"
-                            : "text-[#dadce0]"
+                            ? "text-yellow-accent"
+                            : "text-border-light"
                         }`}
                         viewBox="0 0 24 24"
                         fill="currentColor"
@@ -103,3 +103,52 @@ const Reviews: React.FC = () => {
 };
 
 export default Reviews;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

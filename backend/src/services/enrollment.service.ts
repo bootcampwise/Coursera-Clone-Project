@@ -3,14 +3,14 @@ import { issueCertificateForEnrollment } from "./certificate.service";
 import { notificationService } from "./notification.service";
 
 export const enrollUser = async (userId: string, courseId: string) => {
-  // Check if course exists
+  
   const course = await prisma.course.findUnique({ where: { id: courseId } });
   if (!course) throw new Error("Course not found");
 
   if (course.status !== "Published")
     throw new Error("Course is not available for enrollment");
 
-  // Check if already enrolled
+  
   const existingEnrollment = await prisma.enrollment.findFirst({
     where: { userId, courseId },
   });
@@ -36,7 +36,7 @@ export const enrollUser = async (userId: string, courseId: string) => {
     },
   });
 
-  // Create welcome notification
+  
   try {
     await notificationService.createNotification(userId, {
       type: "welcome",
@@ -51,7 +51,7 @@ export const enrollUser = async (userId: string, courseId: string) => {
       "[enrollment-service] Failed to create welcome notification:",
       notifError,
     );
-    // Don't fail enrollment if notification fails
+    
   }
 
   return enrollment;
@@ -128,7 +128,7 @@ export const getCourseEnrollments = async (
 
   if (!course) throw new Error("Course not found");
 
-  // Check ownership
+  
   if (
     userRole.toLowerCase() !== "admin" &&
     userRole.toLowerCase() !== "administrator" &&
@@ -229,9 +229,16 @@ export const updateLessonProgress = async (
     videoDuration?: number;
   },
 ) => {
-  const enrollment = await prisma.enrollment.findUnique({
-    where: { id: enrollmentId },
-  });
+  
+  const [enrollment, existingProgress] = await Promise.all([
+    prisma.enrollment.findUnique({
+      where: { id: enrollmentId },
+    }),
+    prisma.lessonProgress.findUnique({
+      where: { enrollmentId_lessonId: { enrollmentId, lessonId } },
+      select: { completed: true, lastPlayed: true },
+    }),
+  ]);
 
   if (!enrollment) throw new Error("Enrollment not found");
   if (enrollment.userId !== userId) throw new Error("Unauthorized");
@@ -245,21 +252,16 @@ export const updateLessonProgress = async (
     videoDuration,
   } = data;
 
-  // Enforce assessment and video completion rules
-  let completed = requestedCompleted;
-  if (completed) {
-    const [lesson, existingProgress] = await Promise.all([
-      prisma.lesson.findUnique({
-        where: { id: lessonId },
-        select: { type: true, duration: true },
-      }),
-      prisma.lessonProgress.findUnique({
-        where: {
-          enrollmentId_lessonId: { enrollmentId, lessonId },
-        },
-        select: { lastPlayed: true },
-      }),
-    ]);
+  
+  const wasAlreadyCompleted = !!existingProgress?.completed;
+  let completed = wasAlreadyCompleted || requestedCompleted;
+
+  
+  if (completed && !wasAlreadyCompleted) {
+    const lesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+      select: { type: true, duration: true },
+    });
 
     if (lesson?.type === "ASSESSMENT" && !passed) {
       completed = false;
@@ -275,7 +277,7 @@ export const updateLessonProgress = async (
     }
   }
 
-  // Upsert lesson progress
+  
   const progress = await prisma.lessonProgress.upsert({
     where: {
       enrollmentId_lessonId: {
@@ -299,9 +301,9 @@ export const updateLessonProgress = async (
     },
   });
 
-  // Recalculate course progress and completion
-  // Progress: lesson-based completion percentage
-  // Completion: module-based completion (all modules complete)
+  
+  
+  
   const [totalLessons, completedLessons, modules, completedProgress] =
     await Promise.all([
       prisma.lesson.count({
@@ -348,7 +350,7 @@ export const updateLessonProgress = async (
   });
 
   if (!enrollment.completed && isCompleted) {
-    // Create course completion notification
+    
     try {
       const courseInfo = await prisma.course.findUnique({
         where: { id: enrollment.courseId },
@@ -369,7 +371,7 @@ export const updateLessonProgress = async (
         "[enrollment-service] Failed to create completion notification:",
         notifError,
       );
-      // Don't fail the flow if notification fails
+      
     }
 
     await issueCertificateForEnrollment(enrollmentId);

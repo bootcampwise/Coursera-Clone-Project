@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 import { storage as cloudinaryStorage } from "../config/cloudinary";
 
-// Determine storage engine based on environment
+
 const isCloudinaryConfigured =
   process.env.CLOUDINARY_CLOUD_NAME &&
   process.env.CLOUDINARY_API_KEY &&
@@ -16,7 +16,7 @@ if (isCloudinaryConfigured) {
   storage = cloudinaryStorage;
 } else {
   console.log("Cloudinary credentials missing. Using Local Disk Storage.");
-  // Ensure uploads directory exists
+  
   const uploadDir = path.join(__dirname, "../../uploads");
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -48,6 +48,6 @@ export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit
+    fileSize: 100 * 1024 * 1024, 
   },
 });

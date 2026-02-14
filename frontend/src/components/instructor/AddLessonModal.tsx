@@ -27,7 +27,7 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
 
-  // Update type if fixedType changes
+  
   React.useEffect(() => {
     if (fixedType) {
       setType(fixedType);
@@ -241,3 +241,52 @@ const AddLessonModal: React.FC<AddLessonModalProps> = ({
 };
 
 export default AddLessonModal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

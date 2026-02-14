@@ -176,15 +176,15 @@ const SearchResults: React.FC = () => {
   const displayedCourses = courses.slice(startIndex, endIndex);
 
   return (
-    <div className="min-h-screen bg-[#F5F7F8] font-sans">
+    <div className="min-h-screen bg-surface font-sans">
       <Header />
 
       <main className="w-full max-w-[1440px] mx-auto px-4 md:px-8 py-4 overflow-hidden">
-        {/* Breadcrumbs Row */}
+        {}
         <div className="flex items-center gap-2 mb-4 text-[13px] text-gray-500 overflow-x-auto whitespace-nowrap scrollbar-hide py-1">
           <Link
             to="/"
-            className="hover:text-[#0056D2] transition-colors shrink-0"
+            className="hover:text-primary transition-colors shrink-0"
           >
             <svg
               width="16"
@@ -205,7 +205,7 @@ const SearchResults: React.FC = () => {
           </span>
           <Link
             to="/google-career-certificates"
-            className="hover:text-[#0056D2] transition-colors shrink-0"
+            className="hover:text-primary transition-colors shrink-0"
           >
             Google Career Certificates - DAT
           </Link>
@@ -214,22 +214,22 @@ const SearchResults: React.FC = () => {
           </span>
           <Link
             to="/results"
-            className="hover:text-[#0056D2] transition-colors text-blue-600 shrink-0"
+            className="hover:text-primary transition-colors text-blue-600 shrink-0"
           >
             Results
           </Link>
           <span className="text-gray-300 text-[18px] font-light shrink-0">
             ›
           </span>
-          <span className="text-[#1f1f1f] shrink-0">Search</span>
+          <span className="text-text-primary shrink-0">Search</span>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 mt-6">
-          {/* Mobile Filter Button */}
+          {}
           <div className="lg:hidden mb-4">
             <button
               onClick={() => setIsMobileFiltersOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-[#f5f7f8] transition-colors w-full sm:w-auto justify-center"
+              className="flex items-center gap-2 px-4 py-2 border border-primary text-primary font-bold rounded-[4px] text-[14px] hover:bg-surface transition-colors w-full sm:w-auto justify-center"
             >
               <svg
                 width="18"
@@ -255,7 +255,7 @@ const SearchResults: React.FC = () => {
             </button>
           </div>
 
-          {/* Sidebar Drawer on Mobile */}
+          {}
           {isMobileFiltersOpen && (
             <div className="fixed inset-0 z-[100] lg:hidden">
               <div
@@ -272,7 +272,7 @@ const SearchResults: React.FC = () => {
             </div>
           )}
 
-          {/* Sidebar - Desktop */}
+          {}
           <aside className="hidden lg:block w-[260px] shrink-0">
             <div className="sticky top-[80px]">
               <FilterSidebar
@@ -282,9 +282,9 @@ const SearchResults: React.FC = () => {
             </div>
           </aside>
 
-          {/* Results Area */}
+          {}
           <section className="flex-1 min-w-0">
-            <h1 className="text-[18px] md:text-[20px] font-bold text-[#1f1f1f] mb-6 md:mb-8 font-sans">
+            <h1 className="text-[18px] md:text-[20px] font-bold text-text-primary mb-6 md:mb-8 font-sans">
               {isLoading
                 ? "Searching..."
                 : courses.length > 0
@@ -299,7 +299,7 @@ const SearchResults: React.FC = () => {
                 ))}
             </div>
 
-            {/* Only show pagination if there are results */}
+            {}
             {!isLoading && courses.length > 0 && (
               <Pagination
                 currentPage={currentPage}
@@ -318,3 +318,52 @@ const SearchResults: React.FC = () => {
 };
 
 export default SearchResults;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

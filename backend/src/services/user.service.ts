@@ -53,19 +53,19 @@ export const upsertGoogleUser = async (userData: GoogleUserData) => {
   });
 
   if (existingUser) {
-    // Always update user details (avatar, name) to keep sync with Google
+    
     return await prisma.user.update({
       where: { email: userData.email },
       data: {
         provider: "google",
         providerId: userData.providerId,
         avatarUrl: userData.avatarUrl,
-        name: userData.name, // Also sync name in case it changed
+        name: userData.name, 
       },
     });
   }
 
-  // Create new Google user
+  
   const newUser = await prisma.user.create({
     data: {
       email: userData.email,
@@ -137,7 +137,7 @@ export const getUserById = async (id: string) => {
 
   if (!user) throw new Error("User not found");
 
-  // Exclude password hash
+  
   const { passwordHash, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };

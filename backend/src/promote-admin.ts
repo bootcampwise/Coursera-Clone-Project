@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const userId = "69776dce74746b5bd85801f6"; // ID from your logs
+const userId = "69776dce74746b5bd85801f6"; 
 
 async function main() {
   console.log(`Promoting user ${userId} to admin...`);

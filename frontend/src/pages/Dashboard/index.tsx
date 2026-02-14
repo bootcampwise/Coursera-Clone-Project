@@ -117,12 +117,12 @@ const Dashboard: React.FC = () => {
 
       <main className="container mx-auto px-4 md:px-8 py-10 max-w-[1440px]">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Left Column: User Info & Activity */}
+          {}
           <aside className="w-full lg:w-[320px] shrink-0">
             <WelcomeHeader />
           </aside>
 
-          {/* Right Column: Main Feed */}
+          {}
           <div className="flex-1">
             <ContinueLearning />
 
@@ -153,3 +153,52 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

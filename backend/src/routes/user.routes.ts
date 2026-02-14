@@ -26,10 +26,10 @@ import { requireRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
-// Public / Auth-related
+
 router.post("/sync-google", syncGoogleUser);
 
-// Protected routes
+
 router.get("/me", authMiddleware, getMe);
 router.patch("/me", authMiddleware, updateProfile);
 router.get("/me/work-experiences", authMiddleware, getMyWorkExperience);
@@ -73,7 +73,7 @@ router.delete(
   deleteMyProfileCertificateItem,
 );
 
-// Admin routes
+
 router.get("/", authMiddleware, requireRole(["admin"]), getUsers);
 router.post("/", authMiddleware, requireRole(["admin"]), createUser);
 router.get("/:id", authMiddleware, requireRole(["admin"]), getUser);

@@ -21,13 +21,12 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// Public routes - Static paths first
+
 router.get("/", getAllCourses);
 router.get("/search", getAllCourses);
 router.get("/recently-viewed", authMiddleware, getRecentlyViewed);
 
-// Protected routes - Specific paths BEFORE parameterized routes
-// Instructor routes
+
 router.get(
   "/instructor/my",
   authMiddleware,
@@ -35,7 +34,7 @@ router.get(
   getInstructorCourses,
 );
 
-// Admin routes
+
 router.get(
   "/admin/catalog",
   authMiddleware,
@@ -43,7 +42,7 @@ router.get(
   getAdminCourseCatalog,
 );
 
-// CRUD operations (protected)
+
 router.post(
   "/",
   authMiddleware,
@@ -70,7 +69,7 @@ router.post(
   uploadCourseThumbnail,
 );
 
-// Parameterized routes - AFTER specific routes to avoid catching them
+
 router.get("/:id", getCourseById);
 router.get("/:id/enrollment-status", authMiddleware, getEnrollmentStatus);
 

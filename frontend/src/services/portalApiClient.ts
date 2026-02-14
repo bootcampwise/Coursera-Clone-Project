@@ -6,7 +6,7 @@ const portalApi = axios.create({
 });
 
 portalApi.interceptors.request.use((config) => {
-  // attach portal token if available
+  
   const token =
     localStorage.getItem("portalToken") ||
     localStorage.getItem("adminToken") ||
@@ -17,3 +17,52 @@ portalApi.interceptors.request.use((config) => {
 });
 
 export default portalApi;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

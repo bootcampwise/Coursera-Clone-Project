@@ -6,7 +6,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  // attach token if available
+  
   const token =
     localStorage.getItem("token") ||
     localStorage.getItem("adminToken") ||
@@ -17,3 +17,52 @@ api.interceptors.request.use((config) => {
 });
 
 export default api;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

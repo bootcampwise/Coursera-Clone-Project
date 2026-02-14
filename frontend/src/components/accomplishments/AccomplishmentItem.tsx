@@ -15,7 +15,7 @@ const AccomplishmentItem: React.FC<Props> = ({ accomplishment }) => {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center gap-4 py-8 border-b border-border last:border-0 hover:bg-gray-50 transition-colors px-4 -mx-4 rounded-lg">
-      {/* Icon/Image */}
+      {}
       <div className="w-[72px] h-[72px] shrink-0 border border-border rounded-[4px] bg-white p-1">
         <img
           src={accomplishment.image}
@@ -24,17 +24,17 @@ const AccomplishmentItem: React.FC<Props> = ({ accomplishment }) => {
         />
       </div>
 
-      {/* Content */}
+      {}
       <div className="flex-1 min-w-0">
-        <h3 className="text-[16px] font-bold text-[#1f1f1f] mb-1 leading-snug hover:underline cursor-pointer">
+        <h3 className="text-[16px] font-bold text-gray-dark-3 mb-1 leading-snug hover:underline cursor-pointer">
           {accomplishment.title}
         </h3>
-        <p className="text-[14px] text-[#1f1f1f] mb-1">{accomplishment.type}</p>
-        <div className="flex items-center gap-2 text-[14px] text-[#5f6368]">
+        <p className="text-[14px] text-gray-dark-3 mb-1">{accomplishment.type}</p>
+        <div className="flex items-center gap-2 text-[14px] text-text-gray">
           {accomplishment.grade && (
             <span>
               Grade:{" "}
-              <span className="text-[#1f1f1f] font-medium">
+              <span className="text-gray-dark-3 font-medium">
                 {accomplishment.grade}
               </span>
             </span>
@@ -42,13 +42,13 @@ const AccomplishmentItem: React.FC<Props> = ({ accomplishment }) => {
         </div>
       </div>
 
-      {/* Action */}
+      {}
       <div className="shrink-0 w-full md:w-auto">
         <button
           onClick={() =>
             navigate(`/accomplishments/certificate/${accomplishment.id}`)
           }
-          className="w-full md:w-auto px-6 py-2 bg-white text-[#0056D2] font-bold text-[14px] rounded-[4px] border border-[#0056D2] hover:bg-[#f5f7f8] transition-colors whitespace-nowrap"
+          className="w-full md:w-auto px-6 py-2 bg-white text-primary font-bold text-[14px] rounded-[4px] border border-primary hover:bg-surface transition-colors whitespace-nowrap"
         >
           View Certificate
         </button>
@@ -58,3 +58,52 @@ const AccomplishmentItem: React.FC<Props> = ({ accomplishment }) => {
 };
 
 export default AccomplishmentItem;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

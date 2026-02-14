@@ -20,7 +20,7 @@ const CourseSeriesSideCard: React.FC<CourseSeriesSideCardProps> = ({
             className="w-8 h-8 object-contain"
           />
           <div>
-            <p className="text-[13px] font-semibold text-[#1f1f1f]">{name}</p>
+            <p className="text-[13px] font-semibold text-gray-dark-3">{name}</p>
             <p className="text-[11px] text-gray-500">Google</p>
           </div>
         </div>
@@ -38,8 +38,8 @@ const CourseSeriesSideCard: React.FC<CourseSeriesSideCardProps> = ({
             className="w-8 h-8 object-contain"
           />
           <div>
-            <p className="text-[13px] font-semibold text-[#1f1f1f]">Google</p>
-            <button className="text-[11px] text-[#0056D2] hover:underline">
+            <p className="text-[13px] font-semibold text-gray-dark-3">Google</p>
+            <button className="text-[11px] text-primary hover:underline">
               Learn more
             </button>
           </div>
@@ -50,3 +50,53 @@ const CourseSeriesSideCard: React.FC<CourseSeriesSideCardProps> = ({
 };
 
 export default CourseSeriesSideCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

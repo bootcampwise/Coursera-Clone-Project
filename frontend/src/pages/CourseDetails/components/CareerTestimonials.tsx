@@ -35,7 +35,7 @@ const CareerTestimonials: React.FC = () => {
 
   return (
     <section>
-      <h2 className="text-[32px] font-normal text-[#1f1f1f] mb-6">
+      <h2 className="text-[24px] sm:text-[28px] md:text-[32px] font-normal text-gray-dark-3 mb-6 sm:mb-8">
         Why people choose Coursera for their career
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -53,13 +53,13 @@ const CareerTestimonials: React.FC = () => {
                 />
               </div>
               <div>
-                <h4 className="text-[13px] font-semibold text-[#1f1f1f]">
+                <h4 className="text-[13px] font-semibold text-gray-dark-3">
                   {t.name}
                 </h4>
                 <span className="text-[11px] text-gray-500">{t.title}</span>
               </div>
             </div>
-            <p className="text-[15px] text-[#676A86] leading-relaxed">
+            <p className="text-[14px] sm:text-[15px] text-shade-11-alt leading-relaxed italic">
               "{t.quote}"
             </p>
           </div>
@@ -70,3 +70,53 @@ const CareerTestimonials: React.FC = () => {
 };
 
 export default CareerTestimonials;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

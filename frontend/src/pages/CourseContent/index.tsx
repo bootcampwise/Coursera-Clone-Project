@@ -12,7 +12,7 @@ const CourseContent: React.FC = () => {
     lessonId: string;
   }>();
 
-  // State
+  
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [course, setCourse] = useState<any>(null);
   const [progressData, setProgressData] = useState<any>(null);
@@ -21,6 +21,7 @@ const CourseContent: React.FC = () => {
     "transcript",
   );
   const [isCoachOpen, setIsCoachOpen] = useState(true);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const transcript: {
     id: string;
     startTime: number;
@@ -53,7 +54,7 @@ const CourseContent: React.FC = () => {
     },
   ];
 
-  // Derive current lesson from course data
+  
   const currentLesson = course?.modules
     ?.flatMap((m: any) => m.lessons)
     ?.find((l: any) => l.id === lessonId);
@@ -65,13 +66,13 @@ const CourseContent: React.FC = () => {
     return date.toLocaleDateString();
   };
 
-  // Reset tab to "notes" if switching to a Reading lesson where Transcript is hidden
+  
   useEffect(() => {
     if (
       currentLesson?.type?.toLowerCase() === "reading" &&
       activeTab === "transcript"
     ) {
-      setActiveTab("notes");
+      setActiveTab("notes-downloads");
     }
   }, [currentLesson?.id, currentLesson?.type, activeTab]);
 
@@ -96,7 +97,7 @@ const CourseContent: React.FC = () => {
         setCourse(courseRes);
         setProgressData(progressRes);
 
-        // Auto-expand the module containing the current lesson
+        
         if (lessonId && courseRes?.modules) {
           const activeModule = courseRes.modules.find((m: any) =>
             m.lessons.some((l: any) => l.id === lessonId),
@@ -120,8 +121,7 @@ const CourseContent: React.FC = () => {
     );
   };
 
-
-  // Resume playback logic
+  
   useEffect(() => {
     if (
       currentLesson?.type?.toLowerCase() !== "video" ||
@@ -154,7 +154,7 @@ const CourseContent: React.FC = () => {
     };
   }, [lessonId, progressData, currentLesson]);
 
-  // Auto-complete reading lessons on open
+  
   useEffect(() => {
     const markReadingComplete = async () => {
       if (
@@ -179,7 +179,7 @@ const CourseContent: React.FC = () => {
     markReadingComplete();
   }, [lessonId, progressData?.enrollmentId, currentLesson]);
 
-  // Throttled progress update
+  
   const handleTimeUpdate = async () => {
     if (!videoRef.current || !progressData?.enrollmentId || !lessonId) return;
 
@@ -187,7 +187,7 @@ const CourseContent: React.FC = () => {
     const currentTimeInt = Math.floor(currentTime);
     const duration = Math.floor(videoRef.current.duration);
 
-    // Save every 10 seconds or when finished
+    
     if (
       currentTimeInt !== lastSavedTime.current &&
       (currentTimeInt % 10 === 0 ||
@@ -210,7 +210,7 @@ const CourseContent: React.FC = () => {
           },
         );
 
-        // If it was just completed, refresh progress data to update sidebar
+        
         if (
           !alreadyCompleted &&
           (isNearEnd || currentTimeInt >= duration - 1)
@@ -244,15 +244,14 @@ const CourseContent: React.FC = () => {
     if (!enrollmentApi || !progressData?.enrollmentId || !lessonId) return;
 
     try {
-      // Mark as completed if not already
+      
       if (!isLessonCompleted(lessonId)) {
         await enrollmentApi.updateLessonProgress(
           progressData.enrollmentId,
           lessonId,
           {
             completed: true,
-            forceComplete:
-              currentLesson?.type?.toLowerCase() === "reading",
+            forceComplete: currentLesson?.type?.toLowerCase() === "reading",
           },
         );
       }
@@ -307,7 +306,7 @@ const CourseContent: React.FC = () => {
         </p>
         <button
           onClick={() => navigate("/my-learning")}
-          className="px-8 py-3 bg-[#0056D2] text-white font-bold rounded-[4px] hover:bg-[#00419e] transition-colors"
+          className="px-8 py-3 bg-primary text-white font-bold rounded-[4px] hover:bg-primary-hover transition-colors"
         >
           Back to Dashboard
         </button>
@@ -316,21 +315,28 @@ const CourseContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
-      <CourseContentHeader />
+    <div className="min-h-screen bg-white font-sans text-gray-dark-3">
+      <CourseContentHeader
+        onMobileMenuToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+      />
 
-      <div className="flex bg-white min-h-[calc(100vh-64px)] overflow-hidden">
-        {/* ================= LEFT SIDEBAR ================= */}
-        <aside className="w-[350px] border rounded-b-3xl border-[#dadce0] bg-white overflow-y-auto flex flex-col shrink-0 custom-scrollbar relative z-10 h-[calc(100vh-64px)]">
+      <div className="flex bg-white min-h-[calc(100vh-64px)] relative">
+        {/* ================= LEFT SIDEBAR (Desktop & Mobile Drawer) ================= */}
+        <aside
+          className={`fixed lg:sticky top-[64px] h-[calc(100vh-64px)] bg-white border rounded-b-3xl lg:rounded-none border-gray-medium-4 overflow-y-auto flex flex-col shrink-0 custom-scrollbar z-40 transition-transform duration-300 ease-in-out
+            ${isMobileSidebarOpen ? "translate-x-0 w-[300px] sm:w-[350px] shadow-xl" : "-translate-x-full lg:translate-x-0 w-[350px]"}
+          `}
+          style={{ left: 0 }}
+        >
           {/* Top Course Title Block */}
-          <div className="p-4 py-8 border-b border-[#dadce0] sticky top-0 bg-white z-10">
+          <div className="p-4 py-8 border-b border-gray-medium-4 sticky top-0 bg-white z-10">
             <div className="flex justify-between items-start gap-3">
-              <h2 className="text-[14px] font-bold text-[#000000] leading-snug">
+              <h2 className="text-[14px] font-bold text-black leading-snug">
                 {course.title}
               </h2>
               <button
                 onClick={() => navigate(`/learn/${courseId}`)}
-                className="text-[#0056D2] hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold text-[24px] leading-none shrink-0"
+                className="text-primary hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center font-bold text-[24px] leading-none shrink-0"
               >
                 ×
               </button>
@@ -340,20 +346,20 @@ const CourseContent: React.FC = () => {
           {/* Scrolling Content */}
           <div className="flex-1 pb-10">
             {course.modules.map((module: any, index: number) => (
-              <div key={module.id} className="border-b border-[#dadce0]">
+              <div key={module.id} className="border-b border-gray-medium-4">
                 <button
                   onClick={() => toggleModule(module.id)}
-                  className={`w-full flex items-center justify-between p-4 py-5 text-left hover:bg-[#f5f7f8] ${
-                    expandedModules.includes(module.id) ? "bg-[#f5f7f8]" : ""
+                  className={`w-full flex items-center justify-between p-4 py-5 text-left hover:bg-surface ${
+                    expandedModules.includes(module.id) ? "bg-surface" : ""
                   }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-[12px] text-[#5f6368] font-medium">
+                      <p className="text-[12px] text-text-gray font-medium">
                         Module {index + 1}
                       </p>
                       <svg
-                        className={`w-5 h-5 text-[#5f6368] transition-transform ${
+                        className={`w-5 h-5 text-text-gray transition-transform ${
                           expandedModules.includes(module.id)
                             ? "rotate-180"
                             : ""
@@ -373,8 +379,8 @@ const CourseContent: React.FC = () => {
                     <p
                       className={`text-[14px] mt-1 ${
                         expandedModules.includes(module.id)
-                          ? "font-bold text-[#1f1f1f]"
-                          : "font-medium text-[#3c4043]"
+                          ? "font-bold text-gray-dark-3"
+                          : "font-medium text-shade-7"
                       }`}
                     >
                       {module.title}
@@ -398,42 +404,44 @@ const CourseContent: React.FC = () => {
                           }
                           className={`flex items-start gap-3 p-4 py-4 cursor-pointer transition-colors ${
                             isActive
-                              ? "bg-[#e8f0fe] relative"
-                              : "hover:bg-[#f5f7f8]"
+                              ? "bg-blue-light-2 relative"
+                              : "hover:bg-surface"
                           }`}
                         >
                           {isActive && (
-                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#0056D2]" />
+                            <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-primary" />
                           )}
                           <div className="shrink-0 mt-0.5">
                             {isComplete ? (
                               <svg
-                                className="w-[18px] h-[18px] text-[#00814d]"
+                                className="w-[18px] h-[18px] text-success-dark-2"
                                 viewBox="0 0 24 24"
                                 fill="currentColor"
                               >
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                               </svg>
                             ) : (
-                              <div className="w-[18px] h-[18px] border-2 border-[#dadce0] rounded-full" />
+                              <div className="w-[18px] h-[18px] border-2 border-gray-medium-4 rounded-full" />
                             )}
                           </div>
                           <div>
                             <p
                               className={`text-[13px] leading-tight ${
                                 isActive
-                                  ? "text-[#0056D2] font-bold"
-                                  : "text-[#3c4043] font-normal"
+                                  ? "text-primary font-bold"
+                                  : "text-shade-7 font-normal"
                               }`}
                             >
                               {lesson.title}
                             </p>
                             <div className="flex items-center gap-2 mt-1.5">
-                              <span className="text-[11px] text-[#5f6368] font-medium">
+                              <span className="text-[11px] text-text-gray font-medium">
                                 {(lesson.type || "Lesson")
                                   .toString()
                                   .toLowerCase()
-                                  .replace(/^./, (c) => c.toUpperCase())}{" "}
+                                  .replace(/^./, (c: string) =>
+                                    c.toUpperCase(),
+                                  )}{" "}
                                 {lesson.duration
                                   ? `${Math.floor(lesson.duration / 60)} min`
                                   : "5 min"}
@@ -448,27 +456,34 @@ const CourseContent: React.FC = () => {
               </div>
             ))}
           </div>
-
         </aside>
 
+        {/* Mobile Sidebar Overlay */}
+        {isMobileSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
+
         {/* ================= MAIN CONTENT ================= */}
-        <main className="flex-1 overflow-y-auto bg-white custom-scrollbar relative">
-          <div className="max-w-[1000px] mx-auto px-6 py-8 md:px-12">
+        <main className="flex-1 overflow-y-auto bg-white custom-scrollbar relative pb-32">
+          <div className="max-w-[1000px] mx-auto px-4 sm:px-6 py-6 md:py-8 md:px-12">
             {/* Title and Save Note - Above for Reading/Assessment, Below for Video */}
             {currentLesson.type?.toLowerCase() !== "video" && (
-              <div className="flex items-start justify-between mb-8">
-                <div>
-                  <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-[20px] sm:text-[24px] md:text-[28px] font-normal font-sans text-gray-dark-3 leading-tight pr-4 wrap-break-word">
                     {currentLesson.title}
                   </h1>
                   {currentLesson.updatedAt && (
-                    <p className="mt-1 text-[12px] text-[#5f6368]">
+                    <p className="mt-1 text-[11px] sm:text-[12px] text-text-gray">
                       Updated {formatUpdatedAt(currentLesson.updatedAt)}
                     </p>
                   )}
                 </div>
                 {currentLesson.type?.toLowerCase() !== "assessment" && (
-                  <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
+                  <button className="flex items-center gap-2 text-primary font-bold text-[14px] hover:bg-blue-light-1 px-3 py-2 rounded-md transition-colors whitespace-nowrap shrink-0 border border-transparent hover:border-blue-light-2">
                     <svg
                       className="w-4 h-4"
                       fill="none"
@@ -489,9 +504,9 @@ const CourseContent: React.FC = () => {
             )}
 
             {/* Video / Content Player */}
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8 -mx-4 sm:mx-0">
               {currentLesson.type?.toLowerCase() === "video" ? (
-                <div className="aspect-video bg-black rounded-[8px] overflow-hidden shadow-lg">
+                <div className="aspect-video bg-black sm:rounded-[8px] overflow-hidden shadow-lg">
                   {currentLesson.videoUrl ? (
                     currentLesson.videoUrl.includes("<iframe") ? (
                       <div
@@ -565,8 +580,8 @@ const CourseContent: React.FC = () => {
                   )}
                 </div>
               ) : (
-                <div className="prose prose-slate max-w-none text-[#1f1f1f] leading-relaxed">
-                  <div className="p-8 bg-[#f8f9fa] rounded-[8px] border border-[#dadce0]">
+                <div className="prose prose-slate max-w-none text-gray-dark-3 leading-relaxed">
+                  <div className="p-8 bg-gray-very-light-2 rounded-[8px] border border-gray-medium-4">
                     {currentLesson.content || "No content available."}
                   </div>
                 </div>
@@ -575,18 +590,18 @@ const CourseContent: React.FC = () => {
 
             {/* Title and Save Note - Below for Video */}
             {currentLesson.type?.toLowerCase() === "video" && (
-              <div className="flex items-start justify-between mb-8">
-                <div>
-                  <h1 className="text-[28px] font-normal font-sans text-[#1f1f1f] leading-tight">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+                <div className="min-w-0 flex-1">
+                  <h1 className="text-[20px] sm:text-[24px] md:text-[28px] font-normal font-sans text-gray-dark-3 leading-tight pr-4 wrap-break-word">
                     {currentLesson.title}
                   </h1>
                   {currentLesson.updatedAt && (
-                    <p className="mt-1 text-[12px] text-[#5f6368]">
+                    <p className="mt-1 text-[11px] sm:text-[12px] text-text-gray">
                       Updated {formatUpdatedAt(currentLesson.updatedAt)}
                     </p>
                   )}
                 </div>
-                <button className="flex items-center gap-2 text-[#0056D2] font-bold text-[14px] hover:bg-[#f0f7ff] px-3 py-2 rounded-md transition-colors whitespace-nowrap">
+                <button className="flex items-center gap-2 text-primary font-bold text-[14px] hover:bg-blue-light-1 px-3 py-2 rounded-md transition-colors whitespace-nowrap shrink-0 border border-transparent hover:border-blue-light-2">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -607,14 +622,14 @@ const CourseContent: React.FC = () => {
 
             {/* Coach AI Box - Only for Video Lessons */}
             {currentLesson.type?.toLowerCase() === "video" && (
-              <div className="bg-[#f0f4f9] rounded-[16px] p-6 mb-12 border border-transparent hover:border-[#dadce0] transition-all">
+              <div className="bg-bg-light-blue rounded-[16px] p-6 mb-12 border border-transparent hover:border-gray-medium-4 transition-all">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[18px] font-serif italic text-[#3c4043] font-medium tracking-tight">
+                  <span className="text-[18px] font-serif italic text-shade-7 font-medium tracking-tight">
                     coach
                   </span>
                   <button
                     onClick={() => setIsCoachOpen((prev) => !prev)}
-                    className="text-[#5f6368] hover:bg-white/50 p-1 rounded-md"
+                    className="text-text-gray hover:bg-white/50 p-1 rounded-md"
                     aria-label="Toggle coach section"
                   >
                     <svg
@@ -632,13 +647,13 @@ const CourseContent: React.FC = () => {
                 </div>
                 {isCoachOpen && (
                   <>
-                    <p className="text-[14px] text-[#1f1f1f] mb-6 leading-relaxed">
+                    <p className="text-[14px] text-gray-dark-3 mb-6 leading-relaxed">
                       Let me know if you have any questions about this material,
                       I&apos;m here to help!
                     </p>
 
                     {/* AI Prompts */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 overflow-x-auto sm:overflow-visible pb-2 sm:pb-0">
                       {[
                         "Give me practice questions",
                         "Explain this topic in simple terms",
@@ -647,10 +662,10 @@ const CourseContent: React.FC = () => {
                       ].map((prompt) => (
                         <button
                           key={prompt}
-                          className="flex items-center gap-2 bg-white border border-[#dadce0] px-4 py-2.5 rounded-[8px] text-[13px] font-medium text-[#1f1f1f] hover:bg-[#f8f9fa] shadow-sm transition-all active:scale-[0.98]"
+                          className="flex items-center gap-2 bg-white border border-gray-medium-4 px-4 py-2.5 rounded-[8px] text-[13px] font-medium text-gray-dark-3 hover:bg-gray-very-light-2 shadow-sm transition-all active:scale-[0.98]"
                         >
                           <svg
-                            className="w-4 h-4 text-[#0056D2]"
+                            className="w-4 h-4 text-primary"
                             viewBox="0 0 24 24"
                             fill="currentColor"
                           >
@@ -668,12 +683,11 @@ const CourseContent: React.FC = () => {
             {/* Bottom Tabs: Transcript / Notes / Downloads - Only for Video Lessons */}
             {currentLesson.type?.toLowerCase() === "video" && (
               <>
-                <div className="border-b border-[#dadce0] mb-8">
-                  <div className="flex gap-8">
+                <div className="border-b border-gray-medium-4 mb-8 overflow-x-auto no-scrollbar">
+                  <div className="flex gap-4 sm:gap-8 whitespace-nowrap min-w-max px-2">
                     {["Transcript", "Notes Downloads"].map((tab) => {
                       const slug =
                         tab === "Transcript" ? "transcript" : "notes-downloads";
-                      // Only show Transcript tab for Video lessons
                       if (
                         slug === "transcript" &&
                         currentLesson.type?.toLowerCase() !== "video"
@@ -686,8 +700,8 @@ const CourseContent: React.FC = () => {
                           onClick={() => setActiveTab(slug)}
                           className={`pb-3 text-[14px] font-bold border-b-[3px] transition-all ${
                             activeTab === slug
-                              ? "border-[#1f1f1f] text-[#1f1f1f]"
-                              : "border-transparent text-[#5f6368] hover:text-[#1f1f1f]"
+                              ? "border-gray-dark-3 text-gray-dark-3"
+                              : "border-transparent text-text-gray hover:text-gray-dark-3"
                           }`}
                         >
                           {tab}
@@ -702,11 +716,11 @@ const CourseContent: React.FC = () => {
                   currentLesson.type?.toLowerCase() === "video" && (
                     <div className="pb-32">
                       <div className="flex items-center gap-1 mb-8">
-                        <span className="text-[13px] font-medium text-[#1f1f1f]">
+                        <span className="text-[13px] font-medium text-gray-dark-3">
                           Transcript language:
                         </span>
-                        <div className="inline-flex items-center gap-2 text-[13px] font-medium text-[#1f1f1f] cursor-pointer">
-                          <span className="text-[13px] font-medium text-[#1f1f1f]">
+                        <div className="inline-flex items-center gap-2 text-[13px] font-medium text-gray-dark-3 cursor-pointer">
+                          <span className="text-[13px] font-medium text-gray-dark-3">
                             English
                           </span>
                           <svg
@@ -728,24 +742,22 @@ const CourseContent: React.FC = () => {
                             <div
                               id={`transcript-line-${line.id}`}
                               key={line.id}
-                              className="flex items-start gap-10 group cursor-pointer p-4 rounded-lg transition-all duration-300 hover:bg-gray-50 border-l-4 border-transparent"
+                              className="flex items-start gap-4 md:gap-10 group cursor-pointer p-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-gray-50 border-l-4 border-transparent"
                             >
-                              <span
-                                className="text-[11px] mt-1 shrink-0 font-mono w-10 text-[#5f6368]"
-                              >
+                              <span className="text-[10px] sm:text-[11px] mt-1 shrink-0 font-mono w-8 sm:w-10 text-text-gray">
                                 {Math.floor(line.startTime / 60)}:
                                 {String(
                                   Math.floor(line.startTime % 60),
                                 ).padStart(2, "0")}
                               </span>
-                              <p className="text-[14px] leading-[1.6] text-[#5f6368] group-hover:text-[#1f1f1f]">
+                              <p className="text-[14px] leading-[1.6] text-text-gray group-hover:text-gray-dark-3">
                                 {line.text}
                               </p>
                             </div>
                           ))
                         ) : (
-                          <div className="text-center py-10 bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
-                            <p className="text-[#5f6368]">
+                          <div className="text-center py-10 bg-gray-very-light-2 rounded-lg border border-dashed border-gray-medium-4">
+                            <p className="text-text-gray">
                               Transcript not available for this lesson.
                             </p>
                           </div>
@@ -757,10 +769,11 @@ const CourseContent: React.FC = () => {
                 {/* Other Tab Contents (Placeholders) */}
                 {activeTab === "notes-downloads" && (
                   <div className="pb-32">
-                    <div className="p-8 text-center bg-[#f8f9fa] rounded-lg border border-dashed border-[#dadce0]">
-                    <p className="text-[#5f6368]">
-                      Your notes and downloads for this lesson will appear here.
-                    </p>
+                    <div className="p-8 text-center bg-gray-very-light-2 rounded-lg border border-dashed border-gray-medium-4">
+                      <p className="text-text-gray">
+                        Your notes and downloads for this lesson will appear
+                        here.
+                      </p>
                     </div>
                   </div>
                 )}
@@ -769,9 +782,13 @@ const CourseContent: React.FC = () => {
           </div>
 
           {/* Navigation Bar */}
-          <div className="fixed bottom-0 right-0 left-[350px] bg-white/80 backdrop-blur-sm border-t border-[#dadce0] h-[72px] sm:h-[80px] md:h-[88px] lg:h-[96px] xl:h-[104px] p-2 px-6 sm:p-3 sm:px-8 lg:p-4 lg:px-10 xl:p-5 xl:px-12 z-40 flex flex-col justify-center">
+          <div
+            className={`fixed bottom-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-medium-4 h-[72px] sm:h-[80px] p-2 px-4 sm:px-8 z-40 flex flex-col justify-center transition-all duration-300 ease-in-out
+              ${isMobileSidebarOpen ? "left-0 lg:left-[350px]" : "left-0 lg:left-[350px]"}
+            `}
+          >
             <div className="flex items-center gap-4 text-[12px] sm:gap-6 sm:text-[13px] mb-2 sm:mb-3">
-              <button className="flex items-center gap-1 text-[#0056D2] cursor-pointer">
+              <button className="flex items-center gap-1 text-primary cursor-pointer">
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -787,7 +804,7 @@ const CourseContent: React.FC = () => {
                 </svg>
                 Like
               </button>
-              <button className="flex items-center gap-1 text-[#0056D2] cursor-pointer">
+              <button className="flex items-center gap-1 text-primary cursor-pointer">
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -803,12 +820,8 @@ const CourseContent: React.FC = () => {
                 </svg>
                 Dislike
               </button>
-              <button className="flex items-center gap-1 text-[#0056D2] cursor-pointer">
-                <img
-                  src={IMAGES.UI.REPORT_ICON}
-                  alt=""
-                  className="w-3 h-3"
-                />
+              <button className="flex items-center gap-1 text-primary cursor-pointer">
+                <img src={IMAGES.UI.REPORT_ICON} alt="" className="w-3 h-3" />
                 Report an issue
               </button>
             </div>
@@ -823,11 +836,11 @@ const CourseContent: React.FC = () => {
                 }
                 className={`flex items-center gap-2 px-4 py-2 text-[12px] sm:px-5 sm:py-2.5 sm:text-[13px] lg:px-6 lg:text-[14px] rounded-[4px] font-bold transition-colors ${
                   isLessonCompleted(currentLesson.id)
-                    ? "bg-[#0056D2] text-white hover:bg-[#00419e]"
+                    ? "bg-primary text-white hover:bg-primary-hover"
                     : currentLesson.type?.toLowerCase() === "assessment" ||
                         currentLesson.type?.toLowerCase() === "video"
                       ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                      : "bg-white border border-[#0056D2] text-[#0056D2] hover:bg-[#f0f7ff]"
+                      : "bg-white border border-primary text-primary hover:bg-blue-light-1"
                 }`}
               >
                 {isLessonCompleted(currentLesson.id)
@@ -836,7 +849,7 @@ const CourseContent: React.FC = () => {
                     ? "Locked (Pass to continue)"
                     : currentLesson.type?.toLowerCase() === "video"
                       ? "Go to next item"
-                    : "Mark as completed"}
+                      : "Mark as completed"}
                 <svg
                   className="w-4 h-4"
                   fill="none"
@@ -856,6 +869,43 @@ const CourseContent: React.FC = () => {
 };
 
 export default CourseContent;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

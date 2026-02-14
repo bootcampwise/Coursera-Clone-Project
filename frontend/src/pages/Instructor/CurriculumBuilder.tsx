@@ -6,7 +6,7 @@ import { courseApi } from "../../services/courseApi";
 import AddLessonModal from "../../components/instructor/AddLessonModal";
 import EditLessonModal from "../../components/instructor/EditLessonModal";
 
-// explicit types to avoid inference issues with unions
+
 interface Lesson {
   id: string;
   title: string;
@@ -30,11 +30,11 @@ const CurriculumBuilder: React.FC = () => {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Add Lesson Modal State
+  
   const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
   const [currentModuleId, setCurrentModuleId] = useState<string | null>(null);
 
-  // Edit Lesson Modal State
+  
   const [isEditLessonModalOpen, setIsEditLessonModalOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState<any | null>(null);
 
@@ -43,7 +43,7 @@ const CurriculumBuilder: React.FC = () => {
     setLoading(true);
     try {
       const data = await courseApi.getModules(courseId);
-      // Ensure lessons are sorted by order
+      
       const sortedModules = data
         .map((m: any) => ({
           ...m,
@@ -113,7 +113,7 @@ const CurriculumBuilder: React.FC = () => {
     }
   };
 
-  // --- Add Lesson Logic ---
+  
   const handleAddLesson = (moduleId: string) => {
     setCurrentModuleId(moduleId);
     setIsAddLessonModalOpen(true);
@@ -128,7 +128,7 @@ const CurriculumBuilder: React.FC = () => {
     if (!currentModuleId) return;
 
     try {
-      // Find current module to determine order
+      
       const module = modules.find((m) => m.id === currentModuleId);
       const order = module ? module.lessons.length : 0;
 
@@ -155,7 +155,7 @@ const CurriculumBuilder: React.FC = () => {
     }
   };
 
-  // --- Edit Lesson Logic ---
+  
   const handleEditLesson = (lesson: any) => {
     setEditingLesson(lesson);
     setIsEditLessonModalOpen(true);
@@ -199,7 +199,7 @@ const CurriculumBuilder: React.FC = () => {
   };
 
   const handleReorderLessons = async (moduleId: string, lessons: any[]) => {
-    // Optimistic update
+    
     setModules((prev) =>
       prev.map((m) => {
         if (m.id === moduleId) {
@@ -214,7 +214,7 @@ const CurriculumBuilder: React.FC = () => {
       await courseApi.reorderLessons(updates);
     } catch (error) {
       toast.error("Failed to reorder lessons");
-      fetchModules(); // Revert on error
+      fetchModules(); 
     }
   };
 
@@ -288,3 +288,52 @@ const CurriculumBuilder: React.FC = () => {
 };
 
 export default CurriculumBuilder;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

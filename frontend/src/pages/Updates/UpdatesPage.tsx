@@ -48,7 +48,7 @@ const UpdatesPage: React.FC = () => {
     try {
       if (!notification.isRead) {
         await notificationApi.markAsRead(notification.id);
-        // Update local state
+        
         setUpdates(
           updates.map((u) =>
             u.id === notification.id ? { ...u, isRead: true } : u,
@@ -81,29 +81,29 @@ const UpdatesPage: React.FC = () => {
       <Header />
 
       <main className="flex-1 container mx-auto px-4 md:px-8 py-8 max-w-[1000px]">
-        <h1 className="text-[24px] md:text-[28px] font-bold text-[#1f1f1f] mb-8 font-sans">
+        <h1 className="text-[24px] md:text-[28px] font-bold text-text-primary mb-8 font-sans">
           Updates
         </h1>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#0056D2]"></div>
-            <p className="mt-4 text-[#5f6368]">Loading notifications...</p>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="mt-4 text-text-gray">Loading notifications...</p>
           </div>
         ) : error ? (
           <div className="text-center py-12">
             <p className="text-red-500">{error}</p>
             <button
               onClick={fetchNotifications}
-              className="mt-4 text-[#0056D2] hover:underline"
+              className="mt-4 text-primary hover:underline"
             >
               Try again
             </button>
           </div>
         ) : updates.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-[#5f6368] text-lg">No notifications yet</p>
-            <p className="text-[#5f6368] text-sm mt-2">
+            <p className="text-text-gray text-lg">No notifications yet</p>
+            <p className="text-text-gray text-sm mt-2">
               You'll see updates here when you complete courses or earn
               certificates
             </p>
@@ -113,10 +113,10 @@ const UpdatesPage: React.FC = () => {
             {updates.map((item) => (
               <div
                 key={item.id}
-                className={`flex flex-col md:flex-row gap-4 p-6 rounded-lg border border-[#e1e1e1] ${
+                className={`flex flex-col md:flex-row gap-4 p-6 rounded-lg border border-border ${
                   item.isRead
-                    ? "bg-[#F5F7F8]"
-                    : "bg-white border-l-4 border-l-[#0056D2]"
+                    ? "bg-surface"
+                    : "bg-white border-l-4 border-l-primary"
                 }`}
               >
                 <div className="shrink-0">
@@ -129,7 +129,7 @@ const UpdatesPage: React.FC = () => {
                     />
                   ) : item.type === "certificate" ||
                     item.type === "course_completion" ? (
-                    <div className="w-12 h-12 rounded-full bg-[#0056D2] text-white flex items-center justify-center text-xl font-bold">
+                    <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold">
                       C
                     </div>
                   ) : (
@@ -153,15 +153,15 @@ const UpdatesPage: React.FC = () => {
 
                 <div className="flex-1">
                   <div className="flex justify-between items-start mb-1">
-                    <h3 className="text-[16px] font-bold text-[#1f1f1f] leading-tight m-0">
+                    <h3 className="text-[16px] font-bold text-text-primary leading-tight m-0">
                       {item.title}
                     </h3>
-                    <span className="text-[12px] text-[#5f6368] whitespace-nowrap ml-4">
+                    <span className="text-[12px] text-text-gray whitespace-nowrap ml-4">
                       {formatDate(item.createdAt)}
                     </span>
                   </div>
 
-                  <p className="text-[14px] text-[#373a3c] leading-relaxed mb-3 max-w-[90%]">
+                  <p className="text-[14px] text-text-secondary-dark leading-relaxed mb-3 max-w-[90%]">
                     {item.message}
                   </p>
 
@@ -170,7 +170,7 @@ const UpdatesPage: React.FC = () => {
                       <Link
                         to={item.link}
                         onClick={() => handleNotificationClick(item)}
-                        className="text-[14px] font-bold text-[#0056D2] hover:underline no-underline"
+                        className="text-[14px] font-bold text-primary hover:underline no-underline"
                       >
                         {item.actionText}
                       </Link>
@@ -189,3 +189,52 @@ const UpdatesPage: React.FC = () => {
 };
 
 export default UpdatesPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

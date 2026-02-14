@@ -13,9 +13,9 @@ const AdvanceExpertise: React.FC<AdvanceExpertiseProps> = ({
 
   return (
     <section className="bg-white">
-      <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-10 min-h-[240px]">
-        <div className="py-6">
-          <h2 className="text-[20px] font-normal text-[#1f1f1f] mb-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-6 sm:gap-10 min-h-0 md:min-h-[240px]">
+        <div className="py-4 md:py-6">
+          <h2 className="text-[18px] sm:text-[20px] font-normal text-gray-dark-3 mb-4 sm:mb-3">
             Advance your subject matter expertise
           </h2>
           <ul className="space-y-3">
@@ -35,7 +35,7 @@ const AdvanceExpertise: React.FC<AdvanceExpertiseProps> = ({
             ))}
           </ul>
         </div>
-        <div className="h-[220px] md:h-[240px] overflow-hidden rounded-[8px] w-full">
+        <div className="h-[180px] sm:h-[220px] md:h-[240px] overflow-hidden rounded-[8px] w-full shadow-sm">
           <img
             src={imageSrc}
             alt="Students working"
@@ -48,3 +48,53 @@ const AdvanceExpertise: React.FC<AdvanceExpertiseProps> = ({
 };
 
 export default AdvanceExpertise;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

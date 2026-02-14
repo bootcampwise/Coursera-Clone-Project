@@ -84,15 +84,15 @@ const AccountSettings: FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F5FA] font-sans text-[#1f1f1f]">
+    <div className="min-h-screen bg-profile-light font-sans text-gray-dark-3">
       <Header />
 
       <main className="max-w-[1140px]  mx-auto px-4 md:px-12 py-10">
         <div className="flex flex-col md:flex-row gap-16 items-start">
-          {/* Left Sidebar */}
+          {}
           <aside className="w-full md:w-[220px] shrink-0 md:sticky md:top-24 pt-1 h-fit">
             <nav className="flex flex-col">
-              <button className="flex items-center gap-3 text-left w-full px-1.5 py-2.5 text-[14px] font-bold text-[#5f33e1] border-l-[3px] border-[#5f33e1] bg-transparent transition-colors cursor-pointer border-none">
+              <button className="flex items-center gap-3 text-left w-full px-1.5 py-2.5 text-[14px] font-bold text-purple-nice border-l-[3px] border-purple-nice bg-transparent transition-colors cursor-pointer border-none">
                 <svg
                   width="18"
                   height="18"
@@ -109,7 +109,7 @@ const AccountSettings: FC = () => {
                 </svg>
                 Account
               </button>
-              <button className="flex items-center gap-3 text-left w-full px-3 py-2.5 text-[14px] text-[#1f1f1f] hover:text-[#5f33e1] transition-all bg-transparent border-none cursor-pointer">
+              <button className="flex items-center gap-3 text-left w-full px-3 py-2.5 text-[14px] text-gray-dark-3 hover:text-purple-nice transition-all bg-transparent border-none cursor-pointer">
                 <svg
                   width="18"
                   height="18"
@@ -126,7 +126,7 @@ const AccountSettings: FC = () => {
                 </svg>
                 Communications
               </button>
-              <button className="flex items-center gap-3 text-left w-full px-3 py-2.5 text-[14px] text-[#1f1f1f] hover:text-[#5f33e1] transition-all bg-transparent border-none cursor-pointer">
+              <button className="flex items-center gap-3 text-left w-full px-3 py-2.5 text-[14px] text-gray-dark-3 hover:text-purple-nice transition-all bg-transparent border-none cursor-pointer">
                 <svg
                   width="18"
                   height="18"
@@ -143,7 +143,7 @@ const AccountSettings: FC = () => {
                 </svg>
                 Notes & Highlights
               </button>
-              <button className="flex items-center gap-3 text-left w-full px-3 py-2.5 text-[14px] text-[#1f1f1f] hover:text-[#5f33e1] transition-all bg-transparent border-none cursor-pointer">
+              <button className="flex items-center gap-3 text-left w-full px-3 py-2.5 text-[14px] text-gray-dark-3 hover:text-purple-nice transition-all bg-transparent border-none cursor-pointer">
                 <svg
                   width="18"
                   height="18"
@@ -165,47 +165,47 @@ const AccountSettings: FC = () => {
             </nav>
           </aside>
 
-          {/* Right Content */}
-          <div className="flex-1 w-full bg-white rounded-[4px] border border-[#e1e1e1] p-12 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
-            <h1 className="text-[30px] font-normal mb-10 text-[#1f1f1f]">
+          {}
+          <div className="flex-1 w-full bg-white rounded-[4px] border border-border p-12 shadow-[0_1px_3px_rgba(0,0,0,0.05)]">
+            <h1 className="text-[30px] font-normal mb-10 text-gray-dark-3">
               Account
             </h1>
 
             <form className="space-y-2" onSubmit={handleSaveProfile}>
-              {/* Name Section */}
+              {}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-2">
                 <div className="space-y-2">
-                  <label className="text-[14px] font-normal text-[#1f1f1f]">
-                    Full name <span className="text-[#C02626]">*</span>
+                  <label className="text-[14px] font-normal text-gray-dark-3">
+                    Full name <span className="text-error-dark">*</span>
                   </label>
                   <input
                     type="text"
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
-                    className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] focus:outline-none focus:border-[#0056D2] transition-colors"
+                    className="w-full h-[44px] px-4 rounded-[4px] border border-gray-very-light-3 text-[15px] focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[14px] font-normal text-[#1f1f1f]">
-                    Email address <span className="text-[#C02626]">*</span>
+                  <label className="text-[14px] font-normal text-gray-dark-3">
+                    Email address <span className="text-error-dark">*</span>
                   </label>
                   <input
                     type="email"
                     value={user?.email || ""}
                     disabled
-                    className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] bg-[#F0F4F9] text-[#5f6368] cursor-not-allowed"
+                    className="w-full h-[44px] px-4 rounded-[4px] border border-gray-very-light-3 text-[15px] bg-bg-light-blue text-text-gray cursor-not-allowed"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[14px] font-normal text-[#1f1f1f]">
+                  <label className="text-[14px] font-normal text-gray-dark-3">
                     Timezone
                   </label>
                   <div className="relative">
-                    <select className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] bg-white focus:outline-none focus:border-[#0056D2] appearance-none cursor-pointer">
+                    <select className="w-full h-[44px] px-4 rounded-[4px] border border-gray-very-light-3 text-[15px] bg-white focus:outline-none focus:border-primary appearance-none cursor-pointer">
                       <option>Asia/Karachi</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5f6368]">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-gray">
                       <svg
                         width="12"
                         height="12"
@@ -222,14 +222,14 @@ const AccountSettings: FC = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[14px] font-normal text-[#1f1f1f]">
+                  <label className="text-[14px] font-normal text-gray-dark-3">
                     Language
                   </label>
                   <div className="relative">
-                    <select className="w-full h-[44px] px-4 rounded-[4px] border border-[#ced4da] text-[15px] bg-white focus:outline-none focus:border-[#0056D2] appearance-none cursor-pointer">
+                    <select className="w-full h-[44px] px-4 rounded-[4px] border border-gray-very-light-3 text-[15px] bg-white focus:outline-none focus:border-primary appearance-none cursor-pointer">
                       <option>English</option>
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#5f6368]">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-gray">
                       <svg
                         width="12"
                         height="12"
@@ -251,24 +251,24 @@ const AccountSettings: FC = () => {
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-bold hover:bg-[#F0F4F9] transition-all bg-transparent cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="px-5 py-2 rounded-[4px] border border-primary text-primary text-[14px] font-bold hover:bg-bg-light-blue transition-all bg-transparent cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSaving ? "Saving..." : "Save"}
                 </button>
               </div>
 
-              <hr className="border-[#e1e1e1] my-12" />
+              <hr className="border-border my-12" />
 
-              {/* Personal Account Section */}
+              {}
               <div className="space-y-1">
-                <h2 className="text-[18px] font-normal text-[#1f1f1f] mb-4">
+                <h2 className="text-[18px] font-normal text-gray-dark-3 mb-4">
                   Personal Account
                 </h2>
-                <p className="text-[15px] text-[#1A1317] leading-relaxed max-w-[520px]">
+                <p className="text-[15px] text-gray-darkest-3 leading-relaxed max-w-[520px]">
                   Add your personal account here, so you'll still have access to
                   Coursera courses after you leave your current company.
                 </p>
-                <p className="text-[15px] text-[#1A1317] font-normal">
+                <p className="text-[15px] text-gray-darkest-3 font-normal">
                   Add Alternative Email
                 </p>
                 <div className="space-y-2 max-w-[520px]">
@@ -276,14 +276,14 @@ const AccountSettings: FC = () => {
                     type="email"
                     value={user?.email || ""}
                     disabled
-                    className="w-full h-[38px] px-3 bg-[#F0F4F9] rounded-[4px] border border-[#ced4da] text-[13px] text-[#5f6368] cursor-not-allowed"
+                    className="w-full h-[38px] px-3 bg-bg-light-blue rounded-[4px] border border-gray-very-light-3 text-[13px] text-text-gray cursor-not-allowed"
                   />
                 </div>
                 <div className="pt-2 mb-12">
                   <button
                     type="button"
                     disabled
-                    className="px-4 py-1.5 rounded-[4px] border border-[#c9d4ea] text-[#9aa8c2] text-[12px] font-bold bg-[#eef2f8] cursor-not-allowed"
+                    className="px-4 py-1.5 rounded-[4px] border border-blue-light-3 text-gray-medium-light-2 text-[12px] font-bold bg-blue-light-7 cursor-not-allowed"
                   >
                     Save
                   </button>
@@ -292,14 +292,14 @@ const AccountSettings: FC = () => {
 
               {/* Password Section */}
               <div className="space-y-2">
-                <h2 className="text-[18px] font-normal text-[#1f1f1f]">
+                <h2 className="text-[18px] font-normal text-gray-dark-3">
                   Password
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <div className="space-y-1.5">
-                    <label className="text-[15px] font-normal text-[#1A1317]">
-                      Current password <span className="text-[#C02626]">*</span>
+                    <label className="text-[15px] font-normal text-gray-darkest-3">
+                      Current password <span className="text-error-dark">*</span>
                     </label>
                     <input
                       type="password"
@@ -310,13 +310,13 @@ const AccountSettings: FC = () => {
                           currentPassword: e.target.value,
                         })
                       }
-                      className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
+                      className="w-full h-[36px] px-3 border border-gray-very-light-3 rounded-[4px] text-[14px] focus:border-primary focus:outline-none transition-colors"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[15px] font-normal text-[#1A1317]">
-                      New password <span className="text-[#C02626]">*</span>
+                    <label className="text-[15px] font-normal text-gray-darkest-3">
+                      New password <span className="text-error-dark">*</span>
                     </label>
                     <input
                       type="password"
@@ -327,13 +327,13 @@ const AccountSettings: FC = () => {
                           newPassword: e.target.value,
                         })
                       }
-                      className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
+                      className="w-full h-[36px] px-3 border border-gray-very-light-3 rounded-[4px] text-[14px] focus:border-primary focus:outline-none transition-colors"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[15px] font-normal text-[#1A1317]">
-                      Retype password <span className="text-[#C02626]">*</span>
+                    <label className="text-[15px] font-normal text-gray-darkest-3">
+                      Retype password <span className="text-error-dark">*</span>
                     </label>
                     <input
                       type="password"
@@ -344,7 +344,7 @@ const AccountSettings: FC = () => {
                           retypePassword: e.target.value,
                         })
                       }
-                      className="w-full h-[36px] px-3 border border-[#ced4da] rounded-[4px] text-[14px] focus:border-[#0056D2] focus:outline-none transition-colors"
+                      className="w-full h-[36px] px-3 border border-gray-very-light-3 rounded-[4px] text-[14px] focus:border-primary focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -354,36 +354,36 @@ const AccountSettings: FC = () => {
                     type="button"
                     onClick={handleChangePassword}
                     disabled={isUpdatingPassword}
-                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="px-4 py-2 rounded-[4px] border border-primary text-primary text-[14px] font-medium hover:bg-bg-light-blue transition-all bg-white disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {isUpdatingPassword ? "Updating..." : "Change Password"}
                   </button>
                 </div>
               </div>
 
-              <hr className="border-[#e1e1e1] my-8" />
+              <hr className="border-border my-8" />
 
               {/* Verify My ID Section */}
               <div className="mt-10 space-y-2">
-                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                <h3 className="text-[18px] font-normal text-gray-dark-3">
                   Verify My ID
                 </h3>
 
-                <p className="text-[15px] text-[#1A1317] leading-[20px]">
+                <p className="text-[15px] text-gray-darkest-3 leading-[20px]">
                   Your name,{" "}
-                  <span className="font-semibold text-[#1A1317]">
+                  <span className="font-semibold text-gray-darkest-3">
                     Zainab Murtaza
                   </span>
                   , is{" "}
-                  <span className="font-semibold text-[#1A1317]">verified</span>
+                  <span className="font-semibold text-gray-darkest-3">verified</span>
                   . This is the name that will appear on your certificates.
                 </p>
 
-                <p className="text-[15px] text-[#1A1317]">
+                <p className="text-[15px] text-gray-darkest-3">
                   If you have questions or need help with your ID Verification,{" "}
                   <a
                     href="#"
-                    className="text-[#0056D2] font-medium hover:underline"
+                    className="text-primary font-medium hover:underline"
                   >
                     visit our ID Verification support page
                   </a>
@@ -391,17 +391,17 @@ const AccountSettings: FC = () => {
                 </p>
               </div>
 
-              <hr className="border-[#e1e1e1] my-10" />
+              <hr className="border-border my-10" />
 
               {/* Two Factor Authentication Section */}
               <div className="mt-10 space-y-4">
-                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                <h3 className="text-[18px] font-normal text-gray-dark-3">
                   Two Factor Authentication{" "}
-                  <span className="text-[#6c757d]">(BETA)</span>
+                  <span className="text-gray-medium-light-3">(BETA)</span>
                 </h3>
 
                 {/* Constrained text width like Figma */}
-                <p className="max-w-[500px] text-[15px] text-[#1A1317] leading-[20px]">
+                <p className="max-w-[500px] text-[15px] text-gray-darkest-3 leading-[20px]">
                   Two-Factor Authentication adds an additional layer of security
                   to your Coursera account. Each time you log in to Coursera,
                   you will be asked to enter a unique code that is only
@@ -413,23 +413,23 @@ const AccountSettings: FC = () => {
                 <div>
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                    className="px-4 py-2 rounded-[4px] border border-primary text-primary text-[14px] font-medium hover:bg-bg-light-blue transition-all bg-white"
                   >
                     Enable Two-Factor Authentication?
                   </button>
                 </div>
               </div>
 
-              <hr className="border-[#e1e1e1] my-10" />
+              <hr className="border-border my-10" />
 
               {/* Connected Devices Section */}
               <div className="mt-10 space-y-4">
-                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                <h3 className="text-[18px] font-normal text-gray-dark-3">
                   Connected devices
                 </h3>
 
                 {/* Constrained text width like Figma */}
-                <p className="text-[15px] text-[#1A1317] leading-[20px]">
+                <p className="text-[15px] text-gray-darkest-3 leading-[20px]">
                   If your account has been logged into on multiple devices, you
                   can log out from here.
                 </p>
@@ -437,56 +437,57 @@ const AccountSettings: FC = () => {
                 <div>
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                    className="px-4 py-2 rounded-[4px] border border-primary text-primary text-[14px] font-medium hover:bg-bg-light-blue transition-all bg-white"
                   >
                     Log out from all devices
                   </button>
                 </div>
               </div>
 
-              <hr className="border-[#e1e1e1] my-10" />
+              <hr className="border-border my-10" />
 
               {/* Linked Accounts */}
               <div className="space-y-1">
-                <h2 className="text-[18px] font-normal text-[#1f1f1f]">
+                <h2 className="text-[18px] font-normal text-gray-dark-3">
                   Linked Accounts
                 </h2>
 
                 {/* Facebook Section */}
                 <div className="space-y-2">
-                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-[#1f1f1f]">
+                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-gray-dark-3">
                     <svg
                       width="20"
                       height="20"
                       viewBox="0 0 24 24"
-                      fill="#1877F2"
+                      fill="currentColor"
+                      className="text-facebook-blue"
                     >
                       <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                     </svg>
                     Facebook
                   </h3>
-                  <p className="text-[15px] text-[#111727] font-normal">
+                  <p className="text-[15px] text-shade-13 font-normal">
                     Enable one-click login and receive more personalized course
                     recommendations.
                   </p>
                   <div className="flex items-center gap-6 pt-1">
                     <button
                       type="button"
-                      className="h-[38px] px-6 rounded-[4px] border border-[#ced4da] bg-[#F3F6F8] text-[#555] text-[14px] font-normal cursor-pointer hover:bg-gray-100 transition-colors"
+                      className="h-[38px] px-6 rounded-[4px] border border-gray-very-light-3 bg-bg-light-blue text-gray-medium-dark-3 text-[14px] font-normal cursor-pointer hover:bg-gray-100 transition-colors"
                     >
                       Link my Facebook Account
                     </button>
-                    <span className="text-[14px] text-[#14121B]">
+                    <span className="text-[14px] text-gray-darkest-4">
                       Unlink your Google account to log in with Facebook.
                     </span>
                   </div>
                 </div>
 
-                <hr className="h-px border-[#e1e1e1] my-10" />
+                <hr className="h-px border-border my-10" />
 
                 {/* Apple Section */}
                 <div className="space-y-2">
-                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-[#1f1f1f]">
+                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-gray-dark-3">
                     <svg
                       width="20"
                       height="20"
@@ -497,28 +498,28 @@ const AccountSettings: FC = () => {
                     </svg>
                     Apple
                   </h3>
-                  <p className="text-[15px] text-[#111727] font-normal">
+                  <p className="text-[15px] text-shade-13 font-normal">
                     Enable one-click login and receive more personalized course
                     recommendations.
                   </p>
                   <div className="flex items-center gap-6 pt-1">
                     <button
                       type="button"
-                      className="h-[38px] px-6 rounded-[4px] border border-[#ced4da] bg-[#F3F6F8] text-[#555] text-[14px] font-normal cursor-pointer hover:bg-gray-100 transition-colors"
+                      className="h-[38px] px-6 rounded-[4px] border border-gray-very-light-3 bg-bg-light-blue text-gray-medium-dark-3 text-[14px] font-normal cursor-pointer hover:bg-gray-100 transition-colors"
                     >
                       Link my Apple Account
                     </button>
-                    <span className="text-[14px] text-[#14121B]">
+                    <span className="text-[14px] text-gray-darkest-4">
                       Unlink your Google account to log in with Apple.
                     </span>
                   </div>
                 </div>
 
-                <hr className="h-px border-[#e1e1e1] my-10" />
+                <hr className="h-px border-border my-10" />
 
                 {/* Google Section */}
                 <div className="space-y-2">
-                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-[#1f1f1f]">
+                  <h3 className="text-[18px] font-normal flex items-center gap-2 text-gray-dark-3">
                     <img
                       src={IMAGES.LOGOS.GOOGLE_LOGO}
                       alt="Google"
@@ -526,14 +527,14 @@ const AccountSettings: FC = () => {
                     />
                     Google
                   </h3>
-                  <p className="text-[15px] text-[#111727] font-normal">
+                  <p className="text-[15px] text-shade-13 font-normal">
                     Your Coursera account is currently linked to your Google
                     account.
                   </p>
                   <div className="pt-1">
                     <button
                       type="button"
-                      className="h-[38px] px-5 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                      className="h-[38px] px-5 rounded-[4px] border border-primary text-primary text-[14px] font-medium hover:bg-bg-light-blue transition-all bg-white"
                     >
                       Unlink my Google Account
                     </button>
@@ -541,22 +542,22 @@ const AccountSettings: FC = () => {
                 </div>
               </div>
 
-              <hr className="h-px border-[#e1e1e1] my-10" />
+              <hr className="h-px border-border my-10" />
 
               {/* Delete Account Section */}
               <div className="mt-10 space-y-3">
-                <h3 className="text-[16px] font-semibold text-[#1f1f1f]">
+                <h3 className="text-[16px] font-semibold text-gray-dark-3">
                   Delete Account
                 </h3>
 
-                <p className="max-w-[620px] text-[14px] text-[#495057] leading-[20px]">
+                <p className="max-w-[620px] text-[14px] text-gray-medium-light-3 leading-[20px]">
                   If you delete your account, your personal information will be
                   wiped from Coursera’s{" "}
-                  <span className="text-[#0E1549]">servers</span>, all of your
+                  <span className="text-shade-6">servers</span>, all of your
                   course activity will be anonymized and any certificates earned
                   will be deleted. This action{" "}
-                  <span className="text-[#0E1549]">cannot</span> be undone.{" "}
-                  <span className="text-[#C02626]">
+                  <span className="text-shade-6">cannot</span> be undone.{" "}
+                  <span className="text-error-dark">
                     Cancel any active subscriptions before you delete your
                     account.
                   </span>
@@ -565,24 +566,24 @@ const AccountSettings: FC = () => {
                 <div>
                   <button
                     type="button"
-                    className="px-4 py-2 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                    className="px-4 py-2 rounded-[4px] border border-primary text-primary text-[14px] font-medium hover:bg-bg-light-blue transition-all bg-white"
                   >
                     Delete Account
                   </button>
                 </div>
               </div>
 
-              <hr className="border-[#e1e1e1] my-12" />
+              <hr className="border-border my-12" />
 
               {/* Learner Data Report Section */}
               <div className="mt-10 space-y-4 pb-4">
-                <h3 className="text-[18px] font-normal text-[#1f1f1f]">
+                <h3 className="text-[18px] font-normal text-gray-dark-3">
                   Learner Data Report
                 </h3>
 
-                <p className="max-w-[620px] text-[14px] text-[#495057] leading-[20px]">
-                  Request a report of all learner data{" "}
-                  <span className="text-[#0056D2]">stored</span> by Coursera
+                <p className="max-w-[620px] text-[14px] text-gray-medium-light-3 leading-[20px]">
+                  Request a report of all learner data  {" "}
+                  <span className="text-primary">stored</span> by Coursera
                   about your account. This report will be sent to the e-mail
                   address below.
                 </p>
@@ -592,18 +593,18 @@ const AccountSettings: FC = () => {
                     type="email"
                     defaultValue={user?.email || ""}
                     readOnly
-                    className="flex-1 h-[36px] px-3 bg-[#F0F4F9] rounded-[4px] border border-[#ced4da] text-[14px] text-[#1f1f1f] focus:outline-none"
+                    className="flex-1 h-[36px] px-3 bg-bg-light-blue rounded-[4px] border border-gray-very-light-3 text-[14px] text-gray-dark-3 focus:outline-none"
                   />
 
                   <button
                     type="button"
-                    className="shrink-0 px-4 py-1.5 rounded-[4px] border border-[#0056D2] text-[#0056D2] text-[14px] font-medium hover:bg-[#F0F4F9] transition-all bg-white"
+                    className="shrink-0 px-4 py-1.5 rounded-[4px] border border-primary text-primary text-[14px] font-medium hover:bg-bg-light-blue transition-all bg-white"
                   >
                     Send Report
                   </button>
                 </div>
 
-                <p className="max-w-[620px] text-[13px] text-[#6c757d]">
+                <p className="max-w-[620px] text-[13px] text-gray-medium-light-3">
                   To change email, please adjust the email settings at the top
                   of this page.
                 </p>
@@ -619,3 +620,52 @@ const AccountSettings: FC = () => {
 };
 
 export default AccountSettings;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

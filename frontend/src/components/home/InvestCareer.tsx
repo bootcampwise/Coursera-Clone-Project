@@ -1,4 +1,4 @@
-// src/components/home/InvestCareerSection/InvestCareerSection.tsx
+
 import { IMAGES } from "../../constants/images";
 const INVEST_CARDS = [
   {
@@ -23,34 +23,34 @@ const INVEST_CARDS = [
 
 const InvestCareer = () => {
   return (
-    <section className="w-full min-h-[296px] bg-[#F0F6FF] flex items-center py-12 md:py-0">
+    <section className="w-full min-h-[296px] bg-blue-ultra-light flex items-center py-12 md:py-0">
       <div className="container px-4 md:px-8 mx-auto w-full">
-        {/* Section Title */}
-        <h2 className="font-normal text-[25.49px] leading-[24.74px] text-[#29181F] mb-10">
+        {}
+        <h2 className="font-normal text-[25.49px] leading-[24.74px] text-brown-dark mb-10">
           Invest in your career
         </h2>
 
-        {/* Cards */}
+        {}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {INVEST_CARDS.map((card, index) => (
             <div
               key={index}
               className="flex flex-col items-start text-left  max-w-[320px] mx-auto"
             >
-              {/* Icon */}
+              {}
               <img
                 src={card.icon}
                 alt={card.title}
                 className="h-[32px] w-auto object-contain mb-4"
               />
 
-              {/* Title */}
-              <h3 className="font-normal text-[17.24px] leading-[18.74px] text-[#141225] mb-2">
+              {}
+              <h3 className="font-normal text-[17.24px] leading-[18.74px] text-dark-purple mb-2">
                 {card.title}
               </h3>
 
-              {/* Description */}
-              <p className="font-normal text-[13.49px] leading-[14.24px] text-[#131018]">
+              {}
+              <p className="font-normal text-[13.49px] leading-[14.24px] text-dark-brown">
                 {card.description}
               </p>
             </div>
@@ -62,3 +62,51 @@ const InvestCareer = () => {
 };
 
 export default InvestCareer;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

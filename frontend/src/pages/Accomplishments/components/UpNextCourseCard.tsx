@@ -14,7 +14,7 @@ const UpNextCourseCard: React.FC<UpNextCourseCardProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col h-full bg-white border border-[#e3e6ef] rounded-[10px] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] ${className || ""}`}
+      className={`flex flex-col h-full bg-white border border-gray-light-2-alt rounded-[10px] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.08)] ${className || ""}`}
     >
       <div className="relative p-2 h-[160px] overflow-hidden rounded-2xl">
         <img
@@ -31,17 +31,17 @@ const UpNextCourseCard: React.FC<UpNextCourseCardProps> = ({
             alt="Google"
             className="w-[26px] h-[26px] object-contain shrink-0"
           />
-          <span className="text-[16px] text-[#5B6993] font-normal leading-none truncate">
+          <span className="text-[16px] text-gray-medium-2-alt font-normal leading-none truncate">
             Google
           </span>
         </div>
 
-        <h3 className="text-[16px] font-normal text-[#0F102F] mb-8 line-clamp-2 leading-[1.3] min-h-[48px]">
+        <h3 className="text-[16px] font-normal text-gray-darkest-2 mb-8 line-clamp-2 leading-[1.3] min-h-[48px]">
           {title}
         </h3>
 
         <div className="mt-auto">
-          <p className="text-[12px] text-[#636363] font-medium uppercase tracking-tight leading-none opacity-80">
+          <p className="text-[12px] text-shade-2 font-medium uppercase tracking-tight leading-none opacity-80">
             Course
           </p>
         </div>
@@ -51,3 +51,53 @@ const UpNextCourseCard: React.FC<UpNextCourseCardProps> = ({
 };
 
 export default UpNextCourseCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

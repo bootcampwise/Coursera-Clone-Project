@@ -29,7 +29,7 @@ const CourseCertificate: React.FC = () => {
   const verifyUrl = certificate?.verificationCode
     ? `${window.location.origin}/verify/${certificate.verificationCode}`
     : "";
-  // Robust origin calculation
+  
   const backendOrigin = (() => {
     if (import.meta.env.VITE_API_BASE_URL) {
       return import.meta.env.VITE_API_BASE_URL.replace(/\/api\/v1\/?$/, "");
@@ -98,7 +98,7 @@ const CourseCertificate: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f5f7f8] font-sans text-[#1f1f1f]">
+      <div className="min-h-screen bg-surface font-sans text-gray-dark-3">
         <Header />
         <div className="max-w-[1140px] mx-auto px-4 md:px-12 py-8">
           Loading certificate...
@@ -109,12 +109,12 @@ const CourseCertificate: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
+    <div className="min-h-screen bg-white font-sans text-gray-dark-3">
       <Header />
 
       <main className="max-w-[1140px] mx-auto px-4 md:px-0 py-6 md:py-8">
-        {/* Breadcrumbs */}
-        <nav className="flex items-center gap-1.5 text-[12px] md:text-[13px] text-[#5f6368] mb-6 md:mb-8 font-medium overflow-x-auto whitespace-nowrap scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+        {}
+        <nav className="flex items-center gap-1.5 text-[12px] md:text-[13px] text-text-gray mb-6 md:mb-8 font-medium overflow-x-auto whitespace-nowrap scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
           <span className="hover:underline cursor-pointer">
             Accomplishments
           </span>
@@ -130,23 +130,23 @@ const CourseCertificate: React.FC = () => {
           >
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
-          <span className="text-[#1f1f1f]">Course Certificate</span>
+          <span className="text-gray-dark-3">Course Certificate</span>
         </nav>
 
-        <h1 className="text-[28px] md:text-[36px] font-normal mb-8 text-[#1f1f1f] leading-tight">
+        <h1 className="text-[28px] md:text-[36px] font-normal mb-8 text-gray-dark-3 leading-tight">
           {certificate?.courseTitle || "Course Certificate"}
         </h1>
 
         <div className="flex flex-col md:flex-row gap-6 items-start">
-          {/* Left Column */}
+          {}
           <div className="space-y-10 min-w-0 flex-1 w-full max-w-[500px]">
-            {/* Completion Banner */}
-            <div className="bg-[#E3EEFF] rounded-sm p-6 md:p-10 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 md:gap-10">
+            {}
+            <div className="bg-blue-light-8 rounded-sm p-6 md:p-10 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 md:gap-10">
               <div className="relative shrink-0">
-                <div className="w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full bg-[#9e27b0] flex items-center justify-center text-white text-[32px] md:text-[42px] font-bold">
+                <div className="w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full bg-avatar-purple flex items-center justify-center text-white text-[32px] md:text-[42px] font-bold">
                   {(certificate?.learnerName || "L").charAt(0).toUpperCase()}
                 </div>
-                <div className="absolute -top-0.5 -right-0.5 w-[22px] h-[22px] md:w-[26px] md:h-[26px] bg-white rounded-full flex items-center justify-center border border-[#dadce0]">
+                <div className="absolute -top-0.5 -right-0.5 w-[22px] h-[22px] md:w-[26px] md:h-[26px] bg-white rounded-full flex items-center justify-center border border-gray-medium-4">
                   <div className="bg-white rounded-full w-full h-full flex items-center justify-center">
                     <svg
                       width="10"
@@ -164,13 +164,13 @@ const CourseCertificate: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-4">
-                <h2 className="text-[20px] md:text-[24px] font-normal text-[#1f1f1f]">
+                <h2 className="text-[20px] md:text-[24px] font-normal text-gray-dark-3">
                   Completed by{" "}
                   <span className="font-bold">
                     {certificate?.learnerName || "Learner"}
                   </span>
                 </h2>
-                <div className="space-y-1.5 text-[15px] text-[#1f1f1f]">
+                <div className="space-y-1.5 text-[15px] text-gray-dark-3">
                   <p>{formatCompletionDate(certificate?.issuedAt)}</p>
                   <p>
                     {typeof certificate?.durationMinutes === "number" &&
@@ -188,17 +188,17 @@ const CourseCertificate: React.FC = () => {
                       : "Grade Achieved: N/A"}
                   </p>
                 </div>
-                <p className="text-[14px] leading-relaxed text-[#1f1f1f] mt-4 max-w-[500px]">
+                <p className="text-[14px] leading-relaxed text-gray-dark-3 mt-4 max-w-[500px]">
                   <span className="font-bold">
                     {certificate?.learnerName || "This learner"}'s
                   </span>{" "}
                   account is verified. Coursera{" "}
-                  <span className="font-bold text-[#0056D2]">certifies</span>
+                  <span className="font-bold text-primary">certifies</span>
                   their{" "}
-                  <span className="font-bold text-[#0056D2]">
+                  <span className="font-bold text-primary">
                     successful completion of
                   </span>{" "}
-                  <span className="font-bold text-[#1f1f1f]">
+                  <span className="font-bold text-gray-dark-3">
                     {certificate?.courseTitle || "this course"}
                   </span>
                 </p>
@@ -215,14 +215,14 @@ const CourseCertificate: React.FC = () => {
                 />
               </div>
               <div className="space-y-0.5">
-                <h3 className="text-[18px] md:text-[20px] font-normal text-[#1f1f1f] leading-tight mb-1">
+                <h3 className="text-[18px] md:text-[20px] font-normal text-gray-dark-3 leading-tight mb-1">
                   {certificate?.courseTitle || "Course"}
                 </h3>
-                <p className="text-[13px] md:text-[14px] text-[#5f6368] font-medium">
+                <p className="text-[13px] md:text-[14px] text-text-gray font-medium">
                   {certificate?.partnerName || "Provider"}
                 </p>
                 <div className="flex items-center justify-center sm:justify-start gap-1.5 py-1">
-                  <div className="flex text-[#f5c22b] gap-[3px]">
+                  <div className="flex text-yellow-accent gap-[3px]">
                     {[...Array(5)].map((_, i) => (
                       <svg
                         key={i}
@@ -235,10 +235,10 @@ const CourseCertificate: React.FC = () => {
                       </svg>
                     ))}
                   </div>
-                  <span className="text-[13px] md:text-[14px] font-bold text-[#1f1f1f] ml-0.5">
+                  <span className="text-[13px] md:text-[14px] font-bold text-gray-dark-3 ml-0.5">
                     4.8
                   </span>
-                  <span className="text-[13px] md:text-[14px] text-[#5f6368]">
+                  <span className="text-[13px] md:text-[14px] text-text-gray">
                     (74,715 ratings)
                   </span>
                 </div>
@@ -246,10 +246,10 @@ const CourseCertificate: React.FC = () => {
             </div>
 
             {/* Learning + Skills Container */}
-            <div className="bg-white rounded-sm border border-[#e8eaed] p-6 md:p-10 space-y-8 md:space-y-10">
+            <div className="bg-white rounded-sm border border-gray-light-ultra-light p-6 md:p-10 space-y-8 md:space-y-10">
               {/* What you will learn */}
               <div>
-                <h3 className="text-[16px] font-normal tracking-widest uppercase text-[#1f1f1f] mb-8">
+                <h3 className="text-[16px] font-normal tracking-widest uppercase text-gray-dark-3 mb-8">
                   WHAT YOU WILL LEARN
                 </h3>
                 {learningPoints.length > 0 ? (
@@ -258,7 +258,7 @@ const CourseCertificate: React.FC = () => {
                       <div key={`${index}-${point}`} className="flex gap-5">
                         <div className="mt-1">
                           <svg
-                            className="text-[#008332]"
+                            className="text-success-dark-3"
                             width="20"
                             height="20"
                             fill="none"
@@ -269,22 +269,22 @@ const CourseCertificate: React.FC = () => {
                             <polyline points="20 6 9 17 4 12" />
                           </svg>
                         </div>
-                        <p className="text-[15px] leading-relaxed text-[#1f1f1f]">
+                        <p className="text-[15px] leading-relaxed text-gray-dark-3">
                           {point}
                         </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-[15px] leading-relaxed text-[#1f1f1f]">
+                  <p className="text-[15px] leading-relaxed text-gray-dark-3">
                     Learning outcomes are not available for this course yet.
                   </p>
                 )}
               </div>
 
               {/* Skills you will gain */}
-              <div className="space-y-6 pt-8 border-t border-[#f1f3f4]">
-                <h3 className="text-[16px] font-normal tracking-widest uppercase text-[#1f1f1f]">
+              <div className="space-y-6 pt-8 border-t border-gray-light-ultra-light">
+                <h3 className="text-[16px] font-normal tracking-widest uppercase text-gray-dark-3">
                   SKILLS YOU WILL GAIN
                 </h3>
                 <div className="flex flex-wrap gap-2.5">
@@ -301,13 +301,13 @@ const CourseCertificate: React.FC = () => {
                   ].map((skill) => (
                     <span
                       key={skill}
-                      className="px-4 py-2 bg-[#f1f3f4] rounded-full text-[14px] text-[#1f1f1f] font-medium border border-transparent transition-colors"
+                      className="px-4 py-2 bg-gray-light-ultra-light rounded-full text-[14px] text-gray-dark-3 font-medium border border-transparent transition-colors"
                     >
                       {skill}
                     </span>
                   ))}
                 </div>
-                <button className="text-[14px] font-bold text-[#0056D2] hover:underline uppercase tracking-widest mt-2">
+                <button className="text-[14px] font-bold text-primary hover:underline uppercase tracking-widest mt-2">
                   SHOW ALL
                 </button>
               </div>
@@ -316,7 +316,7 @@ const CourseCertificate: React.FC = () => {
 
           {/* Right Column */}
           <div className="space-y-6 md:sticky md:top-24 mt-10 md:mt-0 w-full max-w-[600px]">
-            <div className="bg-white rounded border border-[#B3B3B5] border-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)] overflow-hidden relative aspect-[4/3] sm:aspect-auto">
+            <div className="bg-white rounded border border-gray-medium-5 border-4 shadow-[0_1px_3px_rgba(0,0,0,0.1)] overflow-hidden relative aspect-[4/3] sm:aspect-auto">
               <iframe
                 src={`${backendOrigin}/api/v1/certificates/${id}/html?token=${localStorage.getItem("token") || localStorage.getItem("adminToken") || ""}`}
                 title="Certificate Preview"
@@ -329,7 +329,7 @@ const CourseCertificate: React.FC = () => {
               <button
                 onClick={handleShare}
                 disabled={!certificate}
-                className="w-full py-3.5 bg-[#0056D2] text-white rounded-[4px] font-bold text-[15px] hover:bg-[#00419e] transition-colors flex items-center justify-center gap-3 disabled:opacity-60"
+                className="w-full py-3.5 bg-primary text-white rounded-[4px] font-bold text-[15px] hover:bg-primary-hover transition-colors flex items-center justify-center gap-3 disabled:opacity-60"
               >
                 <svg
                   width="20"
@@ -350,7 +350,7 @@ const CourseCertificate: React.FC = () => {
               <button
                 onClick={handleDownload}
                 disabled={!certificate}
-                className="w-full py-3.5 border border-[#0056D2] text-[#0056D2] rounded-[4px] font-bold text-[15px] hover:bg-blue-50 transition-colors flex items-center justify-center gap-3 bg-transparent disabled:opacity-60"
+                className="w-full py-3.5 border border-primary text-primary rounded-[4px] font-bold text-[15px] hover:bg-blue-50 transition-colors flex items-center justify-center gap-3 bg-transparent disabled:opacity-60"
               >
                 <svg
                   width="20"
@@ -379,3 +379,52 @@ const CourseCertificate: React.FC = () => {
 };
 
 export default CourseCertificate;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

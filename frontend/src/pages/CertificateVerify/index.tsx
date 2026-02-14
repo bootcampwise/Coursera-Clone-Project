@@ -34,15 +34,15 @@ const CertificateVerify: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
+    <div className="min-h-screen bg-white font-sans text-gray-dark-3">
       <div className="max-w-[900px] mx-auto px-6 py-12">
         <h1 className="text-[28px] font-bold mb-4">Certificate Verification</h1>
-        <div className="border border-[#e1e1e1] rounded-[8px] p-6">
-          <p className="text-[14px] text-[#5f6368] mb-2">
+        <div className="border border-border rounded-[8px] p-6">
+          <p className="text-[14px] text-text-gray mb-2">
             This certificate is valid and belongs to:
           </p>
           <p className="text-[18px] font-bold">{data.learnerName}</p>
-          <div className="mt-4 space-y-1 text-[14px] text-[#1f1f1f]">
+          <div className="mt-4 space-y-1 text-[14px] text-gray-dark-3">
             <p>
               Course: <span className="font-semibold">{data.courseTitle}</span>
             </p>
@@ -70,3 +70,51 @@ const CertificateVerify: React.FC = () => {
 };
 
 export default CertificateVerify;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

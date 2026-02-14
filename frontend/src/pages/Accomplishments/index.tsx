@@ -207,36 +207,36 @@ const Accomplishments: React.FC = () => {
     recentlyViewedCourses.length - recentlyViewedVisibleCount;
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#1f1f1f]">
-      {/* 1. Navigation */}
+    <div className="min-h-screen bg-white font-sans text-gray-dark-3">
+      {}
       <Header />
 
-      {/* 4. Main Content */}
+      {}
       <main className={`${contentContainer} py-12`}>
-        {/* Verify My ID */}
-        <div className="border border-[#e5e7eb] rounded-[4px] p-6 mb-10">
-          <h2 className="text-[20px] font-normal text-[#1f1f1f] mb-2">
+        {}
+        <div className="border border-gray-light-1 rounded-[4px] p-6 mb-10">
+          <h2 className="text-[20px] font-normal text-gray-dark-3 mb-2">
             Verify My ID
           </h2>
-          <p className="text-[14px] text-[#1f1f1f] leading-6">
+          <p className="text-[14px] text-gray-dark-3 leading-6">
             Your name, {studentName}, is verified. This is the name that will
             appear on your certificates. If you have questions or need help with
             your ID Verification, visit our{" "}
-            <a href="#" className="text-[#0056D2] hover:underline">
+            <a href="#" className="text-primary hover:underline">
               ID Verification support
             </a>{" "}
             page.
           </p>
         </div>
 
-        {/* My Specializations */}
+        {}
         <div className="mb-10">
-          <h2 className="text-[16px] font-normal text-[#4c5a8a] mb-3">
+          <h2 className="text-[16px] font-normal text-shade-1 mb-3">
             My Specializations
           </h2>
-          <div className="border border-[#e5e7eb] rounded-[4px] bg-white">
+          <div className="border border-gray-light-1 rounded-[4px] bg-white">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-4">
-              <div className="w-[76px] h-[76px] border border-[#f0f0f0] bg-[#fafafa] rounded-[4px] flex items-center justify-center shrink-0">
+              <div className="w-[76px] h-[76px] border border-border-light bg-gray-very-light rounded-[4px] flex items-center justify-center shrink-0">
                 <img
                   src={IMAGES.UI.SPECIALIZATION_ICON}
                   alt="Specialization"
@@ -244,27 +244,27 @@ const Accomplishments: React.FC = () => {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[16px] text-[#0056D2] font-medium mb-1">
+                <div className="text-[16px] text-primary font-medium mb-1">
                   Google Prompting Essentials
                 </div>
-                <div className="text-[14px] text-[#1f1f1f]">Google</div>
+                <div className="text-[14px] text-gray-dark-3">Google</div>
               </div>
-              <button className="ml-auto px-5 py-2 bg-[#0A5BD3] text-white text-[14px] font-medium rounded-[10px] hover:bg-[#0a52c2] transition-colors">
+              <button className="ml-auto px-5 py-2 bg-primary text-white text-[14px] font-medium rounded-[10px] hover:bg-primary-hover transition-colors">
                 Add to LinkedIn
               </button>
             </div>
           </div>
         </div>
 
-        {/* My Courses */}
+        {}
         <div className="mb-16">
-          <h2 className="text-[16px] font-normal text-[#4c5a8a] mb-3">
+          <h2 className="text-[16px] font-normal text-shade-1 mb-3">
             My Courses
           </h2>
           <div className="space-y-6">
-            <div className="border border-[#e5e7eb] rounded-[4px] bg-white">
+            <div className="border border-gray-light-1 rounded-[4px] bg-white">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-4">
-                <div className="w-[76px] h-[76px] border border-[#e6f0ff] bg-[#f7fbff] rounded-[4px] flex items-center justify-center shrink-0">
+                <div className="w-[76px] h-[76px] border border-primary-light bg-primary-light-bg rounded-[4px] flex items-center justify-center shrink-0">
                   <img
                     src={IMAGES.UI.SPECIALIZATION_ICON}
                     alt="Course"
@@ -272,23 +272,23 @@ const Accomplishments: React.FC = () => {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[16px] text-[#0056D2] font-medium mb-1">
+                  <div className="text-[16px] text-primary font-medium mb-1">
                     Design Prompts for Everyday Work Tasks
                   </div>
-                  <div className="text-[14px] text-[#1f1f1f] mb-1">Google</div>
-                  <div className="text-[14px] text-[#1f1f1f]">
+                  <div className="text-[14px] text-gray-dark-3 mb-1">Google</div>
+                  <div className="text-[14px] text-gray-dark-3">
                     Grade Achieved: 100%
                   </div>
                 </div>
-                <button className="ml-auto px-5 py-2 bg-[#0A5BD3] text-white text-[14px] font-medium rounded-[10px] hover:bg-[#0a52c2] transition-colors">
+                <button className="ml-auto px-5 py-2 bg-primary text-white text-[14px] font-medium rounded-[10px] hover:bg-primary-hover transition-colors">
                   Add to LinkedIn
                 </button>
               </div>
             </div>
 
-            <div className="border border-[#e5e7eb] rounded-[4px] bg-white">
+            <div className="border border-gray-light-1 rounded-[4px] bg-white">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-4">
-                <div className="w-[76px] h-[76px] border border-[#e6f0ff] bg-[#f7fbff] rounded-[4px] flex items-center justify-center shrink-0">
+                <div className="w-[76px] h-[76px] border border-primary-light bg-primary-light-bg rounded-[4px] flex items-center justify-center shrink-0">
                   <img
                     src={IMAGES.UI.SPECIALIZATION_ICON}
                     alt="Course"
@@ -296,15 +296,15 @@ const Accomplishments: React.FC = () => {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[16px] text-[#0056D2] font-medium mb-1">
+                  <div className="text-[16px] text-primary font-medium mb-1">
                     Start Writing Prompts like a Pro
                   </div>
-                  <div className="text-[14px] text-[#1f1f1f] mb-1">Google</div>
-                  <div className="text-[14px] text-[#1f1f1f]">
+                  <div className="text-[14px] text-gray-dark-3 mb-1">Google</div>
+                  <div className="text-[14px] text-gray-dark-3">
                     Grade Achieved: 100%
                   </div>
                 </div>
-                <button className="ml-auto px-5 py-2 bg-[#0A5BD3] text-white text-[14px] font-medium rounded-[10px] hover:bg-[#0a52c2] transition-colors">
+                <button className="ml-auto px-5 py-2 bg-primary text-white text-[14px] font-medium rounded-[10px] hover:bg-primary-hover transition-colors">
                   Add to LinkedIn
                 </button>
               </div>
@@ -312,9 +312,9 @@ const Accomplishments: React.FC = () => {
           </div>
         </div>
 
-        {/* Up Next in Series */}
+        {}
         <div className="mb-16">
-          <h2 className="text-[22px] font-normal text-[#1f1f1f] mb-6">
+          <h2 className="text-[22px] font-normal text-gray-dark-3 mb-6">
             Up Next in {completedCourseName}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -329,9 +329,9 @@ const Accomplishments: React.FC = () => {
           </div>
         </div>
 
-        {/* Top Picks for You */}
+        {}
         <div className="mb-16">
-          <h2 className="text-[22px] font-normal text-[#1f1f1f] mb-6">
+          <h2 className="text-[22px] font-normal text-gray-dark-3 mb-6">
             Top Picks for You
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -348,7 +348,7 @@ const Accomplishments: React.FC = () => {
           </div>
           {topPicksRemaining > 0 ? (
             <button
-              className="mt-6 px-6 py-[7px] border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-[#f5f7f8] transition-colors"
+              className="mt-6 px-6 py-[7px] border border-primary text-primary font-bold rounded-[4px] text-[14px] hover:bg-surface transition-colors"
               onClick={() => setTopPicksVisibleCount(topPickCourses.length)}
             >
               Show {topPicksRemaining} more
@@ -356,9 +356,9 @@ const Accomplishments: React.FC = () => {
           ) : null}
         </div>
 
-        {/* Recently Viewed Products */}
+        {}
         <div className="mb-16">
-          <h2 className="text-[22px] font-normal text-[#1f1f1f] mb-6">
+          <h2 className="text-[22px] font-normal text-gray-dark-3 mb-6">
             Recently Viewed Products
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -375,7 +375,7 @@ const Accomplishments: React.FC = () => {
           </div>
           {recentlyViewedRemaining > 0 ? (
             <button
-              className="mt-6 px-6 py-[7px] border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-[#f5f7f8] transition-colors"
+              className="mt-6 px-6 py-[7px] border border-primary text-primary font-bold rounded-[4px] text-[14px] hover:bg-surface transition-colors"
               onClick={() =>
                 setRecentlyViewedVisibleCount(recentlyViewedCourses.length)
               }
@@ -385,9 +385,9 @@ const Accomplishments: React.FC = () => {
           ) : null}
         </div>
 
-        {/* Earn Your Degree */}
+        {}
         <div className="mb-16">
-          <h2 className="text-[24px] font-semibold text-[#1f1f1f] mb-6">
+          <h2 className="text-[24px] font-semibold text-gray-dark-3 mb-6">
             Earn Your Degree
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -401,7 +401,7 @@ const Accomplishments: React.FC = () => {
           </div>
           {showMoreDegrees ? (
             <button
-              className="mt-6 px-6 py-[7px] border border-[#0056D2] text-[#0056D2] font-bold rounded-[4px] text-[14px] hover:bg-[#f5f7f8] transition-colors"
+              className="mt-6 px-6 py-[7px] border border-primary text-primary font-bold rounded-[4px] text-[14px] hover:bg-surface transition-colors"
               onClick={() => setDegreesVisibleCount(degreeItems.length)}
             >
               Show {degreesRemaining} more
@@ -409,23 +409,23 @@ const Accomplishments: React.FC = () => {
           ) : null}
         </div>
 
-        {/* MasterTrack and University Certificates */}
+        {}
         <div className="mb-16">
-          <h2 className="text-[22px] font-normal text-[#1f1f1f] mb-2">
+          <h2 className="text-[22px] font-normal text-gray-dark-3 mb-2">
             MasterTrack ® and University Certificates
           </h2>
-          <p className="text-[14px] text-[#5f6368] mb-4">
+          <p className="text-[14px] text-text-gray mb-4">
             Earn an university-issued credential and credit towards a degree
           </p>
           <div className="flex items-center gap-3 mb-6 flex-wrap">
             <button
-              className={`px-4 py-2 rounded-[20px] text-[12px] font-medium border transition-colors ${activeCertificateTab === "mastertrack" ? "bg-[#2f3a4a] text-white border-[#2f3a4a]" : "bg-white text-[#2f3a4a] border-[#e5e7eb] hover:bg-[#f5f7f8]"}`}
+              className={`px-4 py-2 rounded-[20px] text-[12px] font-medium border transition-colors ${activeCertificateTab === "mastertrack" ? "bg-shade-3 text-white border-shade-3" : "bg-white text-shade-3 border-gray-light-1 hover:bg-surface"}`}
               onClick={() => setActiveCertificateTab("mastertrack")}
             >
               MasterTrack ® Certificates
             </button>
             <button
-              className={`px-4 py-2 rounded-[20px] text-[12px] font-medium border transition-colors ${activeCertificateTab === "university" ? "bg-[#2f3a4a] text-white border-[#2f3a4a]" : "bg-white text-[#2f3a4a] border-[#e5e7eb] hover:bg-[#f5f7f8]"}`}
+              className={`px-4 py-2 rounded-[20px] text-[12px] font-medium border transition-colors ${activeCertificateTab === "university" ? "bg-shade-3 text-white border-shade-3" : "bg-white text-shade-3 border-gray-light-1 hover:bg-surface"}`}
               onClick={() => setActiveCertificateTab("university")}
             >
               University Certificates
@@ -449,27 +449,27 @@ const Accomplishments: React.FC = () => {
           </div>
         </div>
 
-        {/* Coursera Plus */}
-        <div className="bg-[#e9f1ff] rounded-[8px] px-8 py-10 mb-16">
+        {}
+        <div className="bg-blue-light-1 rounded-[8px] px-8 py-10 mb-16">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-10">
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-[#0056D2] text-[16px] font-medium tracking-wide">
+                <span className="text-primary text-[16px] font-medium tracking-wide">
                   coursera <span className="font-bold">PLUS</span>
                 </span>
-                <span className="w-[2px] h-[18px] bg-[#1f1f1f] inline-block"></span>
+                <span className="w-[2px] h-[18px] bg-gray-dark-3 inline-block"></span>
               </div>
 
-              <h3 className="text-[20px] text-[#1f1f1f] font-normal leading-relaxed mb-4">
+              <h3 className="text-[20px] text-gray-dark-3 font-normal leading-relaxed mb-4">
                 Try out different courses to see which one fits your needs
               </h3>
 
-              <p className="text-[14px] text-[#1f1f1f] leading-6 mb-6 max-w-[420px]">
+              <p className="text-[14px] text-gray-dark-3 leading-6 mb-6 max-w-[420px]">
                 Get a 7-day free trial that includes courses, Specializations,
                 Projects, and Professional
               </p>
 
-              <button className="bg-[#0056D2] text-white text-[14px] font-medium px-6 py-3 rounded-[6px] flex items-center gap-2 hover:bg-[#0a4fb3] transition-colors">
+              <button className="bg-primary text-white text-[14px] font-medium px-6 py-3 rounded-[6px] flex items-center gap-2 hover:bg-primary-hover transition-colors">
                 Learn More
                 <svg
                   width="16"
@@ -503,10 +503,60 @@ const Accomplishments: React.FC = () => {
         </div>
       </main>
 
-      {/* Custom Footer */}
+      {}
       <Footer />
     </div>
   );
 };
 
 export default Accomplishments;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,8 +5,7 @@ import authMiddleware from "../middlewares/auth.middleware";
 
 const router = Router();
 
-// POST /api/upload
-// Protected route - only logged in users can upload
+
 router.post("/", authMiddleware, upload.single("file"), uploadFile);
 
 export default router;

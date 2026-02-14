@@ -54,7 +54,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
       setResults([]);
-      // Keep overlay open to show popular suggestions if focused
+      
       return;
     }
 
@@ -62,7 +62,7 @@ const Header: React.FC = () => {
       setIsLoading(true);
       try {
         const response = await courseApi.searchCourses(searchQuery);
-        // Only show published courses and limit to 6
+        
         const publishedResults = (response.courses || [])
           .filter((c: any) => c.status === "Published")
           .slice(0, 6);
@@ -88,7 +88,7 @@ const Header: React.FC = () => {
     e?.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setIsMenuOpen(false); // Close mobile menu if open
+      setIsMenuOpen(false); 
       setShowOverlay(false);
     }
   };
@@ -143,7 +143,7 @@ const Header: React.FC = () => {
       <HomePreHeader />
       <header className="bg-background border-b border-border sticky top-0 z-50 font-sans shadow-sm">
         <div className="container mx-auto px-4 md:px-8 h-[72px] flex items-center justify-between gap-4">
-          {/* Logo & Explore */}
+          {}
           <div className="flex items-center gap-4 lg:gap-8 shrink-0">
             <Link to="/" className="shrink-0 mb-1 no-underline">
               <Logo />
@@ -249,7 +249,7 @@ const Header: React.FC = () => {
               </button>
             </form>
 
-            {/* Search Overlay/Modal */}
+            {}
             {showOverlay && (
               <div
                 ref={overlayRef}
@@ -378,7 +378,7 @@ const Header: React.FC = () => {
             )}
           </div>
 
-          {/* Desktop Navigation */}
+          {}
           <div className="hidden md:flex items-center gap-4 xl:gap-6 text-sm font-medium text-text-primary shrink-0">
             <div className="flex items-center gap-4">
               {user ? (
@@ -458,7 +458,7 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {}
           <div className="flex md:hidden items-center gap-4">
             <button
               className="text-primary hover:bg-gray-50 p-2 rounded-md transition-colors bg-transparent border-none cursor-pointer"
@@ -508,15 +508,15 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* ================= MOBILE NAVIGATION DRAWER ================= */}
+        {}
         {isMenuOpen && (
           <div className="md:hidden fixed inset-0 z-[100]">
-            {/* Overlay */}
+            {}
             <div
               className="absolute inset-0 bg-black/50"
               onClick={() => setIsMenuOpen(false)}
             />
-            {/* Menu Drawer */}
+            {}
             <div className="absolute left-0 top-0 bottom-0 w-[280px] max-w-[85%] bg-white p-6 overflow-y-auto animate-slide-in-left flex flex-col">
               <div className="flex items-center justify-between mb-8">
                 <Link to="/" onClick={() => setIsMenuOpen(false)}>
@@ -559,7 +559,7 @@ const Header: React.FC = () => {
                 <div className="flex flex-col gap-1">
                   <Link
                     to="/search"
-                    className="p-3 text-[16px] font-medium text-[#1f1f1f] hover:bg-[#f5f7f8] rounded-lg no-underline flex items-center justify-between"
+                    className="p-3 text-[16px] font-medium text-gray-dark-3 hover:bg-surface rounded-lg no-underline flex items-center justify-between"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Explore
@@ -579,47 +579,47 @@ const Header: React.FC = () => {
 
                   <Link
                     to="/my-learning"
-                    className="p-3 text-[16px] font-medium text-[#1f1f1f] hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    className="p-3 text-[16px] font-medium text-gray-dark-3 hover:bg-surface rounded-lg no-underline"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     My Learning
                   </Link>
                 </div>
 
-                <hr className="my-4 border-[#f0f0f0]" />
+                <hr className="my-4 border-border-light" />
 
-                <div className="flex flex-col gap-1 text-[15px] font-medium text-[#1f1f1f]">
+                <div className="flex flex-col gap-1 text-[15px] font-medium text-gray-dark-3">
                   <Link
                     to="/degrees"
-                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    className="p-3 hover:bg-surface rounded-lg no-underline"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Online Degrees
                   </Link>
                   <Link
                     to="/career"
-                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    className="p-3 hover:bg-surface rounded-lg no-underline"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Find your New Career
                   </Link>
                   <a
                     href="#"
-                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    className="p-3 hover:bg-surface rounded-lg no-underline"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     For Individuals
                   </a>
                   <a
                     href="#"
-                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    className="p-3 hover:bg-surface rounded-lg no-underline"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     For Businesses
                   </a>
                   <a
                     href="#"
-                    className="p-3 hover:bg-[#f5f7f8] rounded-lg no-underline"
+                    className="p-3 hover:bg-surface rounded-lg no-underline"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     For Universities
@@ -649,3 +649,52 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

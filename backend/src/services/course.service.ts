@@ -166,7 +166,7 @@ export const updateCourse = async (
 
   if (!course) throw new Error("Course not found");
 
-  // Check ownership (instructor can only update their own courses, admin can update any)
+  
   const role = userRole.toLowerCase();
   if (
     role !== "admin" &&
@@ -198,7 +198,7 @@ export const deleteCourse = async (
 
   if (!course) throw new Error("Course not found");
 
-  // Check ownership (instructor can only delete their own courses, admin can delete any)
+  
   const role = userRole.toLowerCase();
   if (
     role !== "admin" &&
@@ -208,12 +208,12 @@ export const deleteCourse = async (
     throw new Error("Not authorized to delete this course");
   }
 
-  // Perform cascaded deletion in a transaction
+  
   console.log(`Starting cascade deletion for course: ${id}`);
   try {
     await prisma.$transaction(
       async (tx) => {
-        // 1. Gather all related IDs first
+        
         console.log("- Fetching related IDs...");
         const modules = await tx.module.findMany({
           where: { courseId: id },
@@ -243,7 +243,7 @@ export const deleteCourse = async (
           `- Found: ${moduleIds.length} modules, ${lessonIds.length} lessons, ${enrollmentIds.length} enrollments, ${assessmentIds.length} assessments`,
         );
 
-        // 2. Surgical Cleanup (Leaf to Root)
+        
         console.log("- Deleting LessonProgress...");
         await tx.lessonProgress.deleteMany({
           where: {
@@ -302,7 +302,7 @@ export const deleteCourse = async (
         await tx.course.delete({ where: { id } });
       },
       {
-        timeout: 15000, // Increase timeout for large courses
+        timeout: 15000, 
       },
     );
     console.log(`Successfully deleted course: ${id}`);
@@ -344,7 +344,7 @@ export const getAdminCourses = async () => {
   return courses;
 };
 
-// --- Module & Lesson Services ---
+
 
 export const createModule = async (
   courseId: string,

@@ -10,10 +10,7 @@ import { requireRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
-// POST /modules/:moduleId/lessons
-// PUT /lessons/reorder
-// PUT /lessons/:id
-// DELETE /lessons/:id
+
 
 router.post(
   "/modules/:moduleId/lessons",

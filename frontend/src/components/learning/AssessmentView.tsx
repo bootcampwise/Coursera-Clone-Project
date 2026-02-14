@@ -66,7 +66,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
 
   if (showResults) {
     return (
-      <div className="p-8 bg-white rounded-[12px] border border-[#dadce0] shadow-sm animate-in fade-in zoom-in duration-300">
+      <div className="p-8 bg-white rounded-[12px] border border-gray-medium-4 shadow-sm animate-in fade-in zoom-in duration-300">
         <div className="text-center mb-8">
           <div
             className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${isPassed ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}
@@ -104,9 +104,9 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
           <h2 className="text-2xl font-bold mb-2">
             {isPassed ? "Congratulations!" : "Keep learning!"}
           </h2>
-          <p className="text-[#5f6368]">
+          <p className="text-text-gray">
             You scored{" "}
-            <span className="font-bold text-[#1f1f1f]">{score}%</span>. Passing
+            <span className="font-bold text-gray-dark-3">{score}%</span>. Passing
             score is {data.passingScore}%.
           </p>
         </div>
@@ -117,7 +117,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
             return (
               <div
                 key={q.id}
-                className="p-4 rounded-lg border border-[#dadce0]"
+                className="p-4 rounded-lg border border-gray-medium-4"
               >
                 <p className="font-medium text-[15px] mb-3">
                   {idx + 1}. {q.question}
@@ -128,7 +128,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
                     const isCorrectOpt = q.correctAnswerIndex === optIdx;
 
                     let bgClass = "bg-white";
-                    let borderClass = "border-[#dadce0]";
+                    let borderClass = "border-gray-medium-4";
 
                     if (isSelected) {
                       bgClass = isCorrect ? "bg-green-50" : "bg-red-50";
@@ -188,7 +188,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
                 setShowResults(false);
                 setSelectedAnswers({});
               }}
-              className="px-8 py-3 bg-[#0056D2] text-white font-bold rounded-md hover:bg-[#00419e] transition-colors"
+              className="px-8 py-3 bg-primary text-white font-bold rounded-md hover:bg-primary-hover transition-colors"
             >
               Try Again
             </button>
@@ -211,18 +211,18 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
 
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="bg-[#f0f4f9] p-6 rounded-[12px] mb-8 border border-[#dadce0]">
-        <h3 className="text-[20px] font-bold text-[#1f1f1f] mb-2">
+      <div className="bg-bg-light-blue p-6 rounded-[12px] mb-8 border border-gray-medium-4">
+        <h3 className="text-[20px] font-bold text-gray-dark-3 mb-2">
           {data.title}
         </h3>
-        <p className="text-[14px] text-[#5f6368] leading-relaxed">
+        <p className="text-[14px] text-text-gray leading-relaxed">
           {data.instructions}
         </p>
         <div className="mt-4 flex items-center gap-4">
-          <div className="bg-white px-3 py-1.5 rounded-full border border-[#dadce0] text-[12px] font-bold text-[#1f1f1f]">
+          <div className="bg-white px-3 py-1.5 rounded-full border border-gray-medium-4 text-[12px] font-bold text-gray-dark-3">
             {data.questions.length} Questions
           </div>
-          <div className="bg-white px-3 py-1.5 rounded-full border border-[#dadce0] text-[12px] font-bold text-[#1f1f1f]">
+          <div className="bg-white px-3 py-1.5 rounded-full border border-gray-medium-4 text-[12px] font-bold text-gray-dark-3">
             Pass Score: {data.passingScore}%
           </div>
         </div>
@@ -231,7 +231,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
       <div className="space-y-8 mb-12">
         {data.questions.map((q, qIndex) => (
           <div key={q.id}>
-            <p className="text-[16px] font-bold text-[#1f1f1f] mb-4">
+            <p className="text-[16px] font-bold text-gray-dark-3 mb-4">
               {qIndex + 1}. {q.question}
             </p>
             <div className="space-y-3">
@@ -248,20 +248,20 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
                     }
                     className={`w-full text-left p-4 rounded-[8px] border transition-all ${
                       isSelected
-                        ? "border-[#0056D2] bg-[#f0f7ff] shadow-sm"
-                        : "border-[#dadce0] hover:bg-gray-50 bg-white"
+                        ? "border-primary bg-blue-light-1 shadow-sm"
+                        : "border-gray-medium-4 hover:bg-gray-50 bg-white"
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? "border-[#0056D2]" : "border-[#dadce0]"}`}
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? "border-primary" : "border-gray-medium-4"}`}
                       >
                         {isSelected && (
-                          <div className="w-2.5 h-2.5 bg-[#0056D2] rounded-full" />
+                          <div className="w-2.5 h-2.5 bg-primary rounded-full" />
                         )}
                       </div>
                       <span
-                        className={`text-[15px] ${isSelected ? "text-[#0056D2] font-medium" : "text-[#1f1f1f]"}`}
+                        className={`text-[15px] ${isSelected ? "text-primary font-medium" : "text-gray-dark-3"}`}
                       >
                         {opt}
                       </span>
@@ -274,7 +274,7 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
         ))}
       </div>
 
-      <div className="pt-8 border-t border-[#dadce0]">
+      <div className="pt-8 border-t border-gray-medium-4">
         <button
           onClick={handleSubmit}
           disabled={
@@ -302,3 +302,52 @@ const AssessmentView: React.FC<AssessmentViewProps> = ({
 };
 
 export default AssessmentView;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

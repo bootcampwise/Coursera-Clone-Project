@@ -13,7 +13,7 @@ const CareerSkills: React.FC = () => {
     const fetchCourses = async () => {
       try {
         const response = await courseApi.getCourses({ limit: 6 });
-        // Map backend data to UI format
+        
         const mappedCourses = response.courses.map((c: any) => ({
           id: c.id,
           university: c.instructor?.name || "Instructor",
@@ -39,9 +39,9 @@ const CareerSkills: React.FC = () => {
 
   if (isLoading) {
     return (
-      <section className="bg-[#F5F7F8] py-1">
+      <section className="bg-surface py-1">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="bg-[#F2F6FD] rounded-[16px] p-6 md:p-8">
+          <div className="bg-blue-light-7 rounded-[16px] p-6 md:p-8">
             <div className="flex flex-col md:flex-row gap-8 mb-8">
               <div className="md:w-1/4 flex flex-col items-start gap-6">
                 <div className="h-7 w-40 bg-gray-200 rounded animate-pulse"></div>
@@ -51,7 +51,7 @@ const CareerSkills: React.FC = () => {
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="bg-white rounded-lg border border-[#E6E9EF] overflow-hidden"
+                    className="bg-white rounded-lg border border-gray-light-2-alt overflow-hidden"
                   >
                     <div className="aspect-[16/9] m-2 rounded-[12px] bg-gray-200 animate-pulse"></div>
                     <div className="p-4 space-y-3">
@@ -77,13 +77,13 @@ const CareerSkills: React.FC = () => {
   const remainingCount = Math.max(courses.length - 3, 0);
 
   return (
-    <section className="bg-[#F5F7F8] py-1 container mx-auto rounded-2xl">
+    <section className="bg-surface py-1 container mx-auto rounded-2xl">
       <div className=" px-1">
-        <div className="bg-[#F2F6FD] rounded-[16px] p-6 md:p-8">
+        <div className="bg-blue-light-7 rounded-[16px] p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-8 mb-8">
-            {/* Left Header Area */}
+            {}
             <div className="md:w-1/4 flex flex-col items-start gap-1 mt-20">
-              <h2 className="text-[24px] md:text-[26px] font-normal text-[#371019] leading-tight font-sans">
+              <h2 className="text-[24px] md:text-[26px] font-normal text-purple-dark-text leading-tight font-sans">
                 Career skills that work
               </h2>
               <Button
@@ -94,13 +94,13 @@ const CareerSkills: React.FC = () => {
               </Button>
             </div>
 
-            {/* Cards Grid */}
+            {}
             <div className="md:w-3/4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {visibleCourses.map((course, index) => (
                 <div
                   key={index}
                   onClick={() => navigate(`/course/${course.id}`)}
-                  className="bg-white rounded-lg shadow-sm border border-[#E6E9EF] overflow-hidden flex flex-col hover:shadow-card transition-shadow cursor-pointer h-full"
+                  className="bg-white rounded-lg shadow-sm border border-gray-light-2-alt overflow-hidden flex flex-col hover:shadow-card transition-shadow cursor-pointer h-full"
                 >
                   <div className="relative aspect-[16/9] overflow-hidden rounded-[12px] m-2">
                     <img
@@ -135,7 +135,7 @@ const CareerSkills: React.FC = () => {
                 </div>
               ))}
 
-              {/* Mobile-only CTA */}
+              {}
               <div className="w-full flex justify-center md:hidden mt-4">
                 <Button
                   variant="outline"
@@ -172,3 +172,52 @@ const CareerSkills: React.FC = () => {
 };
 
 export default CareerSkills;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

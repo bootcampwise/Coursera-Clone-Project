@@ -1,5 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
-// Attempt to load dotenv if available, but Prisma usually handles it
+
 try { require('dotenv').config(); } catch (e) {}
 
 const prisma = new PrismaClient();
@@ -13,7 +13,7 @@ async function main() {
     for (const collectionName of collections) {
         console.log(`Attempting update on collection: ${collectionName}`);
         
-        // 1. Update where createdAt is null
+        
         try {
             const result1 = await prisma.$runCommandRaw({
             update: collectionName,
@@ -35,7 +35,7 @@ async function main() {
             console.log(`Skipping ${collectionName} (null check) due to error: ${e.message}`);
         }
 
-        // 2. Update where createdAt is missing
+        
         try {
             const result2 = await prisma.$runCommandRaw({
                 update: collectionName,

@@ -19,19 +19,19 @@ const CourseCard: React.FC<CourseCardProps> = ({
 }) => {
   return (
     <div className="flex flex-col h-full bg-white border border-transparent rounded-[8px] overflow-hidden group transition-all duration-200 cursor-pointer relative">
-      <div className="relative h-[160px] overflow-hidden rounded-[8px] bg-[#f5f7f8] border border-[#e1e1e1]/40 group-hover:border-[#e1e1e1] transition-colors">
+      <div className="relative h-[160px] overflow-hidden rounded-[8px] bg-surface border border-border/40 group-hover:border-border transition-colors">
         <img
           src={image}
           alt={title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        {/* Figma badge: white rounded box with drop shadow */}
+        {}
         <div className="absolute top-2 right-2 flex gap-1.5 items-center">
-          <div className="bg-white/95 px-[6px] py-[3.5px] rounded-[3px] text-[10px] font-bold text-[#1f1f1f] shadow-[0_2px_8px_rgba(0,0,0,0.12)] uppercase tracking-tight leading-none whitespace-nowrap">
+          <div className="bg-white/95 px-[6px] py-[3.5px] rounded-[3px] text-[10px] font-bold text-gray-dark-3 shadow-[0_2px_8px_rgba(0,0,0,0.12)] uppercase tracking-tight leading-none whitespace-nowrap">
             Free Trial
           </div>
           {badge === "All skills" && (
-            <div className="bg-white/95 px-[6px] py-[3px] rounded-[3px] text-[10px] font-bold text-[#1f1f1f] shadow-[0_2px_8px_rgba(0,0,0,0.12)] uppercase tracking-tight flex items-center gap-1 leading-none whitespace-nowrap">
+            <div className="bg-white/95 px-[6px] py-[3px] rounded-[3px] text-[10px] font-bold text-gray-dark-3 shadow-[0_2px_8px_rgba(0,0,0,0.12)] uppercase tracking-tight flex items-center gap-1 leading-none whitespace-nowrap">
               <svg
                 width="12"
                 height="12"
@@ -39,7 +39,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
                 fill="none"
                 className="shrink-0"
               >
-                <circle cx="12" cy="12" r="10" fill="#0056D2"></circle>
+                <circle cx="12" cy="12" r="10" fill="currentColor"></circle>
                 <path
                   d="M8 12l3 3 5-5"
                   stroke="white"
@@ -61,18 +61,18 @@ const CourseCard: React.FC<CourseCardProps> = ({
             alt={provider}
             className="w-[18px] h-[18px] object-contain shrink-0"
           />
-          <span className="text-[12px] text-[#636363] font-medium leading-none truncate">
+          <span className="text-[12px] text-shade-2 font-medium leading-none truncate">
             {provider}
           </span>
         </div>
 
-        <h3 className="text-[15px] font-bold text-[#1f1f1f] mb-2 line-clamp-2 leading-[1.3] group-hover:text-[#0056D2] group-hover:underline decoration-1 underline-offset-2 transition-colors">
+        <h3 className="text-[15px] font-bold text-gray-dark-3 mb-2 line-clamp-2 leading-[1.3] group-hover:text-primary group-hover:underline decoration-1 underline-offset-2 transition-colors">
           {title}
         </h3>
 
         <div className="mt-auto">
-          {/* Build toward a degree - specific per Figma */}
-          <div className="flex items-center gap-1.5 text-[#0056D2] text-[12px] font-bold mb-1.5 hover:underline decoration-1 underline-offset-1">
+          {}
+          <div className="flex items-center gap-1.5 text-primary text-[12px] font-bold mb-1.5 hover:underline decoration-1 underline-offset-1">
             <svg
               width="14"
               height="14"
@@ -90,7 +90,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
             <span className="leading-tight">Build toward a degree</span>
           </div>
 
-          <p className="text-[12px] text-[#636363] font-medium uppercase tracking-tight leading-none opacity-80">
+          <p className="text-[12px] text-shade-2 font-medium uppercase tracking-tight leading-none opacity-80">
             {type}
           </p>
         </div>
@@ -100,3 +100,53 @@ const CourseCard: React.FC<CourseCardProps> = ({
 };
 
 export default CourseCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

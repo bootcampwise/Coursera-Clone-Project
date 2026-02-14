@@ -78,8 +78,8 @@ export const reorderModules = async (
 ) => {
   await verifyCourseOwnership(courseId, userId, userRole);
 
-  // Validate all modules belong to course - usually overkill if we trust ID,
-  // but good to check at least one or assume security by ID + Ownership of course.
+  
+  
 
   const updates = moduleOrders.map((item) =>
     prisma.module.update({

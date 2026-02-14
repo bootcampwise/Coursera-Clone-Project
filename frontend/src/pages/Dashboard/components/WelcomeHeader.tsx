@@ -5,26 +5,26 @@ import type { RootState } from "../../../app/store";
 const WelcomeHeader: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
 
-  // Get first name for the greeting
+  
   const firstName = user?.name ? user.name.split(" ")[0] : "Learner";
 
   return (
     <div className="flex flex-col">
-      <h1 className="text-[32px] font-bold text-[#1f1f1f] mb-4 tracking-tight leading-[1.1]">
+      <h1 className="text-[32px] font-bold text-gray-dark-3 mb-4 tracking-tight leading-[1.1]">
         Welcome, {firstName}!
       </h1>
 
-      <button className="w-full bg-white border border-[#0056D2] text-[#0056D2] px-4 py-[8px] rounded-[4px] font-bold text-[14px] hover:bg-[#f5f7f8] transition-colors mb-8 shadow-sm">
+      <button className="w-full bg-white border border-primary text-primary px-4 py-[8px] rounded-[4px] font-bold text-[14px] hover:bg-surface transition-colors mb-8 shadow-sm">
         Add career goals
       </button>
 
-      <div className="bg-white border border-[#e1e1e1] rounded-[8px] overflow-hidden shadow-none">
+      <div className="bg-white border border-border rounded-[8px] overflow-hidden shadow-none">
         <div className="p-4 pb-5">
           <div className="flex justify-between items-center mb-3">
-            <h2 className="text-[11px] font-bold text-[#636363] uppercase tracking-[0.05em] leading-none">
+            <h2 className="text-[11px] font-bold text-shade-2 uppercase tracking-[0.05em] leading-none">
               Weekly activity
             </h2>
-            <button className="text-[#636363] hover:text-[#1f1f1f] transition-colors">
+            <button className="text-shade-2 hover:text-gray-dark-3 transition-colors">
               <svg
                 width="14"
                 height="14"
@@ -42,10 +42,10 @@ const WelcomeHeader: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-0.5 mb-5">
-            <div className="text-[14px] font-bold text-[#1f1f1f] leading-snug">
+            <div className="text-[14px] font-bold text-gray-dark-3 leading-snug">
               On track
             </div>
-            <div className="text-[13px] text-[#636363] leading-snug">
+            <div className="text-[13px] text-shade-2 leading-snug">
               0 of 2-day goal. Keep it up!
             </div>
           </div>
@@ -56,8 +56,8 @@ const WelcomeHeader: React.FC = () => {
                 <div
                   className={`w-[32px] h-[32px] rounded-full flex items-center justify-center text-[11px] font-bold leading-none ${
                     index === 1
-                      ? "bg-[#0056D2] text-white"
-                      : "bg-[#F5F7F8] text-[#636363]"
+                      ? "bg-primary text-white"
+                      : "bg-surface text-shade-2"
                   }`}
                 >
                   {index === 1 ? (
@@ -82,7 +82,7 @@ const WelcomeHeader: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-[#f5f7f8] px-4 py-3 text-[12px] text-[#636363] border-t border-[#e1e1e1] font-medium">
+        <div className="bg-surface px-4 py-3 text-[12px] text-shade-2 border-t border-border font-medium">
           42 items completed • 66 min learned
         </div>
       </div>
@@ -91,3 +91,53 @@ const WelcomeHeader: React.FC = () => {
 };
 
 export default WelcomeHeader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Start seeding...");
 
-  // 1. Create Instructor
+  
   const instructorEmail = "instructor@example.com";
   let instructor = await prisma.user.findUnique({
     where: { email: instructorEmail },
@@ -16,7 +16,7 @@ async function main() {
       data: {
         name: "John Doe",
         email: instructorEmail,
-        passwordHash: "hashed_password_123", // In a real app, hash this properly
+        passwordHash: "hashed_password_123", 
         role: "instructor",
         avatarUrl: "https://i.pravatar.cc/150?u=instructor",
       },
@@ -26,7 +26,7 @@ async function main() {
     console.log(`Using existing instructor: ${instructor.name}`);
   }
 
-  // 2. Create Course
+  
   const course = await prisma.course.create({
     data: {
       title: "The Complete Web Development Bootcamp",
@@ -39,7 +39,7 @@ async function main() {
       difficulty: "Beginner",
       language: "English",
       thumbnail:
-        "https://img-c.udemycdn.com/course/750x422/1565838_e54e_18.jpg", // Placeholder
+        "https://img-c.udemycdn.com/course/750x422/1565838_e54e_18.jpg", 
       price: 19.99,
       status: "Published",
       instructorId: instructor.id,
@@ -54,7 +54,7 @@ async function main() {
                   title: "What is HTML?",
                   type: LessonType.VIDEO,
                   description: "Introduction to HyperText Markup Language",
-                  videoUrl: "https://www.youtube.com/watch?v=kUMe1FH4CHE", // Sample video
+                  videoUrl: "https://www.youtube.com/watch?v=kUMe1FH4CHE", 
                   duration: 600,
                   order: 1,
                 },
@@ -131,7 +131,7 @@ async function main() {
 
   console.log(`Created course: ${course.title}`);
 
-  // 3. Create another course (Data Science)
+  
   const dsCourse = await prisma.course.create({
     data: {
       title: "Data Science A-Z™: Real-Life Data Science Exercises Included",

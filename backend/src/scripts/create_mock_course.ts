@@ -1,7 +1,7 @@
 import { prisma } from "../config/prisma";
 
 async function main() {
-  // 1. Find an instructor
+  
   let instructor = await prisma.user.findFirst({
     where: { role: "instructor" },
   });
@@ -21,7 +21,7 @@ async function main() {
 
   console.log(`Using instructor: ${instructor.name} (${instructor.id})`);
 
-  // 2. Create the mock course
+  
   const courseData = {
     title: "Full-Stack React & Node.js Mastery",
     subtitle:
@@ -46,7 +46,7 @@ async function main() {
 
   console.log(`Mock course created: ${course.title} (${course.id})`);
 
-  // 3. Add some lessons/modules
+  
   const module = await prisma.module.create({
     data: {
       title: "Module 1: Introduction to Full-Stack",

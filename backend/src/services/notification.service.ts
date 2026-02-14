@@ -12,9 +12,7 @@ interface CreateNotificationData {
 }
 
 export const notificationService = {
-  /**
-   * Create a new notification for a user
-   */
+  
   async createNotification(userId: string, data: CreateNotificationData) {
     return await prisma.notification.create({
       data: {
@@ -24,9 +22,7 @@ export const notificationService = {
     });
   },
 
-  /**
-   * Get all notifications for a user with pagination
-   */
+  
   async getUserNotifications(
     userId: string,
     options?: {
@@ -38,7 +34,7 @@ export const notificationService = {
     const page = options?.page || 1;
     const limit = options?.limit || 20;
     const skip = (page - 1) * limit;
-    const includeRead = options?.includeRead !== false; // default true
+    const includeRead = options?.includeRead !== false; 
 
     const where = includeRead ? { userId } : { userId, isRead: false };
 
@@ -63,9 +59,7 @@ export const notificationService = {
     };
   },
 
-  /**
-   * Get count of unread notifications
-   */
+  
   async getUnreadCount(userId: string) {
     return await prisma.notification.count({
       where: {
@@ -75,11 +69,9 @@ export const notificationService = {
     });
   },
 
-  /**
-   * Mark a specific notification as read
-   */
+  
   async markAsRead(notificationId: string, userId: string) {
-    // Verify the notification belongs to the user
+    
     const notification = await prisma.notification.findFirst({
       where: { id: notificationId, userId },
     });
@@ -94,9 +86,7 @@ export const notificationService = {
     });
   },
 
-  /**
-   * Mark all notifications as read for a user
-   */
+  
   async markAllAsRead(userId: string) {
     return await prisma.notification.updateMany({
       where: { userId, isRead: false },
@@ -104,11 +94,9 @@ export const notificationService = {
     });
   },
 
-  /**
-   * Delete a notification
-   */
+  
   async deleteNotification(notificationId: string, userId: string) {
-    // Verify the notification belongs to the user
+    
     const notification = await prisma.notification.findFirst({
       where: { id: notificationId, userId },
     });

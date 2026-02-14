@@ -27,9 +27,9 @@ export const getAdminAnalytics = async () => {
     }),
   ]);
 
-  // Calculate revenue (sum of price of enrolled courses)
-  // This is a simplified calculation assuming all enrollments are paid full price
-  // In a real app, you'd track transactions separately
+  
+  
+  
   const paidEnrollments = await prisma.enrollment.findMany({
     include: { course: { select: { price: true } } },
   });
@@ -53,7 +53,7 @@ export const getAdminAnalytics = async () => {
 };
 
 export const getInstructorAnalytics = async (instructorId: string) => {
-  // Get courses by instructor
+  
   const courses = await prisma.course.findMany({
     where: { instructorId },
     select: { id: true, title: true, price: true },
@@ -87,10 +87,10 @@ export const getInstructorAnalytics = async (instructorId: string) => {
       }),
     ]);
 
-  // Calculate total revenue for instructor
-  // Assuming 100% share for now, or implement platform fee logic
-  // Enrollments need to be fetched with course price to calculate accurately if prices changed
-  // Simplified: price * enrollment count
+  
+  
+  
+  
   const revenue = courses.reduce((acc, course) => {
     const enrollment = enrollmentsByCourse.find(
       (e) => e.courseId === course.id,

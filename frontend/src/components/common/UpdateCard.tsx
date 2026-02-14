@@ -26,11 +26,11 @@ const UpdateCard: React.FC<UpdateCardProps> = ({
   return (
     <div
       className={`flex flex-col md:flex-row gap-6 p-8 rounded-sm ${
-        isRead ? "bg-[#F5F7F8]" : "bg-[#F5F7F8]"
+        isRead ? "bg-surface" : "bg-surface"
       }`}
     >
       <div className="shrink-0">
-        {/* Icon Logic */}
+        {}
         {image ? (
           <img
             src={image}
@@ -38,7 +38,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({
             className="w-[80px] h-[80px] rounded object-cover"
           />
         ) : type === "certificate" ? (
-          <div className="w-[60px] h-[60px] rounded-full bg-[#0056D2] text-white flex items-center justify-center">
+          <div className="w-[60px] h-[60px] rounded-full bg-primary text-white flex items-center justify-center">
             <span className="text-3xl font-bold font-serif">C</span>
           </div>
         ) : (
@@ -62,14 +62,14 @@ const UpdateCard: React.FC<UpdateCardProps> = ({
 
       <div className="flex-1 font-sans">
         <div className="mb-1">
-          <span className="text-[12px] text-[#5f6368] font-normal">{time}</span>
+          <span className="text-[12px] text-text-gray font-normal">{time}</span>
         </div>
 
-        <h3 className="text-[20px] font-normal text-[#1f1f1f] leading-snug mb-3">
+        <h3 className="text-[20px] font-normal text-gray-dark-3 leading-snug mb-3">
           {title}
         </h3>
 
-        <div className="text-[14px] text-[#373a3c] leading-relaxed mb-6 max-w-[95%]">
+        <div className="text-[14px] text-gray-medium-dark-2 leading-relaxed mb-6 max-w-[95%]">
           {message}
         </div>
 
@@ -77,7 +77,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({
           <div>
             <Link
               to={link}
-              className="text-[14px] font-semibold text-[#0056D2] hover:underline no-underline"
+              className="text-[14px] font-semibold text-primary hover:underline no-underline"
             >
               {actionText}
             </Link>
@@ -89,3 +89,52 @@ const UpdateCard: React.FC<UpdateCardProps> = ({
 };
 
 export default UpdateCard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

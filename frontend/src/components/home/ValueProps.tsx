@@ -2,18 +2,18 @@ import React from "react";
 
 const ValueProps: React.FC = () => {
   return (
-    <section className="py-12 md:py-16 bg-[#F5F7F8]">
+    <section className="py-12 md:py-16 bg-surface">
       <div className="container mx-auto px-4 md:px-8">
         <h2 className="text-[24px] md:text-[32px] font-medium text-text-primary mb-12">
           Invest in your career
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-          {/* Feature 1 */}
+          {}
           <div className="flex flex-col gap-4">
-            {/* Icon Placeholder - User to replace */}
+            {}
             <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-lg mb-2">
-              {/* Replace this SVG with your manually added icon */}
+              {}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -38,9 +38,9 @@ const ValueProps: React.FC = () => {
             </p>
           </div>
 
-          {/* Feature 2 */}
+          {}
           <div className="flex flex-col gap-4">
-            {/* Icon Placeholder */}
+            {}
             <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-lg mb-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -59,19 +59,19 @@ const ValueProps: React.FC = () => {
             </div>
 
             <h3 className="text-[20px] font-semibold text-text-primary">
-              Earn valuable <span className="text-[#2a73cc]">credentials</span>
+              Earn valuable <span className="text-blue-accent">credentials</span>
             </h3>
             <p className="text-[16px] text-text-primary leading-relaxed">
               Get certificates for every course you finish and boost your
-              chances <span className="text-[#2a73cc]">of getting hired</span>{" "}
-              <span className="text-[#2a73cc]">after your trial</span> ends at
+              chances <span className="text-blue-accent">of getting hired</span>{" "}
+              <span className="text-blue-accent">after your trial</span> ends at
               no additional cost.
             </p>
           </div>
 
-          {/* Feature 3 */}
+          {}
           <div className="flex flex-col gap-4">
-            {/* Icon Placeholder */}
+            {}
             <div className="w-12 h-12 flex items-center justify-center bg-blue-100 rounded-lg mb-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -93,7 +93,7 @@ const ValueProps: React.FC = () => {
               Learn from the best
             </h3>
             <p className="text-[16px] text-text-primary leading-relaxed">
-              Take your skills to <span className="text-[#2a73cc]">the</span>{" "}
+              Take your skills to <span className="text-blue-accent">the</span>{" "}
               next level with expert-led courses and Coursera Coach, your
               AI-powered guide.
             </p>
@@ -105,3 +105,52 @@ const ValueProps: React.FC = () => {
 };
 
 export default ValueProps;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

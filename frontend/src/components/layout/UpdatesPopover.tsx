@@ -7,7 +7,7 @@ interface UpdateItem {
   title: string;
   message: string;
   time: string;
-  image?: string; // URL or placeholder
+  image?: string; 
   isRead: boolean;
   link: string;
 }
@@ -64,10 +64,10 @@ const UpdatesPopover: React.FC = () => {
   return (
     <div className="absolute right-[-80px] md:right-0 top-10 mt-3 w-[360px] bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 overflow-hidden font-sans">
       <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
-        <h3 className="text-[16px] font-bold text-[#1f1f1f] m-0">Updates</h3>
+        <h3 className="text-[16px] font-bold text-gray-dark-3 m-0">Updates</h3>
         <Link
           to="/updates"
-          className="text-[12px] font-semibold text-[#0056D2] hover:underline no-underline"
+          className="text-[12px] font-semibold text-primary hover:underline no-underline"
         >
           Go to updates
         </Link>
@@ -86,7 +86,7 @@ const UpdatesPopover: React.FC = () => {
               className="block px-4 py-3 hover:bg-surface transition-colors border-b border-gray-50 last:border-0 no-underline group"
             >
               <div className="flex gap-3">
-                {/* Icon/Image */}
+                {}
                 <div className="shrink-0 mt-1">
                   {item.image ? (
                     <img
@@ -108,10 +108,10 @@ const UpdatesPopover: React.FC = () => {
                   )}
                 </div>
 
-                {/* Content */}
+                {}
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
-                    <span className="text-[14px] leading-tight font-semibold text-[#1f1f1f] group-hover:text-[#0056D2] mb-1 line-clamp-1">
+                    <span className="text-[14px] leading-tight font-semibold text-gray-dark-3 group-hover:text-primary mb-1 line-clamp-1">
                       {item.title}
                     </span>
                     {!item.isRead && (
@@ -121,7 +121,7 @@ const UpdatesPopover: React.FC = () => {
                   <p className="text-[13px] text-text-secondary leading-snug mb-1 line-clamp-2">
                     {item.message}
                   </p>
-                  <span className="text-[11px] text-[#70757a]">
+                  <span className="text-[11px] text-shade-12">
                     {item.time}
                   </span>
                 </div>
@@ -135,3 +135,51 @@ const UpdatesPopover: React.FC = () => {
 };
 
 export default UpdatesPopover;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -55,7 +55,7 @@ export const courseApi = {
   },
 
   updateCourse: async (id: string, data: any) => {
-    // Use adminApi if we're on an admin route, otherwise use instructorApi
+    
     const isAdminRoute = window.location.pathname.startsWith("/admin");
     const apiClient = isAdminRoute ? adminApi : instructorApi;
     const response = await apiClient.put(ENDPOINTS.COURSES_BY_ID(id), data);
@@ -82,9 +82,9 @@ export const courseApi = {
     return response.data;
   },
 
-  // Module & Lesson Methods
+  
   getModules: async (courseId: string) => {
-    // GET /courses/:courseId/modules
+    
     const response = await api.get(`/courses/${courseId}/modules`);
     return response.data;
   },
@@ -95,7 +95,7 @@ export const courseApi = {
   ) => {
     const isAdminRoute = window.location.pathname.startsWith("/admin");
     const apiClient = isAdminRoute ? adminApi : instructorApi;
-    // POST /courses/:courseId/modules
+    
     const response = await apiClient.post(`/courses/${courseId}/modules`, data);
     return response.data;
   },
@@ -155,3 +155,52 @@ export const courseApi = {
     return response.data;
   },
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

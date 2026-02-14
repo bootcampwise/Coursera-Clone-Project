@@ -12,7 +12,7 @@ import { requireRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
-// Student routes
+
 router.post("/:courseId", authMiddleware, enrollUser);
 router.get("/my", authMiddleware, getUserEnrollments);
 router.patch("/:id/progress", authMiddleware, updateProgress);
@@ -23,7 +23,7 @@ router.patch(
   updateLessonProgress,
 );
 
-// Instructor routes
+
 router.get(
   "/course/:courseId",
   authMiddleware,

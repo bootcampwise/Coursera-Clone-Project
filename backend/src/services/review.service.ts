@@ -8,13 +8,13 @@ interface CreateReviewData {
 }
 
 export const createReview = async (data: CreateReviewData) => {
-  // 1. Check if course exists
+  
   const course = await prisma.course.findUnique({
     where: { id: data.courseId },
   });
   if (!course) throw new Error("Course not found");
 
-  // 2. Check if user is enrolled
+  
   const enrollment = await prisma.enrollment.findFirst({
     where: { userId: data.userId, courseId: data.courseId },
   });
@@ -23,7 +23,7 @@ export const createReview = async (data: CreateReviewData) => {
     throw new Error("You must be enrolled in the course to leave a review");
   }
 
-  // 3. Check if already reviewed
+  
   const existingReview = await prisma.review.findFirst({
     where: { userId: data.userId, courseId: data.courseId },
   });
@@ -32,7 +32,7 @@ export const createReview = async (data: CreateReviewData) => {
     throw new Error("You have already reviewed this course");
   }
 
-  // 4. Validate rating
+  
   if (data.rating < 1 || data.rating > 5) {
     throw new Error("Rating must be between 1 and 5");
   }
@@ -62,10 +62,10 @@ export const getCourseReviews = async (courseId: string) => {
         select: { id: true, name: true, avatarUrl: true },
       },
     },
-    orderBy: { id: "desc" }, // MongoDB IDs are timestamp-based, usually fine for sort. Or use createdAt if added.
+    orderBy: { id: "desc" }, 
   });
 
-  // Calculate average rating
+  
   const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
   const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
 
@@ -87,7 +87,7 @@ export const deleteReview = async (
 
   if (!review) throw new Error("Review not found");
 
-  // Ownership: user who wrote it, or admin
+  
   if (userRole.toLowerCase() !== "admin" && review.userId !== userId) {
     throw new Error("Not authorized to delete this review");
   }

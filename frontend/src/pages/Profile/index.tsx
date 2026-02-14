@@ -107,7 +107,7 @@ const UserProfile: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const displayName = user?.name || "Learner";
   const displayInitials = user?.name ? getInitials(user.name) : "L";
-  const avatarBg = user?.name ? getAvatarColor(user.name) : "#A64AC9";
+  const avatarBg = user?.name ? getAvatarColor(user.name) : "rgb(166, 74, 201)";
   const [workExperiences, setWorkExperiences] = useState<WorkExperience[]>([]);
   const [isWorkModalOpen, setIsWorkModalOpen] = useState(false);
   const [editingWorkId, setEditingWorkId] = useState<string | null>(null);
@@ -504,7 +504,7 @@ const UserProfile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F5FA]">
+    <div className="min-h-screen bg-profile">
       <ProfileHeader />
 
       <main className="max-w-7xl mx-auto p-6 md:p-10 lg:p-14">
@@ -512,10 +512,10 @@ const UserProfile: React.FC = () => {
           <aside className="col-span-1">
             <div className="rounded-[12px] bg-white px-6 py-8 flex flex-col items-center text-center mb-5">
               <div className="relative w-full mb-6">
-                <p className="font-normal text-[22px] leading-[19px] text-[#121A37]">
+                <p className="font-normal text-[22px] leading-[19px] text-bg-light">
                   Personal details
                 </p>
-                <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[#0056D2] hover:text-[#0049af] bg-transparent border-none cursor-pointer p-0">
+                <button className="absolute right-0 top-1/2 -translate-y-1/2 text-primary hover:text-primary-hover bg-transparent border-none cursor-pointer p-0">
                   <EditIcon />
                 </button>
               </div>
@@ -535,25 +535,25 @@ const UserProfile: React.FC = () => {
                 )}
               </div>
 
-              <p className="mb-6 font-normal text-[28px] leading-[22px] text-[#0E164E]">
+              <p className="mb-6 font-normal text-[28px] leading-[22px] text-blue-dark">
                 {displayName}
               </p>
 
               <Button
                 variant="outline"
-                className="w-full max-w-[260px] h-[62px] text-[18px] font-normal mb-4 flex items-center justify-center gap-2 border-[#155ED3] text-[#155ED3] hover:bg-transparent px-4"
+                className="w-full max-w-[260px] h-[62px] text-[18px] font-normal mb-4 flex items-center justify-center gap-2 border-blue-medium-2 text-blue-medium-2 hover:bg-transparent px-4"
               >
                 <PaperclipIcon />
                 <span>Share profile link</span>
               </Button>
 
-              <button className="font-normal text-[18px] leading-[16px] text-[#0459D5] bg-transparent border-none cursor-pointer">
+              <button className="font-normal text-[18px] leading-[16px] text-blue-medium-4 bg-transparent border-none cursor-pointer">
                 Update profile visibility
               </button>
             </div>
 
             <div className="rounded-[12px] bg-white px-6 py-6 mb-5">
-              <p className="mb-4 font-semibold text-[22px] leading-[20px] text-[#000000] text-left">
+              <p className="mb-4 font-semibold text-[22px] leading-[20px] text-text-primary text-left">
                 Highlights
               </p>
 
@@ -565,13 +565,13 @@ const UserProfile: React.FC = () => {
                 />
 
                 <div className="flex flex-col gap-1">
-                  <p className="font-normal text-[14px] leading-[15px] text-[#0F1014]">
+                  <p className="font-normal text-[14px] leading-[15px] text-text-darkest">
                     Google Prompting Essentials
                   </p>
-                  <p className="font-normal text-[14px] leading-[15px] text-[#0F1014]">
+                  <p className="font-normal text-[14px] leading-[15px] text-text-darkest">
                     Specialization (Google)
                   </p>
-                  <button className="mt-1 font-normal text-[14px] leading-[13px] text-[#055CD5] text-left bg-transparent border-none cursor-pointer p-0">
+                  <button className="mt-1 font-normal text-[14px] leading-[13px] text-blue-medium-5 text-left bg-transparent border-none cursor-pointer p-0">
                     View certificate
                   </button>
                 </div>
@@ -579,14 +579,14 @@ const UserProfile: React.FC = () => {
             </div>
 
             <div className="rounded-[12px] bg-white px-6 py-6 flex flex-col items-center text-center mb-5">
-              <p className="font-normal text-[16px] leading-[17px] text-[#5F6A8B] mb-5">
+              <p className="font-normal text-[16px] leading-[17px] text-text-secondary-dark mb-5">
                 Let recruiters know what role you&apos;re looking for to make
                 sure you find opportunities that are right for you.
               </p>
 
               <Button
                 variant="outline"
-                className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-[#0661D6] text-[#0661D6] hover:bg-transparent px-4"
+                className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-primary text-primary hover:bg-transparent px-4"
               >
                 <PlusIcon />
                 <span>Add work preferences</span>
@@ -594,18 +594,18 @@ const UserProfile: React.FC = () => {
             </div>
 
             <div className="rounded-[12px] bg-white px-6 py-6 flex flex-col items-center text-center mb-5">
-              <p className="mb-4 font-normal text-[22px] leading-[18px] text-[#1E1014]">
+              <p className="mb-4 font-normal text-[22px] leading-[18px] text-text-dark">
                 Additional info
               </p>
 
-              <p className="mb-6 font-normal text-[16px] leading-[17px] text-[#616B8B]">
+              <p className="mb-6 font-normal text-[16px] leading-[17px] text-text-secondary-dark">
                 Help recruiters get to know you better by describing what makes
                 you a great candidate and sharing other links.
               </p>
 
               <Button
                 variant="outline"
-                className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-[#0162D7] text-[#0162D7] hover:bg-transparent px-4"
+                className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-blue-medium-4 text-blue-medium-4 hover:bg-transparent px-4"
               >
                 <PlusIcon />
                 <span>Add additional info</span>
@@ -615,13 +615,13 @@ const UserProfile: React.FC = () => {
 
           <div className="col-span-1">
             <section>
-              <p className="mb-6 font-normal text-[28px] leading-[24px] text-[#1D161A]">
+              <p className="mb-6 font-normal text-[28px] leading-[24px] text-text-darker">
                 Experience
               </p>
 
               <div className="rounded-[12px] bg-white px-6 py-10 mb-5">
                 <div className="mb-4 flex items-center gap-2">
-                  <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                  <p className="font-normal text-[22px] leading-[20px] text-text-darkest">
                     Projects
                   </p>
                   <img
@@ -631,8 +631,8 @@ const UserProfile: React.FC = () => {
                   />
                 </div>
 
-                <div className="rounded-[8px] bg-[#F3F6FB] px-5 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mt-12">
-                  <p className="font-normal text-[17px] leading-[22px] text-[#62688A] max-w-[600px]">
+                <div className="rounded-[8px] bg-light-blue px-5 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mt-12">
+                  <p className="font-normal text-[17px] leading-[22px] text-text-muted-dark max-w-[600px]">
                     Showcase your skills to recruiters with job-relevant
                     projects.
                     <br />
@@ -640,7 +640,7 @@ const UserProfile: React.FC = () => {
                     and ability to solve real-world problems.
                   </p>
 
-                  <button className="font-normal text-[15px] leading-[15px] text-[#046BD9] whitespace-nowrap bg-transparent border-none cursor-pointer p-0">
+                  <button className="font-normal text-[15px] leading-[15px] text-blue-medium-5 whitespace-nowrap bg-transparent border-none cursor-pointer p-0">
                     Browse Projects
                   </button>
                 </div>
@@ -649,14 +649,14 @@ const UserProfile: React.FC = () => {
 
             <div className="rounded-[12px] bg-white px-6 py-6">
               <div className="mb-4 flex items-center gap-2">
-                <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                <p className="font-normal text-[22px] leading-[20px] text-text-darkest">
                   Work history
                 </p>
               </div>
 
-              <div className="rounded-[8px] bg-[#F3F6FB] px-5 py-6 flex flex-col gap-4 mt-12">
+              <div className="rounded-[8px] bg-light-blue px-5 py-6 flex flex-col gap-4 mt-12">
                 {isLoadingWork ? (
-                  <p className="font-normal text-[15px] leading-[24px] text-[#62688A]">
+                  <p className="font-normal text-[15px] leading-[24px] text-text-muted-dark">
                     Loading work experience...
                   </p>
                 ) : workExperiences.length > 0 ? (
@@ -664,17 +664,17 @@ const UserProfile: React.FC = () => {
                     {workExperiences.map((item) => (
                       <div
                         key={item.id}
-                        className="bg-white border border-[#e1e6f0] rounded-[8px] p-4"
+                        className="bg-white border border-border-custom rounded-[8px] p-4"
                       >
                         <div className="flex items-start justify-between gap-3">
-                          <p className="text-[17px] leading-[22px] text-[#1A181F] font-medium">
+                          <p className="text-[17px] leading-[22px] text-text-darkest font-medium">
                             {item.title}
                           </p>
                           <div className="flex items-center gap-2 shrink-0">
                             <button
                               type="button"
                               onClick={() => openEditWorkModal(item)}
-                              className="text-[12px] font-medium text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer p-0"
+                              className="text-[12px] font-medium text-primary hover:underline bg-transparent border-none cursor-pointer p-0"
                             >
                               Edit
                             </button>
@@ -682,24 +682,24 @@ const UserProfile: React.FC = () => {
                               type="button"
                               onClick={() => handleDeleteWorkExperience(item.id)}
                               disabled={isDeletingWorkId === item.id}
-                              className="text-[12px] font-medium text-[#c02626] hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
+                              className="text-[12px] font-medium text-error-custom hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
                             >
                               {isDeletingWorkId === item.id ? "Deleting..." : "Delete"}
                             </button>
                           </div>
                         </div>
-                        <p className="text-[15px] leading-[20px] text-[#3E4A6D] mt-1">
+                        <p className="text-[15px] leading-[20px] text-text-muted-2 mt-1">
                           {item.company}
                           {item.location ? `, ${item.location}` : ""}
                         </p>
-                        <p className="text-[13px] leading-[18px] text-[#7A849F] mt-1">
+                        <p className="text-[13px] leading-[18px] text-text-muted-3 mt-1">
                           {item.startDate}
                           {" - "}
                           {item.isCurrent ? "Present" : item.endDate || "Present"}
                           {item.employmentType ? ` | ${item.employmentType}` : ""}
                         </p>
                         {item.description ? (
-                          <p className="text-[14px] leading-[22px] text-[#62688A] mt-2">
+                          <p className="text-[14px] leading-[22px] text-text-muted-dark mt-2">
                             {item.description}
                           </p>
                         ) : null}
@@ -707,7 +707,7 @@ const UserProfile: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="font-normal text-[17px] leading-[28px] text-[#62688A] max-w-[650px]">
+                  <p className="font-normal text-[17px] leading-[28px] text-text-muted-dark max-w-[650px]">
                     Add your past work experience here. If you&apos;re just
                     starting out, you can add internships or volunteer
                     experience instead.
@@ -717,7 +717,7 @@ const UserProfile: React.FC = () => {
                 <Button
                   variant="outline"
                   onClick={openAddWorkModal}
-                  className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-[#0661D6] text-[#0661D6] hover:bg-transparent px-4"
+                  className="w-full max-w-[260px] h-[48px] text-[16px] font-normal flex items-center justify-center gap-2 border-blue-medium-3 text-blue-medium-3 hover:bg-transparent px-4"
                 >
                   <PlusIcon />
                   <span>Add work experience</span>
@@ -726,14 +726,14 @@ const UserProfile: React.FC = () => {
             </div>
 
             <section>
-              <p className="mb-6 font-normal text-[28px] leading-[24px] text-[#1D161A] mt-12">
+              <p className="mb-6 font-normal text-[28px] leading-[24px] text-text-darker mt-12">
                 Education
               </p>
 
               <div className="rounded-[12px] bg-white px-6 py-10">
                 <div className="mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                    <p className="font-normal text-[22px] leading-[20px] text-text-darkest">
                       Credentials
                     </p>
                     <img
@@ -746,18 +746,18 @@ const UserProfile: React.FC = () => {
                   <Button
                     variant="outline"
                     onClick={openCredentialSelectionModal}
-                    className="h-[32px] px-4 text-[14px] font-normal flex items-center gap-2 border-[#046BD9] text-[#046BD9] hover:bg-transparent"
+                    className="h-[32px] px-4 text-[14px] font-normal flex items-center gap-2 border-primary text-primary hover:bg-transparent"
                   >
                     <PlusIcon size={12} />
                     <span>Add</span>
                   </Button>
                 </div>
                 {isLoadingCredentials ? (
-                  <p className="font-normal text-[15px] text-[#62688A]">
+                  <p className="font-normal text-[15px] text-shade-5">
                     Loading credentials...
                   </p>
                 ) : educations.length === 0 && profileCertificates.length === 0 ? (
-                  <p className="font-normal text-[15px] text-[#62688A]">
+                  <p className="font-normal text-[15px] text-shade-5">
                     Add your education or certification details to show your
                     credentials.
                   </p>
@@ -765,20 +765,20 @@ const UserProfile: React.FC = () => {
                   <div className="space-y-6">
                     {educations.map((item) => (
                       <div key={item.id} className="flex items-start gap-4">
-                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded bg-[#F3F6FB] text-[#1f1f1f]">
+                        <div className="flex h-[40px] w-[40px] items-center justify-center rounded bg-bg-light-blue text-gray-dark-3">
                           <GraduationCapIcon />
                         </div>
 
                         <div className="flex-1">
-                          <p className="font-normal text-[15px] text-[#1A181F]">
+                          <p className="font-normal text-[15px] text-gray-dark-2">
                             {item.instituteName}
                           </p>
 
-                          <p className="font-normal text-[14px] text-[#62688A]">
+                          <p className="font-normal text-[14px] text-shade-5">
                             {item.degreeDetails}
                           </p>
 
-                          <p className="font-normal text-[13px] text-[#8A90A8]">
+                          <p className="font-normal text-[13px] text-shade-6">
                             {formatMonthYear(item.startDate)} -{" "}
                             {formatMonthYear(item.endDate)}
                           </p>
@@ -788,7 +788,7 @@ const UserProfile: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => openEditEducationModal(item)}
-                            className="text-[12px] font-medium text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer p-0"
+                            className="text-[12px] font-medium text-primary hover:underline bg-transparent border-none cursor-pointer p-0"
                           >
                             Edit
                           </button>
@@ -796,7 +796,7 @@ const UserProfile: React.FC = () => {
                             type="button"
                             onClick={() => handleDeleteEducation(item.id)}
                             disabled={isDeletingCredentialId === item.id}
-                            className="text-[12px] font-medium text-[#c02626] hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
+                            className="text-[12px] font-medium text-error-custom hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
                           >
                             {isDeletingCredentialId === item.id ? "Deleting..." : "Delete"}
                           </button>
@@ -813,18 +813,18 @@ const UserProfile: React.FC = () => {
                         />
 
                         <div className="flex-1">
-                          <p className="font-normal text-[15px] text-[#1A181F]">
+                          <p className="font-normal text-[15px] text-gray-dark-2">
                             {item.certificateName}
                           </p>
 
                           <button
                             type="button"
-                            className="mt-1 font-normal text-[14px] text-[#046BD9] bg-transparent border-none cursor-pointer p-0"
+                            className="mt-1 font-normal text-[14px] text-primary bg-transparent border-none cursor-pointer p-0"
                           >
                             View certificate
                           </button>
 
-                          <p className="mt-1 font-normal text-[13px] text-[#8A90A8]">
+                          <p className="mt-1 font-normal text-[13px] text-shade-6">
                             Completed {formatMonthYear(item.completionDate)}
                           </p>
                         </div>
@@ -833,7 +833,7 @@ const UserProfile: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => openEditCertificateModal(item)}
-                            className="text-[12px] font-medium text-[#0056D2] hover:underline bg-transparent border-none cursor-pointer p-0"
+                            className="text-[12px] font-medium text-primary hover:underline bg-transparent border-none cursor-pointer p-0"
                           >
                             Edit
                           </button>
@@ -841,7 +841,7 @@ const UserProfile: React.FC = () => {
                             type="button"
                             onClick={() => handleDeleteCertificate(item.id)}
                             disabled={isDeletingCredentialId === item.id}
-                            className="text-[12px] font-medium text-[#c02626] hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
+                            className="text-[12px] font-medium text-error-custom hover:underline disabled:opacity-60 disabled:cursor-not-allowed bg-transparent border-none cursor-pointer p-0"
                           >
                             {isDeletingCredentialId === item.id ? "Deleting..." : "Delete"}
                           </button>
@@ -854,13 +854,13 @@ const UserProfile: React.FC = () => {
             </section>
 
             <section>
-              <p className="mb-6 font-normal text-[28px] leading-[24px] text-[#1D161A] mt-12">
+              <p className="mb-6 font-normal text-[28px] leading-[24px] text-gray-dark-1 mt-12">
                 Courses
               </p>
 
               <div className="rounded-[12px] bg-white px-6 py-10">
                 <div className="mb-4 flex items-center gap-2">
-                  <p className="font-normal text-[22px] leading-[20px] text-[#1A181F]">
+                  <p className="font-normal text-[22px] leading-[20px] text-gray-dark-2">
                     Courses
                   </p>
                   <img
@@ -871,11 +871,11 @@ const UserProfile: React.FC = () => {
                 </div>
 
                 {isLoadingCompletedCourses ? (
-                  <p className="font-normal text-[15px] text-[#62688A]">
+                  <p className="font-normal text-[15px] text-shade-5">
                     Loading completed courses...
                   </p>
                 ) : completedCourses.length === 0 ? (
-                  <p className="font-normal text-[15px] text-[#62688A]">
+                  <p className="font-normal text-[15px] text-shade-5">
                     Complete a course on Coursera to see it here.
                   </p>
                 ) : (
@@ -889,19 +889,19 @@ const UserProfile: React.FC = () => {
                         />
 
                         <div className="flex-1">
-                          <p className="font-normal text-[15px] text-[#1A181F]">
+                          <p className="font-normal text-[15px] text-gray-dark-2">
                             {item.courseTitle || "Course"}
                           </p>
-                          <p className="font-normal text-[14px] text-[#62688A]">
+                          <p className="font-normal text-[14px] text-shade-5">
                             Google Course
                           </p>
                           <button
                             type="button"
-                            className="mt-1 font-normal text-[14px] text-[#046BD9] bg-transparent border-none cursor-pointer p-0"
+                            className="mt-1 font-normal text-[14px] text-primary bg-transparent border-none cursor-pointer p-0"
                           >
                             View certificate
                           </button>
-                          <p className="mt-1 font-normal text-[13px] text-[#8A90A8]">
+                          <p className="mt-1 font-normal text-[13px] text-shade-6">
                             Completed {formatCompletionDate(item.issuedAt)}
                           </p>
                         </div>
@@ -927,9 +927,9 @@ const UserProfile: React.FC = () => {
             }}
           />
 
-          <div className="relative w-full max-w-[640px] max-h-[calc(100vh-2rem)] bg-white rounded-[10px] border border-[#dfe3eb] shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#eef1f5]">
-              <h3 className="text-[20px] font-medium text-[#1A181F]">
+          <div className="relative w-full max-w-[640px] max-h-[calc(100vh-2rem)] bg-white rounded-[10px] border border-border-custom shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border-ultra-light">
+              <h3 className="text-[20px] font-medium text-gray-dark-2">
                 {editingWorkId ? "Edit work experience" : "Add work experience"}
               </h3>
               <button
@@ -938,7 +938,7 @@ const UserProfile: React.FC = () => {
                   setIsWorkModalOpen(false);
                   resetWorkForm();
                 }}
-                className="w-9 h-9 rounded-[6px] border border-[#dfe3eb] text-[#6a7390] hover:bg-[#f4f7fc] bg-transparent cursor-pointer flex items-center justify-center"
+                className="w-9 h-9 rounded-[6px] border border-border-custom text-shade-4 hover:bg-blue-light-3 bg-transparent cursor-pointer flex items-center justify-center"
               >
                 <CloseIcon />
               </button>
@@ -946,7 +946,7 @@ const UserProfile: React.FC = () => {
 
             <div className="px-6 py-5 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto flex-1">
               <div className="md:col-span-2">
-                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                   Job title
                 </label>
                 <input
@@ -956,12 +956,12 @@ const UserProfile: React.FC = () => {
                     setWorkForm((prev) => ({ ...prev, title: e.target.value }))
                   }
                   placeholder="e.g. Frontend Developer"
-                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                   Company
                 </label>
                 <input
@@ -971,12 +971,12 @@ const UserProfile: React.FC = () => {
                     setWorkForm((prev) => ({ ...prev, company: e.target.value }))
                   }
                   placeholder="e.g. Google"
-                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                   Employment type
                 </label>
                 <input
@@ -989,12 +989,12 @@ const UserProfile: React.FC = () => {
                     }))
                   }
                   placeholder="e.g. Full-time"
-                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                   Location
                 </label>
                 <input
@@ -1004,12 +1004,12 @@ const UserProfile: React.FC = () => {
                     setWorkForm((prev) => ({ ...prev, location: e.target.value }))
                   }
                   placeholder="e.g. Lahore"
-                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                   Start date
                 </label>
                 <input
@@ -1018,12 +1018,12 @@ const UserProfile: React.FC = () => {
                   onChange={(e) =>
                     setWorkForm((prev) => ({ ...prev, startDate: e.target.value }))
                   }
-                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                   End date
                 </label>
                 <input
@@ -1033,12 +1033,12 @@ const UserProfile: React.FC = () => {
                     setWorkForm((prev) => ({ ...prev, endDate: e.target.value }))
                   }
                   disabled={Boolean(workForm.isCurrent)}
-                  className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2] disabled:bg-[#f3f5fa] disabled:text-[#9aa3ba]"
+                  className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary disabled:bg-blue-light-4 disabled:text-shade-9"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="inline-flex items-center gap-2 text-[13px] text-[#3f4b6b] cursor-pointer">
+                <label className="inline-flex items-center gap-2 text-[13px] text-shade-8 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={Boolean(workForm.isCurrent)}
@@ -1049,14 +1049,14 @@ const UserProfile: React.FC = () => {
                         endDate: e.target.checked ? "" : prev.endDate,
                       }))
                     }
-                    className="w-4 h-4 accent-[#0056D2]"
+                    className="w-4 h-4 accent-primary"
                   />
                   I currently work here
                 </label>
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                   Description
                 </label>
                 <textarea
@@ -1069,19 +1069,19 @@ const UserProfile: React.FC = () => {
                   }
                   rows={4}
                   placeholder="Describe your responsibilities and achievements"
-                  className="w-full px-3 py-2.5 rounded-[6px] border border-[#d4dae6] text-[14px] resize-y focus:outline-none focus:border-[#0056D2]"
+                  className="w-full px-3 py-2.5 rounded-[6px] border border-border-light text-[14px] resize-y focus:outline-none focus:border-primary"
                 />
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-[#eef1f5] flex items-center justify-end gap-3 shrink-0">
+            <div className="px-6 py-4 border-t border-border-ultra-light flex items-center justify-end gap-3 shrink-0">
               <button
                 type="button"
                 onClick={() => {
                   setIsWorkModalOpen(false);
                   resetWorkForm();
                 }}
-                className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                className="h-[40px] px-4 rounded-[6px] border border-border-light text-[14px] text-shade-10 hover:bg-blue-light-5 bg-transparent cursor-pointer"
               >
                 Cancel
               </button>
@@ -1089,7 +1089,7 @@ const UserProfile: React.FC = () => {
                 type="button"
                 disabled={!isWorkFormValid || isSavingWork}
                 onClick={handleSaveWorkExperience}
-                className="h-[40px] px-5 rounded-[6px] bg-[#0056D2] text-white text-[14px] font-medium hover:bg-[#0048b3] disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
+                className="h-[40px] px-5 rounded-[6px] bg-primary text-white text-[14px] font-medium hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
               >
                 {isSavingWork ? "Saving..." : editingWorkId ? "Update" : "Add"}
               </button>
@@ -1107,9 +1107,9 @@ const UserProfile: React.FC = () => {
             onClick={closeCredentialModal}
           />
 
-          <div className="relative w-full max-w-[560px] max-h-[calc(100vh-2rem)] bg-white rounded-[10px] border border-[#dfe3eb] shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#eef1f5]">
-              <h3 className="text-[20px] font-medium text-[#1A181F]">
+          <div className="relative w-full max-w-[560px] max-h-[calc(100vh-2rem)] bg-white rounded-[10px] border border-border-custom shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border-ultra-light">
+              <h3 className="text-[20px] font-medium text-gray-dark-2">
                 {credentialModalType === "selector"
                   ? "Add credential"
                   : credentialModalType === "education"
@@ -1123,7 +1123,7 @@ const UserProfile: React.FC = () => {
               <button
                 type="button"
                 onClick={closeCredentialModal}
-                className="w-9 h-9 rounded-[6px] border border-[#dfe3eb] text-[#6a7390] hover:bg-[#f4f7fc] bg-transparent cursor-pointer flex items-center justify-center"
+                className="w-9 h-9 rounded-[6px] border border-border-custom text-shade-4 hover:bg-blue-light-3 bg-transparent cursor-pointer flex items-center justify-center"
               >
                 <CloseIcon />
               </button>
@@ -1134,24 +1134,24 @@ const UserProfile: React.FC = () => {
                 <button
                   type="button"
                   onClick={openAddEducationModal}
-                  className="w-full rounded-[8px] border border-[#d4dae6] hover:border-[#0056D2] text-left px-4 py-3 bg-white cursor-pointer"
+                  className="w-full rounded-[8px] border border-border-light hover:border-primary text-left px-4 py-3 bg-white cursor-pointer"
                 >
-                  <p className="text-[15px] font-medium text-[#1A181F]">
+                  <p className="text-[15px] font-medium text-gray-dark-2">
                     Add education
                   </p>
-                  <p className="text-[13px] text-[#6b7695] mt-1">
+                  <p className="text-[13px] text-shade-7-alt mt-1">
                     Institute name, degree details, and timeline
                   </p>
                 </button>
                 <button
                   type="button"
                   onClick={openAddCertificateModal}
-                  className="w-full rounded-[8px] border border-[#d4dae6] hover:border-[#0056D2] text-left px-4 py-3 bg-white cursor-pointer"
+                  className="w-full rounded-[8px] border border-border-light hover:border-primary text-left px-4 py-3 bg-white cursor-pointer"
                 >
-                  <p className="text-[15px] font-medium text-[#1A181F]">
+                  <p className="text-[15px] font-medium text-gray-dark-2">
                     Add certificate
                   </p>
-                  <p className="text-[13px] text-[#6b7695] mt-1">
+                  <p className="text-[13px] text-shade-7-alt mt-1">
                     Certificate name and completion date
                   </p>
                 </button>
@@ -1160,7 +1160,7 @@ const UserProfile: React.FC = () => {
               <>
                 <div className="px-6 py-5 grid grid-cols-1 gap-4 overflow-y-auto flex-1">
                   <div>
-                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                    <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                       Institute name
                     </label>
                     <input
@@ -1173,11 +1173,11 @@ const UserProfile: React.FC = () => {
                         }))
                       }
                       placeholder="e.g. University of Agriculture, Faisalabad"
-                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                    <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                       Degree details
                     </label>
                     <input
@@ -1190,12 +1190,12 @@ const UserProfile: React.FC = () => {
                         }))
                       }
                       placeholder="e.g. Bachelor's degree in Computer Science"
-                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                      <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                         Start date
                       </label>
                       <input
@@ -1207,11 +1207,11 @@ const UserProfile: React.FC = () => {
                             startDate: e.target.value,
                           }))
                         }
-                        className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                        className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                       />
                     </div>
                     <div>
-                      <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                      <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                         End date
                       </label>
                       <input
@@ -1223,17 +1223,17 @@ const UserProfile: React.FC = () => {
                             endDate: e.target.value,
                           }))
                         }
-                        className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                        className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="px-6 py-4 border-t border-[#eef1f5] flex items-center justify-between gap-3 shrink-0">
+                <div className="px-6 py-4 border-t border-border-ultra-light flex items-center justify-between gap-3 shrink-0">
                   <button
                     type="button"
                     onClick={() => setCredentialModalType("selector")}
-                    className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                    className="h-[40px] px-4 rounded-[6px] border border-border-light text-[14px] text-shade-10 hover:bg-blue-light-5 bg-transparent cursor-pointer"
                   >
                     Back
                   </button>
@@ -1241,7 +1241,7 @@ const UserProfile: React.FC = () => {
                     <button
                       type="button"
                       onClick={closeCredentialModal}
-                      className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                      className="h-[40px] px-4 rounded-[6px] border border-border-light text-[14px] text-shade-10 hover:bg-blue-light-5 bg-transparent cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -1249,7 +1249,7 @@ const UserProfile: React.FC = () => {
                       type="button"
                       disabled={!isEducationFormValid || isSavingCredential}
                       onClick={handleSaveEducation}
-                      className="h-[40px] px-5 rounded-[6px] bg-[#0056D2] text-white text-[14px] font-medium hover:bg-[#0048b3] disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
+                      className="h-[40px] px-5 rounded-[6px] bg-primary text-white text-[14px] font-medium hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
                     >
                       {isSavingCredential
                         ? "Saving..."
@@ -1264,7 +1264,7 @@ const UserProfile: React.FC = () => {
               <>
                 <div className="px-6 py-5 grid grid-cols-1 gap-4 overflow-y-auto flex-1">
                   <div>
-                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                    <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                       Certificate name
                     </label>
                     <input
@@ -1277,11 +1277,11 @@ const UserProfile: React.FC = () => {
                         }))
                       }
                       placeholder="e.g. Google Prompting Essentials"
-                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-[13px] font-medium text-[#3f4b6b] mb-1.5">
+                    <label className="block text-[13px] font-medium text-shade-8 mb-1.5">
                       Completion date
                     </label>
                     <input
@@ -1293,16 +1293,16 @@ const UserProfile: React.FC = () => {
                           completionDate: e.target.value,
                         }))
                       }
-                      className="w-full h-[44px] px-3 rounded-[6px] border border-[#d4dae6] text-[14px] focus:outline-none focus:border-[#0056D2]"
+                      className="w-full h-[44px] px-3 rounded-[6px] border border-border-light text-[14px] focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
 
-                <div className="px-6 py-4 border-t border-[#eef1f5] flex items-center justify-between gap-3 shrink-0">
+                <div className="px-6 py-4 border-t border-border-ultra-light flex items-center justify-between gap-3 shrink-0">
                   <button
                     type="button"
                     onClick={() => setCredentialModalType("selector")}
-                    className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                    className="h-[40px] px-4 rounded-[6px] border border-border-light text-[14px] text-shade-10 hover:bg-blue-light-5 bg-transparent cursor-pointer"
                   >
                     Back
                   </button>
@@ -1310,7 +1310,7 @@ const UserProfile: React.FC = () => {
                     <button
                       type="button"
                       onClick={closeCredentialModal}
-                      className="h-[40px] px-4 rounded-[6px] border border-[#d4dae6] text-[14px] text-[#4b5677] hover:bg-[#f6f8fc] bg-transparent cursor-pointer"
+                      className="h-[40px] px-4 rounded-[6px] border border-border-light text-[14px] text-shade-10 hover:bg-blue-light-5 bg-transparent cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -1318,7 +1318,7 @@ const UserProfile: React.FC = () => {
                       type="button"
                       disabled={!isCertificateFormValid || isSavingCredential}
                       onClick={handleSaveCertificate}
-                      className="h-[40px] px-5 rounded-[6px] bg-[#0056D2] text-white text-[14px] font-medium hover:bg-[#0048b3] disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
+                      className="h-[40px] px-5 rounded-[6px] bg-primary text-white text-[14px] font-medium hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed border-none cursor-pointer"
                     >
                       {isSavingCredential
                         ? "Saving..."
@@ -1340,3 +1340,53 @@ const UserProfile: React.FC = () => {
 };
 
 export default UserProfile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

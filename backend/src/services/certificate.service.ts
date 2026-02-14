@@ -77,7 +77,7 @@ const computeCourseDuration = async (courseId: string) => {
       const seconds = lesson.duration || 0;
       return sum + Math.round(seconds / 60);
     }
-    // READING + ASSESSMENT = fixed 5 minutes
+    
     return sum + 5;
   }, 0);
 
@@ -172,13 +172,13 @@ const renderCertificateAssets = async (data: {
       timeout: 60000,
     });
     const page = await browser.newPage();
-    // Use a slightly larger viewport to ensure no clipping
+    
     await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 2 });
 
     console.log(`[certificate-service] Setting content for ${fileBase}...`);
     await page.setContent(html, { waitUntil: "load", timeout: 60000 });
 
-    // Minimal delay to ensure styles are applied
+    
     await new Promise((r) => setTimeout(r, 500));
 
     console.log(`[certificate-service] Generating PDF for ${fileBase}...`);
@@ -262,7 +262,7 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
     where: { userId: enrollment.userId, courseId: enrollment.courseId },
   });
 
-  // If already exists, check if assets are present on disk
+  
   if (existing) {
     const pdfUrl = existing.pdfUrl || "";
     const imageUrl = existing.imageUrl || "";
@@ -284,7 +284,7 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
         include: { course: { select: CERTIFICATE_COURSE_SELECT } },
       }) as any;
     }
-    // If assets are missing, we'll try to (re)generate them below
+    
     console.log(
       `[certificate-service] Assets missing for existing certificate ${existing.id}, retrying generation...`,
     );
@@ -317,7 +317,7 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       },
     });
 
-    // Create notification for certificate generation
+    
     try {
       await notificationService.createNotification(enrollment.userId, {
         type: "certificate",
@@ -331,7 +331,7 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
         "[certificate-service] Failed to create notification:",
         notifError,
       );
-      // Don't fail the whole operation if notification fails
+      
     }
   }
 
@@ -379,7 +379,7 @@ export const getMyCertificates = async (userId: string) => {
 
   const finalCerts = [];
   for (let cert of certificates) {
-    // 1. Self-heal: Check for missing assets
+    
     const pdfUrl = cert.pdfUrl || "";
     const imageUrl = cert.imageUrl || "";
     const pdfPath = path.join(__dirname, "../../", pdfUrl.replace(/^\/+/, ""));
@@ -413,7 +413,7 @@ export const getMyCertificates = async (userId: string) => {
       }
     }
 
-    // 2. Ensure grade is set
+    
     if (typeof cert.grade !== "number") {
       const grade = await computeCourseGradeByUserCourse(
         cert.userId,

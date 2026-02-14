@@ -67,7 +67,7 @@ export const deleteModule = asyncHandler(
 export const reorderModules = asyncHandler(
   async (req: Request & { user?: any }, res: Response) => {
     const { courseId } = req.params;
-    const { modules } = req.body; // Array of { id, order }
+    const { modules } = req.body; 
     const userId = req.user?.id;
     const userRole = req.user?.role;
 

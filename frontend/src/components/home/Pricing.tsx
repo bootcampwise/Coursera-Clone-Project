@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import Button from "../common/Button";
 
 const Pricing: React.FC = () => {
-  const [isAnnual, setIsAnnual] = useState(false); // Toggle state placeholder
+  const [isAnnual, setIsAnnual] = useState(false); 
 
   const CheckIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
-      strokeWidth={2}
+      strokeWidth={3}
       stroke="currentColor"
-      className="w-4 h-4 text-primary flex-shrink-0 mt-1"
+      className="w-4 h-4 text-primary flex-shrink-0 mt-0.5"
     >
       <path
         strokeLinecap="round"
@@ -22,54 +22,71 @@ const Pricing: React.FC = () => {
   );
 
   return (
-    <section className="bg-[#F5F7F8] py-16 font-sans">
+    <section className="bg-bg-light-blue py-20 font-sans">
       <div className="container mx-auto px-4 md:px-8">
-        {/* Header & Toggle */}
-        <div className="text-center mb-12">
-          <h2 className="text-[28px] md:text-[32px] font-semibold text-text-primary mb-8">
+        {}
+        <div className="text-center mb-16">
+          <h2 className="text-[28px] md:text-[34px] font-normal text-gray-dark-3 mb-10">
             Plans for you or your team
           </h2>
-          <div className="inline-flex bg-white rounded-full p-1 shadow-sm border border-border-muted relative">
-            <div className="absolute left-1 top-1 bottom-1 w-[50%] bg-primary rounded-full transition-all duration-300"></div>
-            <button className="relative z-10 px-8 py-2 text-white font-semibold text-sm rounded-full">
+          <div className="inline-flex bg-white rounded-full p-1 shadow-sm border border-gray-very-light-3 relative h-[56px] w-[280px]">
+            <div
+              className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-primary rounded-full transition-all duration-300 ${
+                isAnnual ? "left-[calc(50%+2px)]" : "left-1"
+              }`}
+            ></div>
+            <button
+              onClick={() => setIsAnnual(false)}
+              className={`flex-1 relative z-10 font-bold text-[14px] rounded-full transition-colors ${
+                !isAnnual ? "text-white" : "text-gray-dark-3"
+              }`}
+            >
               For you
             </button>
-            <button className="relative z-10 px-6 py-2 text-text-secondary font-semibold text-sm rounded-full hover:text-primary transition-colors">
+            <button
+              onClick={() => setIsAnnual(true)}
+              className={`flex-1 relative z-10 font-bold text-[14px] rounded-full transition-colors ${
+                isAnnual ? "text-white" : "text-gray-dark-3"
+              }`}
+            >
               For your team
             </button>
           </div>
         </div>
 
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 max-w-6xl mx-auto items-start">
-          {/* Card 1: Single Learning Program */}
-          <div className="bg-white p-8 border border-gray-200 rounded-lg md:rounded-r-none md:rounded-l-lg md:border-r-0 h-full flex flex-col relative z-0 md:mt-8 shadow-sm md:shadow-none">
-            <h3 className="text-[20px] font-semibold text-text-primary mb-2">
+        {}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto items-center px-4">
+          {}
+          <div className="bg-white p-8 border border-gray-very-light-3 rounded-[4px] flex flex-col shadow-sm transition-all duration-300 hover:border-primary hover:shadow-xl hover:-translate-y-1 cursor-default min-h-[520px]">
+            <h3 className="text-[22px] font-normal text-gray-dark-3 mb-3">
               Single learning program
             </h3>
-            <p className="text-sm text-text-secondary mb-8">
-              Learn a single topic or skill and earn a credential
+            <p className="text-[14px] text-gray-600 mb-8 leading-relaxed">
+              Learn a{" "}
+              <span className="underline decoration-dotted">single</span> topic
+              or skill and earn a credential
             </p>
 
-            <div className="mb-6">
-              <div className="flex items-baseline gap-1">
-                <span className="text-[24px] font-normal text-text-primary">
+            <div className="mb-8">
+              <div className="flex items-baseline">
+                <span className="text-[28px] font-normal text-gray-dark-3">
                   $20 - $20
                 </span>
-                <span className="text-xs text-text-secondary line-through italic ml-2">
+                <span className="text-[14px] text-gray-500 italic ml-2">
                   /month
                 </span>
-                {/* Note: Screenshot text implies price/month but "$20 - $20" looks like a range. Transcribing exactly. Actually looks like "$49 - $79" usually, but user image has "$20 - $20". I will strictly follow image.*/}
               </div>
             </div>
 
-            <div className="text-xs text-text-primary mb-6">
-              Visit an individual course or Specialization page to purchase.
+            <div className="text-[13px] text-gray-700 leading-relaxed mb-8">
+              Visit an{" "}
+              <span className="underline decoration-dotted">individual</span>{" "}
+              course or Specialization page to purchase.
             </div>
 
             <div className="border-t border-gray-200 my-6"></div>
 
-            <ul className="space-y-4 text-sm text-text-primary flex-grow">
+            <ul className="space-y-4 text-[14px] text-gray-700 flex-grow">
               <li className="flex gap-3 items-start">
                 <CheckIcon />
                 <span>Access all courses within the learning program</span>
@@ -83,41 +100,38 @@ const Pricing: React.FC = () => {
             </ul>
           </div>
 
-          {/* Card 2: Coursera Plus Monthly (Highlighted) */}
-          <div className="bg-white border-2 border-primary rounded-lg shadow-xl relative z-10 overflow-hidden md:-my-6 flex flex-col h-full transform md:scale-105">
-            <div className="bg-primary text-white text-center text-xs font-bold py-2 uppercase tracking-wide">
+          {}
+          <div className="bg-white border-[2px] border-primary rounded-[4px] relative flex flex-col shadow-xl overflow-hidden md:-my-12 z-10 transition-all duration-300 hover:shadow-2xl min-h-[620px]">
+            <div className="bg-primary text-white text-center text-[13px] font-normal py-2.5">
               Most popular
             </div>
-            <div className="p-8 flex flex-col h-full bg-white">
-              <h3 className="text-[20px] font-semibold text-text-primary mb-2">
-                Coursera Plus Monthly
+            <div className="p-8 flex flex-col flex-grow">
+              <h3 className="text-[22px] font-normal text-gray-dark-3 mb-3">
+                Coursera Plus <span className="text-primary">Monthly</span>
               </h3>
-              <p className="text-sm text-text-secondary mb-6">
+              <p className="text-[14px] text-gray-600 mb-8 leading-relaxed">
                 Complete multiple courses and earn credentials in the short term
               </p>
 
-              <div className="mb-6">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-[32px] font-normal text-text-primary">
+              <div className="mb-8">
+                <div className="flex items-baseline">
+                  <span className="text-[32px] font-normal text-gray-dark-3">
                     $24
                   </span>
-                  <span className="text-[16px] text-text-primary">/month</span>
+                  <span className="text-[16px] text-gray-700">/month</span>
                 </div>
               </div>
 
-              <Button
-                variant="primary"
-                className="!w-full !py-3 !rounded-[4px] !font-bold mb-4"
-              >
+              <button className="w-full py-3.5 bg-primary text-white rounded-[4px] font-bold text-[15px] hover:bg-primary-hover transition-colors mb-4">
                 Start 7-day free trial
-              </Button>
-              <div className="text-center text-xs text-text-secondary mb-6">
+              </button>
+              <div className="text-center text-[14px] text-gray-700 mb-8">
                 Cancel anytime
               </div>
 
               <div className="border-t border-gray-200 my-6"></div>
 
-              <ul className="space-y-4 text-sm text-text-primary flex-grow">
+              <ul className="space-y-4 text-[14px] text-gray-700 grow">
                 <li className="flex gap-3 items-start">
                   <CheckIcon />
                   <span>
@@ -147,38 +161,38 @@ const Pricing: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 3: Coursera Plus Annual */}
-          <div className="bg-white p-8 border border-gray-200 rounded-lg md:rounded-l-none md:rounded-r-lg md:border-l-0 h-full flex flex-col relative z-0 md:mt-8 shadow-sm md:shadow-none">
-            <h3 className="text-[20px] font-semibold text-text-primary mb-2">
+          {}
+          <div className="bg-white p-8 border border-gray-very-light-3 rounded-[4px] flex flex-col shadow-sm transition-all duration-300 hover:border-primary hover:shadow-xl hover:-translate-y-1 cursor-default min-h-[520px]">
+            <h3 className="text-[22px] font-normal text-gray-dark-3 mb-3">
               Coursera Plus Annual
             </h3>
-            <p className="text-sm text-text-secondary mb-8">
+            <p className="text-[14px] text-gray-600 mb-8 leading-relaxed">
               Combine flexibility and savings with long-term learning goals
             </p>
 
-            <div className="mb-6">
-              <div className="flex items-baseline gap-1">
-                <span className="text-[24px] font-normal text-text-primary">
+            <div className="mb-8">
+              <div className="flex items-baseline">
+                <span className="text-[28px] font-normal text-gray-dark-3">
                   $160
                 </span>
-                <span className="text-[16px] text-text-primary">/year</span>
+                <span className="text-[16px] text-gray-dark-3">/year</span>
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              className="!w-full !py-3 !rounded-[4px] !font-bold !border-primary !text-primary hover:!bg-blue-50 mb-4"
-            >
+            <button className="w-full py-3.5 bg-white text-primary border border-primary rounded-[4px] font-bold text-[15px] hover:bg-blue-50 transition-colors mb-4">
               Try Coursera Plus Annual
-            </Button>
-            <div className="text-center text-xs text-text-secondary mb-6">
-              14-day money-back guarantee
+            </button>
+            <div className="text-center text-[14px] text-gray-700 mb-8 leading-relaxed">
+              14-day{" "}
+              <span className="text-brown-accent border-b border-brown-accent/30">
+                money-back guarantee
+              </span>
             </div>
 
             <div className="border-t border-gray-200 my-6"></div>
 
-            <ul className="space-y-4 text-sm text-text-primary flex-grow">
-              <div className="text-xs text-text-secondary mb-2">
+            <ul className="space-y-4 text-[14px] text-gray-700">
+              <div className="text-[13px] text-gray-600 mb-6 font-normal">
                 Everything included in the monthly plan, plus:
               </div>
               <li className="flex gap-3 items-start">
@@ -201,3 +215,52 @@ const Pricing: React.FC = () => {
 };
 
 export default Pricing;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

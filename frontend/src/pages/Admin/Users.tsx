@@ -40,7 +40,7 @@ const Users: React.FC = () => {
     try {
       setLoading(true);
       const response = await adminApi.get(ENDPOINTS.USERS_LIST, {
-        params: { limit: 50 }, // Increased limit for admin view
+        params: { limit: 50 }, 
       });
       setUsers(response.data.users);
       setError(null);
@@ -426,3 +426,52 @@ const Users: React.FC = () => {
 };
 
 export default Users;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

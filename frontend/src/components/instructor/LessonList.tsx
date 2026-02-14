@@ -10,7 +10,7 @@ interface Lesson {
 
 interface LessonListProps {
   lessons: Lesson[];
-  moduleId: string; // Keep this in interface if passed by parent, even if unused in component (or remove if strict)
+  moduleId: string; 
   onEdit: (lesson: Lesson) => void;
   onDelete: (lessonId: string) => void;
   onReorder: (moduleId: string, lessons: Lesson[]) => void;
@@ -155,3 +155,51 @@ const LessonList: React.FC<LessonListProps> = ({
 };
 
 export default LessonList;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

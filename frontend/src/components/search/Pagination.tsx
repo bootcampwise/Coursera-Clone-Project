@@ -64,7 +64,7 @@ const Pagination: React.FC<PaginationProps> = ({
         className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition-colors ${
           currentPage === 1
             ? "text-gray-300 cursor-not-allowed"
-            : "text-gray-400 hover:text-[#0056D2]"
+            : "text-gray-400 hover:text-primary"
         }`}
       >
         <svg
@@ -90,7 +90,7 @@ const Pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(page)}
             className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-[13px] sm:text-[14px] font-medium transition-all ${
               page === currentPage
-                ? "bg-[#0056D2] text-white underline decoration-0"
+                ? "bg-primary text-white underline decoration-0"
                 : "text-gray-500 hover:bg-gray-100"
             }`}
           >
@@ -112,7 +112,7 @@ const Pagination: React.FC<PaginationProps> = ({
         className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition-colors ${
           currentPage === totalPages
             ? "text-gray-300 cursor-not-allowed"
-            : "text-[#0056D2] hover:text-[#00419e]"
+            : "text-primary hover:text-primary-hover"
         }`}
       >
         <svg
@@ -135,3 +135,52 @@ const Pagination: React.FC<PaginationProps> = ({
 };
 
 export default Pagination;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
