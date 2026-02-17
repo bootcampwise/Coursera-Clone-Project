@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import type { AuthenticatedRequest } from '../types';
 import {
   upsertGoogleUser,
   getAllUsers,
@@ -23,7 +24,7 @@ import {
 import asyncHandler from "../utils/asyncHandler";
 
 export const syncGoogleUser = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { email, name, providerId, avatarUrl } = req.body;
 
     if (!email || !name || !providerId) {
@@ -46,7 +47,7 @@ export const syncGoogleUser = asyncHandler(
   },
 );
 
-export const getUsers = asyncHandler(async (req: Request, res: Response) => {
+export const getUsers = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 10;
   const role = req.query.role as string;
@@ -55,14 +56,14 @@ export const getUsers = asyncHandler(async (req: Request, res: Response) => {
   res.json(result);
 });
 
-export const getUser = asyncHandler(async (req: Request, res: Response) => {
+export const getUser = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const user = await getUserById(id as string);
   res.json(user);
 });
 
 export const getMe = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -73,7 +74,7 @@ export const getMe = asyncHandler(
   },
 );
 
-export const updateRole = asyncHandler(async (req: Request, res: Response) => {
+export const updateRole = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const { role } = req.body;
 
@@ -87,7 +88,7 @@ export const updateRole = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateProfile = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { name, avatarUrl } = req.body;
 
@@ -101,7 +102,7 @@ export const updateProfile = asyncHandler(
   },
 );
 
-export const createUser = asyncHandler(async (req: Request, res: Response) => {
+export const createUser = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const { name, email, password, role } = req.body;
 
   if (!name || !email || !role) {
@@ -114,7 +115,7 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const getMyWorkExperience = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -127,7 +128,7 @@ export const getMyWorkExperience = asyncHandler(
 );
 
 export const addMyWorkExperienceItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -168,7 +169,7 @@ export const addMyWorkExperienceItem = asyncHandler(
 );
 
 export const updateMyWorkExperienceItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { experienceId } = req.params;
     if (!userId) {
@@ -210,7 +211,7 @@ export const updateMyWorkExperienceItem = asyncHandler(
 );
 
 export const deleteMyWorkExperienceItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { experienceId } = req.params;
     if (!userId) {
@@ -224,7 +225,7 @@ export const deleteMyWorkExperienceItem = asyncHandler(
 );
 
 export const getMyEducationItems = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -237,7 +238,7 @@ export const getMyEducationItems = asyncHandler(
 );
 
 export const addMyEducationItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -266,7 +267,7 @@ export const addMyEducationItem = asyncHandler(
 );
 
 export const updateMyEducationItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { educationId } = req.params;
     if (!userId) {
@@ -296,7 +297,7 @@ export const updateMyEducationItem = asyncHandler(
 );
 
 export const deleteMyEducationItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { educationId } = req.params;
     if (!userId) {
@@ -310,7 +311,7 @@ export const deleteMyEducationItem = asyncHandler(
 );
 
 export const getMyProfileCertificateItems = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -323,7 +324,7 @@ export const getMyProfileCertificateItems = asyncHandler(
 );
 
 export const addMyProfileCertificateItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -349,7 +350,7 @@ export const addMyProfileCertificateItem = asyncHandler(
 );
 
 export const updateMyProfileCertificateItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { certificateId } = req.params;
     if (!userId) {
@@ -380,7 +381,7 @@ export const updateMyProfileCertificateItem = asyncHandler(
 );
 
 export const deleteMyProfileCertificateItem = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { certificateId } = req.params;
     if (!userId) {
@@ -397,7 +398,7 @@ export const deleteMyProfileCertificateItem = asyncHandler(
 );
 
 export const deleteUserById = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const user = await deleteUser(id as string);
     res.json({ message: "User deleted successfully", user });

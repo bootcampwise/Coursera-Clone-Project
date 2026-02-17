@@ -1,29 +1,28 @@
 import React from "react";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/home/Footer";
-import CourseHero from "./components/CourseHero";
-import CourseInfoBar from "./components/CourseInfoBar";
-import CourseTabs from "./components/CourseTabs";
-import WhatYouWillLearn from "./components/WhatYouWillLearn";
-import SkillsGain from "./components/SkillsGain";
-import DetailsToKnow from "./components/DetailsToKnow";
-import AdvanceExpertise from "./components/AdvanceExpertise";
-import CourseSeries from "./components/CourseSeries";
-import CareerTestimonials from "./components/CareerTestimonials";
-import CourseSeriesSideCard from "./components/CourseSeriesSideCard";
+import CourseHero from "../../components/courseDetails/CourseHero";
+import CourseInfoBar from "../../components/courseDetails/CourseInfoBar";
+import CourseTabs from "../../components/courseDetails/CourseTabs";
+import WhatYouWillLearn from "../../components/courseDetails/WhatYouWillLearn";
+import SkillsGain from "../../components/courseDetails/SkillsGain";
+import DetailsToKnow from "../../components/courseDetails/DetailsToKnow";
+import AdvanceExpertise from "../../components/courseDetails/AdvanceExpertise";
+import type { Course } from "../../types";
+import CourseSeries from "../../components/courseDetails/CourseSeries";
+import CareerTestimonials from "../../components/courseDetails/CareerTestimonials";
+import CourseSeriesSideCard from "../../components/courseDetails/CourseSeriesSideCard";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { courseApi } from "../../services/courseApi";
 
-import Sidebar from "./components/Sidebar";
-
-import CourseDetailsSkeleton from "./components/CourseDetailsSkeleton";
+import CourseDetailsSkeleton from "../../components/courseDetails/CourseDetailsSkeleton";
 
 const CourseDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [seriesCourses, setSeriesCourses] = useState<any[]>([]);
+  const [seriesCourses, setSeriesCourses] = useState<Course[]>([]);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -48,7 +47,7 @@ const CourseDetails: React.FC = () => {
       try {
         const result = await courseApi.getCourses({ limit: 6 });
         const items = (result?.courses || [])
-          .filter((c: any) => c.id !== course.id)
+          .filter((c: Course) => c.id !== course.id)
           .slice(0, 4);
         setSeriesCourses(items);
       } catch (error) {

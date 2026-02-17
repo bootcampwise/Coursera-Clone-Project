@@ -1,5 +1,5 @@
 import React from "react";
-import { type Degree } from "../../pages/Accomplishments/mockData";
+import { type Degree } from "../../mocks/mockData";
 
 interface Props {
   degree: Degree;

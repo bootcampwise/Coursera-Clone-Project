@@ -92,10 +92,10 @@ async function main() {
     const course = await prisma.course.create({
       data: courseData,
     });
-    console.log(`Created: ${course.title}`);
+    
   }
 
-  console.log("Seeding complete!");
+  
 }
 
 main()

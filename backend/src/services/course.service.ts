@@ -1,4 +1,5 @@
 import { prisma } from "../config/prisma";
+import type { CourseWhereInput } from '../types';
 
 interface CreateCourseData {
   title: string;
@@ -42,7 +43,7 @@ export const getAllCourses = async (
 ) => {
   const skip = (page - 1) * limit;
 
-  const where: any = {};
+  const where: CourseWhereInput = {};
 
   if (filters.status) {
     where.status = filters.status;
@@ -209,12 +210,12 @@ export const deleteCourse = async (
   }
 
   
-  console.log(`Starting cascade deletion for course: ${id}`);
+  
   try {
     await prisma.$transaction(
       async (tx) => {
         
-        console.log("- Fetching related IDs...");
+        
         const modules = await tx.module.findMany({
           where: { courseId: id },
           select: { id: true },
@@ -239,12 +240,10 @@ export const deleteCourse = async (
         });
         const assessmentIds = assessments.map((a) => a.id);
 
-        console.log(
-          `- Found: ${moduleIds.length} modules, ${lessonIds.length} lessons, ${enrollmentIds.length} enrollments, ${assessmentIds.length} assessments`,
-        );
+        
 
         
-        console.log("- Deleting LessonProgress...");
+        
         await tx.lessonProgress.deleteMany({
           where: {
             OR: [
@@ -255,41 +254,41 @@ export const deleteCourse = async (
         });
 
         if (lessonIds.length > 0) {
-          console.log("- Deleting TranscriptLines...");
+          
           await tx.transcriptLine.deleteMany({
             where: { lessonId: { in: lessonIds } },
           });
         }
 
         if (assessmentIds.length > 0) {
-          console.log("- Deleting Submissions and Questions...");
+          
           await tx.submission.deleteMany({
             where: { assessmentId: { in: assessmentIds } },
           });
           await tx.question.deleteMany({
             where: { assessmentId: { in: assessmentIds } },
           });
-          console.log("- Deleting Assessments...");
+          
           await tx.assessment.deleteMany({
             where: { id: { in: assessmentIds } },
           });
         }
 
         if (lessonIds.length > 0) {
-          console.log("- Deleting Lessons...");
+          
           await tx.lesson.deleteMany({
             where: { id: { in: lessonIds } },
           });
         }
 
         if (moduleIds.length > 0) {
-          console.log("- Deleting Modules...");
+          
           await tx.module.deleteMany({
             where: { id: { in: moduleIds } },
           });
         }
 
-        console.log("- Deleting Enrollments and Reviews...");
+        
         await tx.enrollment.deleteMany({
           where: { courseId: id },
         });
@@ -298,14 +297,14 @@ export const deleteCourse = async (
           where: { courseId: id },
         });
 
-        console.log("- Deleting Course record...");
+        
         await tx.course.delete({ where: { id } });
       },
       {
         timeout: 15000, 
       },
     );
-    console.log(`Successfully deleted course: ${id}`);
+    
   } catch (error) {
     console.error(`Error in deleteCourse transaction for course ${id}:`, error);
     throw error;

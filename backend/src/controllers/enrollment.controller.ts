@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import type { AuthenticatedRequest } from '../types';
 import asyncHandler from "../utils/asyncHandler";
 import * as enrollmentService from "../services/enrollment.service";
 
 export const enrollUser = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { courseId } = req.params;
     const userId = req.user?.id;
 
@@ -21,7 +22,7 @@ export const enrollUser = asyncHandler(
 );
 
 export const getUserEnrollments = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
 
     if (!userId) {
@@ -35,7 +36,7 @@ export const getUserEnrollments = asyncHandler(
 );
 
 export const updateProgress = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const { progress, completed } = req.body;
     const userId = req.user?.id;
@@ -56,7 +57,7 @@ export const updateProgress = asyncHandler(
 );
 
 export const getCourseEnrollments = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { courseId } = req.params;
     const userId = req.user?.id;
     const userRole = req.user?.role || "";
@@ -76,7 +77,7 @@ export const getCourseEnrollments = asyncHandler(
 );
 
 export const getEnrollmentStatus = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.user?.id;
 
@@ -94,7 +95,7 @@ export const getEnrollmentStatus = asyncHandler(
 );
 
 export const getStudentCourseProgress = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { courseId } = req.params;
     const userId = req.user?.id;
 
@@ -112,7 +113,7 @@ export const getStudentCourseProgress = asyncHandler(
 );
 
 export const updateLessonProgress = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { enrollmentId, lessonId } = req.params;
     const { completed, lastPlayed, passed, forceComplete, score } = req.body;
     const normalizedScore =

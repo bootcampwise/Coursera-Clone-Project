@@ -4,6 +4,7 @@ import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
 import CourseContentHeader from "../../components/layout/CourseContentHeader";
 import { IMAGES } from "../../constants/images";
+import type { Course, Module, Lesson, Progress } from "../../types";
 
 const CourseContent: React.FC = () => {
   const navigate = useNavigate();
@@ -14,8 +15,8 @@ const CourseContent: React.FC = () => {
 
   
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
-  const [course, setCourse] = useState<any>(null);
-  const [progressData, setProgressData] = useState<any>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [progressData, setProgressData] = useState<{ lessonProgress: Progress[] } | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"transcript" | "notes-downloads">(
     "transcript",
@@ -56,8 +57,8 @@ const CourseContent: React.FC = () => {
 
   
   const currentLesson = course?.modules
-    ?.flatMap((m: any) => m.lessons)
-    ?.find((l: any) => l.id === lessonId);
+    ?.flatMap((m: Module) => m.lessons)
+    ?.find((l: Lesson) => l.id === lessonId);
 
   const formatUpdatedAt = (value?: string) => {
     if (!value) return "";
@@ -81,7 +82,7 @@ const CourseContent: React.FC = () => {
 
   const isLessonCompleted = (id: string) => {
     return progressData?.lessonProgress?.some(
-      (p: any) => p.lessonId === id && p.completed,
+      (p: Progress) => p.lessonId === id && p.completed,
     );
   };
 
@@ -99,8 +100,8 @@ const CourseContent: React.FC = () => {
 
         
         if (lessonId && courseRes?.modules) {
-          const activeModule = courseRes.modules.find((m: any) =>
-            m.lessons.some((l: any) => l.id === lessonId),
+          const activeModule = courseRes.modules.find((m: Module) =>
+            m.lessons.some((l: Lesson) => l.id === lessonId),
           );
           if (activeModule) {
             setExpandedModules([activeModule.id]);
@@ -132,7 +133,7 @@ const CourseContent: React.FC = () => {
     }
 
     const lessonProgress = progressData.lessonProgress?.find(
-      (p: any) => p.lessonId === lessonId,
+      (p: Progress) => p.lessonId === lessonId,
     );
     if (!lessonProgress?.lastPlayed || lessonProgress.lastPlayed <= 0) return;
 
@@ -256,8 +257,8 @@ const CourseContent: React.FC = () => {
         );
       }
 
-      const allLessons = course?.modules?.flatMap((m: any) => m.lessons) || [];
-      const currentIndex = allLessons.findIndex((l: any) => l.id === lessonId);
+      const allLessons = course?.modules?.flatMap((m: Module) => m.lessons) || [];
+      const currentIndex = allLessons.findIndex((l: Lesson) => l.id === lessonId);
 
       if (currentIndex !== -1 && currentIndex < allLessons.length - 1) {
         const nextLesson = allLessons[currentIndex + 1];
@@ -345,7 +346,7 @@ const CourseContent: React.FC = () => {
 
           {/* Scrolling Content */}
           <div className="flex-1 pb-10">
-            {course.modules.map((module: any, index: number) => (
+            {course.modules.map((module: Module, index: number) => (
               <div key={module.id} className="border-b border-gray-medium-4">
                 <button
                   onClick={() => toggleModule(module.id)}
@@ -390,7 +391,7 @@ const CourseContent: React.FC = () => {
 
                 {expandedModules.includes(module.id) && (
                   <div className="bg-white pb-2">
-                    {module.lessons.map((lesson: any) => {
+                    {module.lessons.map((lesson: Lesson) => {
                       const isActive = lesson.id === lessonId;
                       const isComplete = isLessonCompleted(lesson.id);
 

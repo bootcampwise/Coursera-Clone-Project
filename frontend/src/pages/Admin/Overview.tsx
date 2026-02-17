@@ -26,7 +26,7 @@ interface AnalyticsData {
     totalCertificates?: number;
     totalRevenue: number;
   };
-  recentSignups: any[];
+  recentSignups: Array<{ name: string; role: string; createdAt: string }>;
 }
 
 const Overview: React.FC = () => {
@@ -40,9 +40,10 @@ const Overview: React.FC = () => {
         setLoading(true);
         const response = await adminApi.get(ENDPOINTS.ANALYTICS_ADMIN);
         setData(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const error = err as { response?: { data?: { message?: string } } };
         setError(
-          err.response?.data?.message || "Failed to load dashboard metrics",
+          error.response?.data?.message || "Failed to load dashboard metrics",
         );
       } finally {
         setLoading(false);

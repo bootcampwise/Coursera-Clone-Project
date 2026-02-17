@@ -9,6 +9,7 @@ import { IMAGES } from "../../constants/images";
 import HomePreHeader from "./HomePreHeader";
 import AuthModal from "../common/AuthModal";
 import { courseApi } from "../../services/courseApi";
+import type { Course } from "../../types";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,7 +17,7 @@ const Header: React.FC = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const popularSuggestions = [
@@ -64,7 +65,7 @@ const Header: React.FC = () => {
         const response = await courseApi.searchCourses(searchQuery);
         
         const publishedResults = (response.courses || [])
-          .filter((c: any) => c.status === "Published")
+          .filter((c: Course) => c.status === "Published")
           .slice(0, 6);
         setResults(publishedResults);
         setShowOverlay(true);

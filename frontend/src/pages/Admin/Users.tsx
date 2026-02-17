@@ -44,8 +44,9 @@ const Users: React.FC = () => {
       });
       setUsers(response.data.users);
       setError(null);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to fetch users");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(error.response?.data?.message || "Failed to fetch users");
     } finally {
       setLoading(false);
     }
@@ -75,8 +76,9 @@ const Users: React.FC = () => {
       toast.success("User created successfully");
       handleCloseModal();
       fetchUsers();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to create user");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Failed to create user");
     }
   };
 
@@ -87,8 +89,9 @@ const Users: React.FC = () => {
       });
       toast.success(`Role updated to ${newRole}`);
       fetchUsers();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update role");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Failed to update role");
     }
   };
 
@@ -106,8 +109,9 @@ const Users: React.FC = () => {
       await adminApi.delete(ENDPOINTS.USERS_BY_ID(userId));
       toast.success("User deleted successfully");
       fetchUsers();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to delete user");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Failed to delete user");
     } finally {
       setIsDeleting(null);
     }

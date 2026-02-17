@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { reviewDashboardApi } from "../../services/reviewDashboardApi";
+import type { Review } from "../../types";
 
 const Reviews: React.FC = () => {
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -12,9 +13,10 @@ const Reviews: React.FC = () => {
         setLoading(true);
         const data = await reviewDashboardApi.getAdminReviews();
         setReviews(data || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const error = err as { response?: { data?: { message?: string } } };
         setError(
-          err?.response?.data?.message || "Failed to load course reviews",
+          error.response?.data?.message || "Failed to load course reviews",
         );
       } finally {
         setLoading(false);

@@ -30,8 +30,9 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await authApi.login(payload);
       return response;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Login failed");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   },
 );
@@ -42,9 +43,10 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await authApi.register(payload);
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Registration failed",
+        error.response?.data?.message || "Registration failed",
       );
     }
   },
@@ -63,9 +65,10 @@ export const syncGoogleUser = createAsyncThunk(
     try {
       const response = await authApi.syncGoogleUser(payload);
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to sync user",
+        error.response?.data?.message || "Failed to sync user",
       );
     }
   },
@@ -77,9 +80,10 @@ export const updateUserProfile = createAsyncThunk(
     try {
       const response = await userApi.updateMyProfile(payload);
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to update profile",
+        error.response?.data?.message || "Failed to update profile",
       );
     }
   },
@@ -94,9 +98,10 @@ export const changePassword = createAsyncThunk(
     try {
       const response = await authApi.updatePassword(payload);
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       return rejectWithValue(
-        err.response?.data?.message || "Failed to update password",
+        error.response?.data?.message || "Failed to update password",
       );
     }
   },

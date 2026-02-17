@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { certificateApi } from "../../services/certificateApi";
 import { IMAGES } from "../../constants/images";
+import type { Certificate } from "../../types";
 
 const CourseCertificate: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [certificate, setCertificate] = useState<any>(null);
+  const [certificate, setCertificate] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

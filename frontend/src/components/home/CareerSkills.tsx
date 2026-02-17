@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import Button from "../common/Button";
 import { courseApi } from "../../services/courseApi";
 import { useNavigate } from "react-router-dom";
+import type { Course } from "../../types";
 
 const CareerSkills: React.FC = () => {
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const CareerSkills: React.FC = () => {
       try {
         const response = await courseApi.getCourses({ limit: 6 });
         
-        const mappedCourses = response.courses.map((c: any) => ({
+        const mappedCourses = response.courses.map((c: Course) => ({
           id: c.id,
           university: c.instructor?.name || "Instructor",
           logo:

@@ -1,51 +1,8 @@
 import { prisma } from "../config/prisma";
+import type { Prisma } from '@prisma/client';
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-
-interface GoogleUserData {
-  email: string;
-  name: string;
-  providerId: string;
-  avatarUrl?: string;
-}
-
-export interface WorkExperienceInput {
-  title: string;
-  company: string;
-  location?: string;
-  employmentType?: string;
-  startDate: string;
-  endDate?: string;
-  isCurrent?: boolean;
-  description?: string;
-}
-
-export interface WorkExperience extends WorkExperienceInput {
-  id: string;
-  createdAt: string;
-}
-
-export interface EducationInput {
-  instituteName: string;
-  degreeDetails: string;
-  startDate: string;
-  endDate: string;
-}
-
-export interface Education extends EducationInput {
-  id: string;
-  createdAt: string;
-}
-
-export interface ProfileCertificateInput {
-  certificateName: string;
-  completionDate: string;
-}
-
-export interface ProfileCertificate extends ProfileCertificateInput {
-  id: string;
-  createdAt: string;
-}
+import type { UserWhereInput, GoogleUserData, WorkExperienceInput, WorkExperience, Education, EducationInput, ProfileCertificate, ProfileCertificateInput } from '../types';
 
 export const upsertGoogleUser = async (userData: GoogleUserData) => {
   const existingUser = await prisma.user.findUnique({
@@ -86,7 +43,7 @@ export const getAllUsers = async (
   role?: string,
 ) => {
   const skip = (page - 1) * limit;
-  const where: any = {};
+  const where: UserWhereInput = {};
 
   if (role) {
     where.role = { equals: role, mode: "insensitive" };
@@ -210,7 +167,7 @@ export const addMyWorkExperience = async (
   await prisma.user.update({
     where: { id: userId },
     data: {
-      workExperiences: [newItem, ...current] as any,
+      workExperiences: [newItem, ...current] as unknown as Prisma.InputJsonValue,
     },
   });
 
@@ -251,7 +208,7 @@ export const updateMyWorkExperience = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { workExperiences: updatedList as any },
+    data: { workExperiences: updatedList as unknown as Prisma.InputJsonValue },
   });
 
   return updatedItem;
@@ -276,7 +233,7 @@ export const deleteMyWorkExperience = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { workExperiences: updatedList as any },
+    data: { workExperiences: updatedList as unknown as Prisma.InputJsonValue },
   });
 
   return { id: experienceId };
@@ -317,7 +274,7 @@ export const addMyEducation = async (
   await prisma.user.update({
     where: { id: userId },
     data: {
-      educations: [newItem, ...current] as any,
+      educations: [newItem, ...current] as unknown as Prisma.InputJsonValue,
     },
   });
 
@@ -354,7 +311,7 @@ export const updateMyEducation = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { educations: updatedList as any },
+    data: { educations: updatedList as unknown as Prisma.InputJsonValue },
   });
 
   return updatedItem;
@@ -379,7 +336,7 @@ export const deleteMyEducation = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { educations: updatedList as any },
+    data: { educations: updatedList as unknown as Prisma.InputJsonValue },
   });
 
   return { id: educationId };
@@ -418,7 +375,7 @@ export const addMyProfileCertificate = async (
   await prisma.user.update({
     where: { id: userId },
     data: {
-      profileCertificates: [newItem, ...current] as any,
+      profileCertificates: [newItem, ...current] as unknown as Prisma.InputJsonValue,
     },
   });
 
@@ -453,7 +410,7 @@ export const updateMyProfileCertificate = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { profileCertificates: updatedList as any },
+    data: { profileCertificates: updatedList as unknown as Prisma.InputJsonValue },
   });
 
   return updatedItem;
@@ -478,7 +435,7 @@ export const deleteMyProfileCertificate = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { profileCertificates: updatedList as any },
+    data: { profileCertificates: updatedList as unknown as Prisma.InputJsonValue },
   });
 
   return { id: certificateId };

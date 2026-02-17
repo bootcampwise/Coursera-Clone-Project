@@ -3,6 +3,8 @@ import React from "react";
 interface FooterProps {
   simple?: boolean;
 }
+import { IMAGES } from "../../constants/images";
+
 
 const Footer: React.FC<FooterProps> = ({ simple }) => {
   return (
@@ -451,19 +453,19 @@ const Footer: React.FC<FooterProps> = ({ simple }) => {
           {}
           <div className="flex flex-col items-start gap-6">
             <img
-              src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/download_on_the_app_store_badge_en.svg"
+              src={IMAGES.LOGOS.APP_STORE_ICON}
               alt="Download on the App Store"
               className="h-[40px] w-auto cursor-pointer"
             />
             <img
-              src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/en_generic_rgb_wo_60.png"
+              src={IMAGES.LOGOS.GOOGLE_PLAY_ICON}
               alt="Get it on Google Play"
-              className="h-[45px] w-auto -ml-1 cursor-pointer"
+              className="h-[40px] w-auto cursor-pointer"
             />
             <img
-              src="https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/2017-b-corp-logo-black-mini.png"
+              src={IMAGES.LOGOS.FOOTER_LOGO}
               alt="Certified B Corporation"
-              className="h-[50px] w-auto opacity-70 mt-4"
+              className="h-[100px] w-auto opacity-70 mt-4"
             />
           </div>
         </div>

@@ -31,8 +31,11 @@ const Courses: React.FC = () => {
       const response = await adminApi.get(ENDPOINTS.COURSES_ADMIN_CATALOG);
       setCourses(response.data);
       setError(null);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to load course catalog");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(
+        error.response?.data?.message || "Failed to load course catalog",
+      );
     } finally {
       setLoading(false);
     }
@@ -48,8 +51,9 @@ const Courses: React.FC = () => {
       await adminApi.delete(ENDPOINTS.COURSES_BY_ID(id));
       toast.success("Course deleted successfully");
       fetchCourses();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to delete course");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Failed to delete course");
     }
   };
 
@@ -246,52 +250,3 @@ const Courses: React.FC = () => {
 };
 
 export default Courses;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

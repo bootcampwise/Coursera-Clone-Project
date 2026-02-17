@@ -21,7 +21,7 @@ const Header: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const { signOut } = useGoogleAuth();
 
-  const Logo = () => <img src={IMAGES.LOGO} alt="Logo" className="w-32" />;
+  
 
   const openAuth = (e?: React.MouseEvent) => {
     e?.preventDefault();

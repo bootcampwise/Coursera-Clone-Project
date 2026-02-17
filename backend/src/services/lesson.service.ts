@@ -1,5 +1,6 @@
 import { prisma } from "../config/prisma";
 import { verifyCourseOwnership } from "./course.service";
+import type { Question, ExtractError } from '../types';
 
 interface CreateLessonData {
   title: string;
@@ -15,9 +16,9 @@ interface UpdateLessonData {
   title?: string;
   type?: "VIDEO" | "READING" | "ASSESSMENT";
   description?: string;
-  videoUrl?: string;
-  content?: string;
-  duration?: number;
+  videoUrl?: string | null;
+  content?: string | null;
+  duration?: number | null;
 }
 
 
@@ -34,7 +35,7 @@ const validateAssessmentJSON = (content: string) => {
       throw new Error("Passing score must be a number.");
 
     
-    data.questions.forEach((q: any, index: number) => {
+    data.questions.forEach((q: Question, index: number) => {
       if (!q.question || typeof q.question !== "string")
         throw new Error(`Question ${index + 1} text is missing.`);
       if (!Array.isArray(q.options) || q.options.length !== 4)
@@ -51,8 +52,9 @@ const validateAssessmentJSON = (content: string) => {
     });
 
     return true;
-  } catch (err: any) {
-    throw new Error(`Invalid Assessment JSON: ${err.message}`);
+  } catch (err: unknown) {
+    const error = err as ExtractError;
+    throw new Error(`Invalid Assessment JSON: ${error.message}`);
   }
 };
 
@@ -125,7 +127,7 @@ export const updateLesson = async (
   const existingLesson = await prisma.lesson.findUnique({ where: { id } });
   if (!existingLesson) throw new Error("Lesson not found");
 
-  const updateData: any = { ...data };
+  const updateData: UpdateLessonData = { ...data };
   const type = data.type || existingLesson.type;
 
   

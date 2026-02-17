@@ -115,8 +115,9 @@ const AdminInstructorLogin: React.FC<Props> = ({ expectedRole }) => {
           toast.error("Access restricted. Please use student login.");
         }
       }
-    } catch (err: any) {
-      const msg = err.response?.data?.message || err.message || "Login failed";
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg = error.response?.data?.message || error.message || "Login failed";
       
       if (!expectedRole) {
         toast.error(msg);

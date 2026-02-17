@@ -18,7 +18,6 @@ const run = async () => {
 
 run()
   .then(() => {
-    console.log("Certificate issuance completed");
     return prisma.$disconnect();
   })
   .catch(async (err) => {

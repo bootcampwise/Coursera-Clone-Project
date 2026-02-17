@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../common/Button";
 
 const Pricing: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(false); 

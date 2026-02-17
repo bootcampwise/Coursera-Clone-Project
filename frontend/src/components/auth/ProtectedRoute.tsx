@@ -21,19 +21,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   if (allowedRoles) {
-    console.log("ProtectedRoute Check:", {
-      user: user?.name,
-      role: user?.role,
-      allowed: allowedRoles,
-    });
+    
     const userRole = user.role?.toLowerCase() || "";
     const hasRole = allowedRoles.some(
       (role) => role.toLowerCase() === userRole,
     );
 
     if (!hasRole) {
-      console.log("Role mismatch. Redirecting to login.");
-      
       return <Navigate to={loginPath} replace />;
     }
   }

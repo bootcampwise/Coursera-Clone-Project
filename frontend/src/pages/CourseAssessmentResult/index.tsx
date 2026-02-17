@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 
 interface QuestionResult {
-  id: number;
+  id: string | number;
   text: string;
   points: number;
   type: "single" | "multiple";
@@ -34,7 +34,7 @@ const CourseAssessmentResult: React.FC = () => {
   );
 
   
-  const results: QuestionResult[] = questions.map((q: any) => ({
+  const results: QuestionResult[] = questions.map((q: Record<string, any>) => ({
     id: q.id,
     text: q.question,
     points: 1,
@@ -178,7 +178,7 @@ const CourseAssessmentResult: React.FC = () => {
 
           {}
           <div className="space-y-8">
-            {results.map((question: any, idx: number) => (
+            {results.map((question: QuestionResult, idx: number) => (
               <div key={question.id} className="border-b border-border pb-8">
                 {}
                 <div className="flex justify-between items-start mb-4">

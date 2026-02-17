@@ -54,11 +54,13 @@ const CreateCourse: React.FC = () => {
       const fetchCourse = async () => {
         try {
           const data = await courseApi.getCourseById(id);
+          const validDifficulties = ["Beginner", "Intermediate", "Advanced"];
+          const difficulty = validDifficulties.includes(data.difficulty) ? (data.difficulty as "Beginner" | "Intermediate" | "Advanced") : "Beginner";
           setForm({
             title: data.title || "",
             subtitle: data.subtitle || "",
             category: data.category || "Development",
-            difficulty: (data.difficulty as any) || "Beginner",
+            difficulty: difficulty,
             language: data.language || "English",
             price: String(data.price ?? 0),
             status: (data.status as CourseStatus) || "Draft",
@@ -142,8 +144,9 @@ const CreateCourse: React.FC = () => {
             : `/instructor/courses`,
         );
       }
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Something went wrong");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

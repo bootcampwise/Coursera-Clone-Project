@@ -8,6 +8,7 @@ import Pagination from "../../components/search/Pagination";
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { courseApi } from "../../services/courseApi";
+import type { SearchCourseResult } from "../../types";
 
 const CATEGORY_MAPPING: Record<string, string> = {
   "data science": "Data Science",
@@ -26,8 +27,8 @@ const DIFFICULTY_MAPPING: Record<string, string> = {
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || searchParams.get("search") || "";
-  const [courses, setCourses] = useState<any[]>([]);
-  const [allCourses, setAllCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<SearchCourseResult[]>([]);
+  const [allCourses, setAllCourses] = useState<SearchCourseResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
@@ -72,8 +73,8 @@ const SearchResults: React.FC = () => {
       setIsLoading(true);
       try {
         const response = await courseApi.getCourses({ search: query });
-        const mappedResults = response.courses.map((c: any) => ({
-          id: c.id,
+        const mappedResults = response.courses.map((c: Record<string, any>) => ({
+          id: c.id || `course-${Math.random()}`,
           image:
             c.thumbnail ||
             "https://images.unsplash.com/photo-1620712943543-bcc4628c6757?w=800&auto=format&fit=crop&q=60",
@@ -82,7 +83,7 @@ const SearchResults: React.FC = () => {
             "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg",
           partnerName: c.instructor?.name || "Professional Instructor",
           title: c.title,
-          skills: c.outcomes || c.description.substring(0, 100) + "...",
+          skills: c.outcomes || c.description?.substring(0, 100) + "..." || "Course skills",
           rating: 4.8,
           reviews: "1.2k",
           type: `${c.difficulty || "Beginner"} · Course`,
@@ -295,7 +296,18 @@ const SearchResults: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
               {!isLoading &&
                 displayedCourses.map((course, index) => (
-                  <SearchCourseCard key={course.id || index} {...course} />
+                  <SearchCourseCard 
+                    key={course.id || index} 
+                    id={course.id}
+                    image={course.image}
+                    partnerLogo={course.logo}
+                    partnerName={course.provider}
+                    title={course.title}
+                    skills={course.description || ""}
+                    rating={5}
+                    reviews="0"
+                    type={course.type}
+                  />
                 ))}
             </div>
 

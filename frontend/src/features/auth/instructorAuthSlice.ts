@@ -37,8 +37,9 @@ export const loginInstructor = createAsyncThunk(
         return rejectWithValue("Access restricted to instructors.");
       }
       return data;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Login failed");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   },
 );

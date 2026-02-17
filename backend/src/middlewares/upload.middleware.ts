@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import type { AuthenticatedRequest, FileFilterCallback } from '../types';
 import { storage as cloudinaryStorage } from "../config/cloudinary";
 
 
@@ -12,10 +13,9 @@ const isCloudinaryConfigured =
 let storage;
 
 if (isCloudinaryConfigured) {
-  console.log("Using Cloudinary Storage for uploads");
   storage = cloudinaryStorage;
 } else {
-  console.log("Cloudinary credentials missing. Using Local Disk Storage.");
+  
   
   const uploadDir = path.join(__dirname, "../../uploads");
   if (!fs.existsSync(uploadDir)) {
@@ -33,7 +33,7 @@ if (isCloudinaryConfigured) {
   });
 }
 
-const fileFilter = (req: any, file: any, cb: any) => {
+const fileFilter = (req: AuthenticatedRequest, file: Express.Multer.File, cb: FileFilterCallback) => {
   if (
     file.mimetype.startsWith("video/") ||
     file.mimetype.startsWith("image/")

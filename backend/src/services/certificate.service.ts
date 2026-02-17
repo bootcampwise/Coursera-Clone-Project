@@ -4,6 +4,7 @@ import crypto from "crypto";
 import puppeteer from "puppeteer";
 import ejs from "ejs";
 import { prisma } from "../config/prisma";
+import type { CertificateWhereInput, ExtractError } from '../types';
 import { notificationService } from "./notification.service";
 
 const CERT_DIR = path.join(__dirname, "../../uploads/certificates");
@@ -52,13 +53,13 @@ const generateUniqueCode = async (
 ) => {
   let code = randomCode(length);
   let exists = await prisma.certificate.findFirst({
-    where: { [field]: code } as any,
+    where: { [field]: code } as CertificateWhereInput,
     select: { id: true },
   });
   while (exists) {
     code = randomCode(length);
     exists = await prisma.certificate.findFirst({
-      where: { [field]: code } as any,
+      where: { [field]: code } as CertificateWhereInput,
       select: { id: true },
     });
   }
@@ -175,13 +176,12 @@ const renderCertificateAssets = async (data: {
     
     await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 2 });
 
-    console.log(`[certificate-service] Setting content for ${fileBase}...`);
     await page.setContent(html, { waitUntil: "load", timeout: 60000 });
 
     
     await new Promise((r) => setTimeout(r, 500));
 
-    console.log(`[certificate-service] Generating PDF for ${fileBase}...`);
+    
     await page.pdf({
       path: pdfPath,
       printBackground: true,
@@ -190,9 +190,7 @@ const renderCertificateAssets = async (data: {
       height: "8.3in",
     });
 
-    console.log(
-      `[certificate-service] Generating screenshot for ${fileBase}...`,
-    );
+    
     await page.screenshot({ path: imagePath, fullPage: true });
 
     await browser
@@ -200,12 +198,13 @@ const renderCertificateAssets = async (data: {
       .catch((e) =>
         console.error("[certificate-service] Error closing browser:", e),
       );
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as ExtractError;
     console.error(
       `[certificate-service] Puppeteer failure for ${fileBase}:`,
-      err.message,
+      error.message,
     );
-    if (err.stack) console.error(err.stack);
+    if ((error as { stack?: string }).stack) console.error((error as { stack?: string }).stack);
     throw err;
   }
 
@@ -279,15 +278,14 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       fs.existsSync(pdfPath) &&
       fs.existsSync(imagePath)
     ) {
-      return prisma.certificate.findUnique({
+      const found = await prisma.certificate.findUnique({
         where: { id: existing.id },
         include: { course: { select: CERTIFICATE_COURSE_SELECT } },
-      }) as any;
+      });
+      return found!;
     }
     
-    console.log(
-      `[certificate-service] Assets missing for existing certificate ${existing.id}, retrying generation...`,
-    );
+    
   }
 
   ensureCertDir();
@@ -345,7 +343,7 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       issuedAt: certificate.issuedAt,
     });
 
-    console.log(`[certificate-service] Assets generated for ${certificate.id}`);
+    
     return prisma.certificate.update({
       where: { id: certificate.id },
       data: {
@@ -359,10 +357,11 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       `[certificate-service] Failed to render certificate assets for ${certificate.id}:`,
       err,
     );
-    return prisma.certificate.findUnique({
+    const found = await prisma.certificate.findUnique({
       where: { id: certificate.id },
       include: { course: { select: CERTIFICATE_COURSE_SELECT } },
-    }) as any;
+    });
+    return found!;
   }
 };
 
@@ -395,9 +394,7 @@ export const getMyCertificates = async (userId: string) => {
       !fs.existsSync(pdfPath) ||
       !fs.existsSync(imagePath)
     ) {
-      console.log(
-        `[certificate-service] Self-healing broken certificate ${cert.id}...`,
-      );
+      
       try {
         const enrollment = await prisma.enrollment.findFirst({
           where: { userId: cert.userId, courseId: cert.courseId },

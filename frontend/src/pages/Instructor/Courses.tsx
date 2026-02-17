@@ -25,7 +25,7 @@ const Courses: React.FC = () => {
       setCourses(data);
     } catch (error) {
       const msg =
-        (error as any).response?.data?.message || "Failed to load courses";
+        (error instanceof Error ? error.message : "Failed to load courses");
       toast.error(msg);
     } finally {
       setLoading(false);

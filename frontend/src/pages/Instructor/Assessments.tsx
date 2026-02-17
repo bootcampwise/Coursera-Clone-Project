@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { courseApi } from "../../services/courseApi";
 import EditLessonModal from "../../components/instructor/EditLessonModal";
 import AddLessonModal from "../../components/instructor/AddLessonModal";
+import type { Course, Module, Lesson } from "../../types/course";
 
 interface LessonRow {
   id: string;
   title: string;
   moduleTitle: string;
   courseTitle: string;
-  content: string | null;
-  updatedAt: string;
+  content?: string;
+  updatedAt?: string;
 }
 
 const Assessments: React.FC = () => {
-  const [searchParams] = useSearchParams();
   const location = useLocation();
   const isAdmin = location.pathname.includes("/admin");
 
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
-  const [modules, setModules] = useState<any[]>([]);
+  const [modules, setModules] = useState<Module[]>([]);
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
   const [lessons, setLessons] = useState<LessonRow[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editingLesson, setEditingLesson] = useState<any | null>(null);
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
 
   useEffect(() => {
     fetchCourses();
@@ -66,7 +66,7 @@ const Assessments: React.FC = () => {
       } else if (data.length > 0) {
         setSelectedCourseId(data[0].id);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error("Failed to fetch courses");
     }
   };
@@ -90,11 +90,11 @@ const Assessments: React.FC = () => {
     try {
       const module = modules.find((m) => m.id === moduleId);
       const assessmentLessons: LessonRow[] = (module?.lessons || [])
-        .filter((l: any) => l.type === "ASSESSMENT")
-        .map((l: any) => ({
+        .filter((l: Lesson) => l.type === "ASSESSMENT")
+        .map((l: Lesson) => ({
           id: l.id,
           title: l.title,
-          moduleTitle: module.title,
+          moduleTitle: module?.title || "Unknown",
           courseTitle:
             courses.find((c) => c.id === selectedCourseId)?.title || "Unknown",
           content: l.content,
@@ -111,7 +111,7 @@ const Assessments: React.FC = () => {
 
   const handleEditLesson = (lessonId: string) => {
     const module = modules.find((m) => m.id === selectedModuleId);
-    const lesson = module?.lessons.find((l: any) => l.id === lessonId);
+    const lesson = module?.lessons.find((l: Lesson) => l.id === lessonId);
     if (lesson) {
       setEditingLesson(lesson);
       setIsEditModalOpen(true);
@@ -150,6 +150,7 @@ const Assessments: React.FC = () => {
     description?: string,
     content?: string,
   ) => {
+    void type;
     try {
       const module = modules.find((m) => m.id === selectedModuleId);
       const order = module ? module.lessons.length : 0;
@@ -312,7 +313,7 @@ const Assessments: React.FC = () => {
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(lesson.updatedAt).toLocaleDateString()}
+                      {lesson.updatedAt ? new Date(lesson.updatedAt).toLocaleDateString() : ""}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex items-center gap-3">

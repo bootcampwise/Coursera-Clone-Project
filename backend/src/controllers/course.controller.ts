@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import type { AuthenticatedRequest } from '../types';
 import asyncHandler from "../utils/asyncHandler";
 import * as courseService from "../services/course.service";
 
@@ -30,7 +31,7 @@ export const getCourseById = asyncHandler(
 );
 
 export const createCourse = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const {
       title,
       subtitle,
@@ -58,7 +59,7 @@ export const createCourse = asyncHandler(
       instructorId = bodyInstructorId;
     } else {
       
-      instructorId = req.user?.id;
+      instructorId = req.user?.id || "";
     }
 
     if (!instructorId) {
@@ -85,7 +86,7 @@ export const createCourse = asyncHandler(
 );
 
 export const updateCourse = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.user?.id;
     const userRole = req.user?.role || "";
@@ -106,7 +107,7 @@ export const updateCourse = asyncHandler(
 );
 
 export const deleteCourse = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.user?.id;
     const userRole = req.user?.role || "";
@@ -126,7 +127,7 @@ export const deleteCourse = asyncHandler(
 );
 
 export const getInstructorCourses = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const instructorId = req.user?.id;
 
     if (!instructorId) {
@@ -140,17 +141,14 @@ export const getInstructorCourses = asyncHandler(
 );
 
 export const getAdminCourseCatalog = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const courses = await courseService.getAdminCourses();
     res.json(courses);
   },
 );
 
 export const uploadCourseThumbnail = asyncHandler(
-  async (
-    req: Request & { user?: any; file?: Express.Multer.File },
-    res: Response,
-  ) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.user?.id;
     const userRole = req.user?.role || "";
@@ -180,7 +178,7 @@ export const uploadCourseThumbnail = asyncHandler(
 );
 
 export const getRecentlyViewed = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });

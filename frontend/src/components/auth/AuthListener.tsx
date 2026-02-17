@@ -12,7 +12,7 @@ const AuthListener: React.FC = () => {
   useEffect(() => {
     let mounted = true;
 
-    const handleSync = async (supabaseUser: any, showToast: boolean) => {
+    const handleSync = async (supabaseUser: { id?: string | null; email?: string | null; user_metadata?: { full_name?: string; avatar_url?: string } }, showToast: boolean) => {
       if (!mounted) return;
 
       const userData = {
@@ -21,7 +21,7 @@ const AuthListener: React.FC = () => {
           supabaseUser.user_metadata?.full_name ||
           supabaseUser.email?.split("@")[0] ||
           "User",
-        providerId: supabaseUser.id,
+        providerId: supabaseUser.id || "",
         avatarUrl: supabaseUser.user_metadata?.avatar_url,
       };
 

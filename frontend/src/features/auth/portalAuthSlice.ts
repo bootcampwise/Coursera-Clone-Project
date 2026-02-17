@@ -28,8 +28,9 @@ export const loginPortalUser = createAsyncThunk(
     try {
       const response = await portalAuthApi.loginPortal(payload);
       return response;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Login failed");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   },
 );

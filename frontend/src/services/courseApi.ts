@@ -2,6 +2,7 @@ import api from "./apiClient";
 import instructorApi from "./instructorApiClient";
 import adminApi from "./adminApiClient";
 import { ENDPOINTS } from "./endpoints";
+import type { CreateCourseData, UpdateCourseData, CreateLessonData, UpdateLessonData } from "../types/services";
 
 export const courseApi = {
   getCourses: async (params?: {
@@ -47,14 +48,14 @@ export const courseApi = {
     return response.data;
   },
 
-  createCourse: async (data: any) => {
+  createCourse: async (data: CreateCourseData) => {
     const isAdminRoute = window.location.pathname.startsWith("/admin");
     const apiClient = isAdminRoute ? adminApi : instructorApi;
     const response = await apiClient.post(ENDPOINTS.COURSES, data);
     return response.data;
   },
 
-  updateCourse: async (id: string, data: any) => {
+  updateCourse: async (id: string, data: UpdateCourseData) => {
     
     const isAdminRoute = window.location.pathname.startsWith("/admin");
     const apiClient = isAdminRoute ? adminApi : instructorApi;
@@ -127,14 +128,14 @@ export const courseApi = {
     return response.data;
   },
 
-  createLesson: async (moduleId: string, data: any) => {
+  createLesson: async (moduleId: string, data: CreateLessonData) => {
     const isAdminRoute = window.location.pathname.startsWith("/admin");
     const apiClient = isAdminRoute ? adminApi : instructorApi;
     const response = await apiClient.post(`/modules/${moduleId}/lessons`, data);
     return response.data;
   },
 
-  updateLesson: async (id: string, data: any) => {
+  updateLesson: async (id: string, data: UpdateLessonData) => {
     const isAdminRoute = window.location.pathname.startsWith("/admin");
     const apiClient = isAdminRoute ? adminApi : instructorApi;
     const response = await apiClient.put(`/lessons/${id}`, data);

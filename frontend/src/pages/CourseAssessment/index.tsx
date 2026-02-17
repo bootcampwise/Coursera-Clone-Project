@@ -2,6 +2,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { courseApi } from "../../services/courseApi";
 import { enrollmentApi } from "../../services/enrollmentApi";
+import type { Lesson, Module } from "../../types";
 
 const CourseAssessment: React.FC = () => {
   const navigate = useNavigate();
@@ -14,8 +15,8 @@ const CourseAssessment: React.FC = () => {
     (location.state as any)?.assessmentStarted,
   );
 
-  const [assessment, setAssessment] = useState<any>(null);
-  const [enrollment, setEnrollment] = useState<any>(null);
+  const [assessment, setAssessment] = useState<Lesson | null>(null);
+  const [enrollment, setEnrollment] = useState<{ courseId: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,8 +36,8 @@ const CourseAssessment: React.FC = () => {
         ]);
 
         const foundAssessment = courseRes.modules
-          ?.flatMap((m: any) => m.lessons)
-          ?.find((l: any) => l.id === assessmentId);
+          ?.flatMap((m: Module) => m.lessons)
+          ?.find((l: Lesson) => l.id === assessmentId);
 
         if (!foundAssessment) {
           setError("Assessment not found");
@@ -78,7 +79,7 @@ const CourseAssessment: React.FC = () => {
     setIsSubmitting(true);
 
     let correctCount = 0;
-    questions.forEach((q: any) => {
+    questions.forEach((q: { id: string | number; correctAnswerIndex: number }) => {
       if (answers[q.id] === q.correctAnswerIndex) {
         correctCount++;
       }
@@ -87,7 +88,7 @@ const CourseAssessment: React.FC = () => {
     const finalScore = Number(
       ((correctCount / questions.length) * 100).toFixed(2),
     );
-    const isPassed = finalScore >= assessment.parsedContent.passingScore;
+    const isPassed = assessment?.parsedContent?.passingScore ? finalScore >= assessment.parsedContent.passingScore : finalScore >= 80;
 
     try {
       if (enrollment?.enrollmentId) {
@@ -107,13 +108,13 @@ const CourseAssessment: React.FC = () => {
         navigate(`/learn/${courseId}/assessment/${assessmentId}/result`, {
           state: {
             score: finalScore,
-            passingScore: assessment.parsedContent.passingScore,
+            passingScore: assessment?.parsedContent?.passingScore || 80,
             answers,
             questions,
             isPassed,
-            title: assessment.parsedContent.title || assessment.title,
+            title: assessment?.parsedContent?.title || assessment?.title || "Assessment",
             highestScore:
-              (assessmentId && enrollment?.progress?.[assessmentId]?.score) ||
+              (assessmentId && typeof enrollment?.progress === 'object' && enrollment.progress?.[assessmentId]?.score) ||
               finalScore,
           },
         });
@@ -243,7 +244,7 @@ const CourseAssessment: React.FC = () => {
             </p>
 
             <div className="space-y-8 md:space-y-12">
-              {questions.map((q: any, idx: number) => {
+              {questions.map((q: Record<string, any>, idx: number) => {
                 const questionId = q.id || `q-${idx + 1}`;
                 return (
                 <div key={questionId} className="relative">

@@ -1,5 +1,3 @@
-import React from "react";
-
 const HomePreHeader = () => {
   return (
     <div className="bg-neutral-900 text-white text-xs md:text-sm hidden md:block font-sans">

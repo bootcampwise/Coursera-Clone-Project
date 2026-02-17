@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../components/common/Header";
 import { IMAGES } from "../../constants/images";
-import AccomplishmentItem from "../../components/accomplishments/AccomplishmentItem";
-import CourseCard from "../Dashboard/components/CourseCard";
-import UpNextCourseCard from "./components/UpNextCourseCard";
-import EarnDegreeCard from "./components/EarnDegreeCard";
-import MasterTrackCertificateCard from "./components/MasterTrackCertificateCard";
+import UpNextCourseCard from "../../components/accomplishments/UpNextCourseCard";
+import EarnDegreeCard from "../../components/accomplishments/EarnDegreeCard";
+import MasterTrackCertificateCard from "../../components/accomplishments/MasterTrackCertificateCard";
 import { useSelector } from "react-redux";
 import { type RootState } from "../../app/store";
-import { googlePromoRecommendations, topPicks } from "./mockData";
 import { certificateApi } from "../../services/certificateApi";
 import { courseApi } from "../../services/courseApi";
 import Footer from "../../components/home/Footer";
+import type { CertificateDisplayItem, CourseDisplayCard, UpNextCourse, Certificate, Course } from "../../types";
 
 const Accomplishments: React.FC = () => {
-  const [certificateItems, setCertificateItems] = useState<any[]>([]);
-  const [topPickCourses, setTopPickCourses] = useState<any[]>([]);
+  const [certificateItems, setCertificateItems] = useState<CertificateDisplayItem[]>([]);
+  const [topPickCourses, setTopPickCourses] = useState<CourseDisplayCard[]>([]);
   const [topPicksVisibleCount, setTopPicksVisibleCount] = useState(4);
-  const [recentlyViewedCourses, setRecentlyViewedCourses] = useState<any[]>([]);
+  const [recentlyViewedCourses, setRecentlyViewedCourses] = useState<CourseDisplayCard[]>([]);
   const [recentlyViewedVisibleCount, setRecentlyViewedVisibleCount] =
     useState(4);
   const [degreesVisibleCount, setDegreesVisibleCount] = useState(4);
-  const [upNextCourses, setUpNextCourses] = useState<any[]>([]);
+  const [upNextCourses, setUpNextCourses] = useState<UpNextCourse[]>([]);
   const [activeCertificateTab, setActiveCertificateTab] = useState<
     "mastertrack" | "university"
   >("mastertrack");
@@ -124,7 +122,7 @@ const Accomplishments: React.FC = () => {
     const fetchCertificates = async () => {
       try {
         const certs = await certificateApi.getMyCertificates();
-        const items = (certs || []).map((c: any) => ({
+        const items = (certs || []).map((c: Certificate) => ({
           id: c.id,
           title: c.courseTitle,
           type: c.partnerName || c.course?.instructor?.name || "Course",
@@ -148,7 +146,7 @@ const Accomplishments: React.FC = () => {
       try {
         const result = await courseApi.getCourses({ limit: 100 });
         const courses = result?.courses || [];
-        const formatted = courses.map((course: any) => ({
+        const formatted = courses.map((course: Course) => ({
           title: course.title,
           provider: course.partner || course.instructor?.name || "Google",
           image: course.thumbnail,
@@ -169,12 +167,12 @@ const Accomplishments: React.FC = () => {
         const result = await courseApi.getCourses({ limit: 100 });
         const courses = result?.courses || [];
         const filtered = courses.filter(
-          (course: any) => course.title !== completedCourseName,
+          (course: Course) => course.title !== completedCourseName,
         );
         const shuffled = [...filtered].sort(() => Math.random() - 0.5);
-        const selected = shuffled.slice(0, 3).map((course: any) => ({
+        const selected = shuffled.slice(0, 3).map((course: Course): UpNextCourse => ({
           title: course.title,
-          image: course.thumbnail,
+          image: course.thumbnail || "https://via.placeholder.com/300x200",
         }));
         setUpNextCourses(selected);
       } catch (err) {
@@ -188,7 +186,7 @@ const Accomplishments: React.FC = () => {
     const fetchRecentlyViewed = async () => {
       try {
         const recentlyViewedData = await courseApi.getRecentlyViewed();
-        const formatted = recentlyViewedData.map((course: any) => ({
+        const formatted = recentlyViewedData.map((course: Course) => ({
           title: course.title,
           provider: course.instructor?.name || "Google",
           image: course.thumbnail,

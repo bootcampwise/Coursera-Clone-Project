@@ -57,9 +57,10 @@ const Settings: React.FC = () => {
         },
       );
       toast.success("Profile updated successfully!");
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       console.error("Error updating profile:", error);
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      toast.error(err.response?.data?.message || "Failed to update profile");
     } finally {
       setIsLoading(false);
     }
@@ -85,12 +86,7 @@ const Settings: React.FC = () => {
 
     setIsLoading(true);
     try {
-      console.log("Attempting to change password...");
-      console.log(
-        "API URL:",
-        `${import.meta.env.VITE_API_BASE_URL}/api/auth/change-password`,
-      );
-      console.log("Token exists:", !!token);
+      
 
       const response = await axios.patch(
         `${import.meta.env.VITE_API_BASE_URL}/auth/change-password`,
@@ -100,21 +96,22 @@ const Settings: React.FC = () => {
         },
       );
 
-      console.log("Password change response:", response.data);
+      
       toast.success("Password changed successfully!");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       setShowPasswordModal(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       console.error("Full error object:", error);
-      console.error("Error response:", error.response);
-      console.error("Error data:", error.response?.data);
-      console.error("Error message:", error.response?.data?.message);
+      console.error("Error response:", err.response);
+      console.error("Error data:", err.response?.data);
+      console.error("Error message:", err.response?.data?.message);
 
       const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
+        err.response?.data?.message ||
+        (error instanceof Error ? error.message : "") ||
         "Failed to change password";
       toast.error(errorMessage);
     } finally {

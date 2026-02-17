@@ -75,9 +75,10 @@ const AccountSettings: FC = () => {
         newPassword: "",
         retypePassword: "",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       console.error("Failed to update password", error);
-      toast.error(error || "Failed to update password");
+      toast.error(err.response?.data?.message || "Failed to update password");
     } finally {
       setIsUpdatingPassword(false);
     }

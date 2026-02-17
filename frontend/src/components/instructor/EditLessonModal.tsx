@@ -46,7 +46,7 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
   const validateAssessmentContent = (raw: string) => {
     const errors: string[] = [];
     const warnings: string[] = [];
-    let parsed: any = null;
+    let parsed: Record<string, any> | null = null;
 
     try {
       parsed = JSON.parse(raw);
@@ -70,7 +70,7 @@ const EditLessonModal: React.FC<EditLessonModalProps> = ({
     if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
       errors.push("Assessment must include at least one question.");
     } else {
-      parsed.questions.forEach((q: any, index: number) => {
+      parsed.questions.forEach((q: Record<string, any>, index: number) => {
         const label = `Question ${index + 1}`;
         if (!q.id || typeof q.id !== "string") {
           errors.push(`${label} is missing a string 'id'.`);

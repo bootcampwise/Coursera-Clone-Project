@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { verifyToken } from "../config/jwt";
+import type { AuthenticatedRequest, TokenPayload } from '../types';
 
 export const authMiddleware = (
-  req: Request & { user?: any },
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction,
 ) => {
@@ -16,7 +17,7 @@ export const authMiddleware = (
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   try {
-    const payload = verifyToken(token) as any;
+    const payload = verifyToken(token) as TokenPayload;
     req.user = { id: payload.sub, role: payload.role };
     next();
   } catch (err) {

@@ -7,7 +7,6 @@ async function main() {
   });
 
   if (!instructor) {
-    console.log("No instructor found, creating one...");
     instructor = await prisma.user.create({
       data: {
         name: "Dr. Angela Yu",
@@ -19,7 +18,7 @@ async function main() {
     });
   }
 
-  console.log(`Using instructor: ${instructor.name} (${instructor.id})`);
+  
 
   
   const courseData = {
@@ -44,7 +43,7 @@ async function main() {
     data: courseData,
   });
 
-  console.log(`Mock course created: ${course.title} (${course.id})`);
+  
 
   
   const module = await prisma.module.create({
@@ -65,7 +64,7 @@ async function main() {
     },
   });
 
-  console.log("Mock modules and lessons added.");
+  
 }
 
 main()

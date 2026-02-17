@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
+import type { AuthenticatedRequest } from '../types';
 import asyncHandler from "../utils/asyncHandler";
 import * as certificateService from "../services/certificate.service";
 import path from "path";
 import fs from "fs";
 
 export const getMyCertificates = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -17,7 +18,7 @@ export const getMyCertificates = asyncHandler(
 );
 
 export const getCertificateById = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { id } = req.params;
     if (!userId) {
@@ -43,7 +44,7 @@ export const verifyCertificate = asyncHandler(
 );
 
 export const downloadCertificate = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { id } = req.params;
     if (!userId) {
@@ -72,7 +73,7 @@ export const downloadCertificate = asyncHandler(
 );
 
 export const getCertificateHtml = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { id } = req.params;
     if (!userId) {

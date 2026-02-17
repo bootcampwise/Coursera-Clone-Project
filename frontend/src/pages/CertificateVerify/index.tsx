@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { certificateApi } from "../../services/certificateApi";
+import type { Certificate } from "../../types";
 
 const CertificateVerify: React.FC = () => {
   const { code } = useParams<{ code: string }>();
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Certificate | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,7 +17,7 @@ const CertificateVerify: React.FC = () => {
         const res = await certificateApi.verifyCertificate(code);
         setData(res);
         setError(null);
-      } catch (err: any) {
+      } catch (err: unknown) {
         setError("Certificate not found.");
       } finally {
         setLoading(false);
@@ -41,26 +42,26 @@ const CertificateVerify: React.FC = () => {
           <p className="text-[14px] text-text-gray mb-2">
             This certificate is valid and belongs to:
           </p>
-          <p className="text-[18px] font-bold">{data.learnerName}</p>
+          <p className="text-[18px] font-bold">{data?.learnerName || data?.userName}</p>
           <div className="mt-4 space-y-1 text-[14px] text-gray-dark-3">
             <p>
-              Course: <span className="font-semibold">{data.courseTitle}</span>
+              Course: <span className="font-semibold">{data?.courseTitle}</span>
             </p>
             <p>
               Issued:{" "}
               <span className="font-semibold">
-                {new Date(data.issuedAt).toLocaleDateString()}
+                {data?.issuedAt ? new Date(data.issuedAt).toLocaleDateString() : "N/A"}
               </span>
             </p>
             <p>
               Partner:{" "}
               <span className="font-semibold">
-                {data.partnerName || "N/A"}
+                {data?.partnerName || "N/A"}
               </span>
             </p>
             <p>
               Verification Code:{" "}
-              <span className="font-semibold">{data.verificationCode}</span>
+              <span className="font-semibold">{data?.verificationCode || data?.credentialId}</span>
             </p>
           </div>
         </div>

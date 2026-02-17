@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
+import type { AuthenticatedRequest } from '../types';
 import asyncHandler from "../utils/asyncHandler";
 import * as lessonService from "../services/lesson.service";
 
 export const createLesson = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { moduleId } = req.params;
     const { title, order, type, description, videoUrl, content, duration } =
       req.body;
@@ -15,8 +16,13 @@ export const createLesson = asyncHandler(
       return;
     }
 
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
     const lesson = await lessonService.createLesson(
-      moduleId,
+      moduleId as string,
       {
         title,
         order: order ?? 0,
@@ -26,22 +32,27 @@ export const createLesson = asyncHandler(
         content,
         duration,
       },
-      userId,
-      userRole,
+      userId as string,
+      userRole || "",
     );
     res.status(201).json(lesson);
   },
 );
 
 export const updateLesson = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const { title, type, description, videoUrl, content, duration } = req.body;
     const userId = req.user?.id;
     const userRole = req.user?.role;
 
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
     const lesson = await lessonService.updateLesson(
-      id,
+      id as string,
       {
         title,
         type,
@@ -50,26 +61,31 @@ export const updateLesson = asyncHandler(
         content,
         duration,
       },
-      userId,
-      userRole,
+      userId as string,
+      userRole || "",
     );
     res.json(lesson);
   },
 );
 
 export const deleteLesson = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.user?.id;
     const userRole = req.user?.role;
 
-    await lessonService.deleteLesson(id, userId, userRole);
+    if (!userId) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+
+    await lessonService.deleteLesson(id as string, userId as string, userRole || "");
     res.json({ message: "Lesson deleted successfully" });
   },
 );
 
 export const reorderLessons = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { lessons } = req.body; 
     const userId = req.user?.id;
     const userRole = req.user?.role;
@@ -79,7 +95,7 @@ export const reorderLessons = asyncHandler(
       return;
     }
 
-    await lessonService.reorderLessons(lessons, userId, userRole);
+    await lessonService.reorderLessons(lessons, userId as string, userRole || "");
     res.json({ message: "Lessons reordered successfully" });
   },
 );

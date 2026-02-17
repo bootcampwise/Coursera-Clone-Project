@@ -10,7 +10,7 @@ interface Lesson {
 
 interface LessonListProps {
   lessons: Lesson[];
-  moduleId: string; 
+  moduleId: string;
   onEdit: (lesson: Lesson) => void;
   onDelete: (lessonId: string) => void;
   onReorder: (moduleId: string, lessons: Lesson[]) => void;
@@ -155,51 +155,3 @@ const LessonList: React.FC<LessonListProps> = ({
 };
 
 export default LessonList;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

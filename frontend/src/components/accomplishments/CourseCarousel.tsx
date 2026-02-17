@@ -1,5 +1,5 @@
 import React from "react";
-import { type Recommendation } from "../../pages/Accomplishments/mockData";
+import { type Recommendation } from "../../mocks/mockData";
 
 interface Props {
   title: string;

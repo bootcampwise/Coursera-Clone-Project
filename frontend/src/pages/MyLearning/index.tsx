@@ -5,19 +5,20 @@ import { enrollmentApi } from "../../services/enrollmentApi";
 import { reviewApi } from "../../services/reviewApi";
 import { Link, useNavigate } from "react-router-dom";
 import { certificateApi } from "../../services/certificateApi";
+import type { Enrollment, Certificate } from "../../types";
 
 const MyLearning: React.FC = () => {
   const [activeTab, setActiveTab] = useState("In Progress");
-  const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
-  const [reviewTarget, setReviewTarget] = useState<any | null>(null);
+  const [reviewTarget, setReviewTarget] = useState<Enrollment | null>(null);
   const [reviewRating, setReviewRating] = useState<number>(0);
   const [reviewComment, setReviewComment] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
   const [certificatesByCourseId, setCertificatesByCourseId] = useState<
-    Record<string, any>
+    Record<string, Certificate>
   >({});
   const navigate = useNavigate();
 
@@ -31,8 +32,8 @@ const MyLearning: React.FC = () => {
         setEnrollments(data);
         try {
           const certificates = await certificateApi.getMyCertificates();
-          const map: Record<string, any> = {};
-          (certificates || []).forEach((c: any) => {
+          const map: Record<string, Certificate> = {};
+          (certificates || []).forEach((c: Certificate) => {
             if (c.courseId) map[c.courseId] = c;
           });
           setCertificatesByCourseId(map);
@@ -130,7 +131,7 @@ const MyLearning: React.FC = () => {
               >
                 {}
                 <div className="w-full md:w-[180px] h-[120px] shrink-0 rounded-[4px] overflow-hidden border border-gray-100">
-                  {enrollment.course.thumbnail ? (
+                  {enrollment.course?.thumbnail ? (
                     <img
                       src={enrollment.course.thumbnail}
                       alt={enrollment.course.title}
@@ -138,7 +139,7 @@ const MyLearning: React.FC = () => {
                     />
                   ) : (
                     <div className="w-full h-full bg-blue-50 flex items-center justify-center text-primary font-bold text-2xl">
-                      {enrollment.course.title.charAt(0)}
+                      {enrollment.course?.title.charAt(0)}
                     </div>
                   )}
                 </div>
@@ -147,14 +148,14 @@ const MyLearning: React.FC = () => {
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
                     <h2
-                      onClick={() => navigate(`/learn/${enrollment.course.id}`)}
+                      onClick={() => navigate(`/learn/${enrollment.course?.id}`)}
                       className="text-[18px] md:text-[20px] font-bold text-gray-dark-3 mb-1 hover:text-primary cursor-pointer transition-colors line-clamp-2"
                     >
-                      {enrollment.course.title}
+                      {enrollment.course?.title}
                     </h2>
                     <p className="text-[13px] md:text-[14px] text-gray-600 mb-4">
                       By{" "}
-                      {enrollment.course.instructor?.name ||
+                      {enrollment.course?.instructor?.name ||
                         "Coursera Instructor"}
                     </p>
 
@@ -163,11 +164,11 @@ const MyLearning: React.FC = () => {
                       <div className="flex-1 max-w-[300px] bg-gray-100 h-2 rounded-full overflow-hidden">
                         <div
                           className="bg-primary h-full transition-all duration-500"
-                          style={{ width: `${enrollment.progress}%` }}
+                          style={{ width: `${typeof enrollment.progress === 'number' ? enrollment.progress : 0}%` }}
                         ></div>
                       </div>
                       <span className="text-[12px] font-bold text-gray-dark-3 shrink-0">
-                        {enrollment.progress}% complete
+                        {typeof enrollment.progress === 'number' ? enrollment.progress : 0}% complete
                       </span>
                     </div>
                   </div>
@@ -203,11 +204,12 @@ const MyLearning: React.FC = () => {
 
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                       {enrollment.completed &&
+                        enrollment.course?.id &&
                         certificatesByCourseId[enrollment.course.id] && (
                           <button
                             onClick={() =>
                               navigate(
-                                `/accomplishments/certificate/${certificatesByCourseId[enrollment.course.id].id}`,
+                                `/accomplishments/certificate/${certificatesByCourseId[enrollment.course?.id || ""].id}`,
                               )
                             }
                             className="px-6 py-[10px] border border-primary text-primary font-bold rounded-[4px] text-[14px] hover:bg-blue-50 transition-colors shadow-sm bg-transparent w-full sm:w-auto"
@@ -224,7 +226,7 @@ const MyLearning: React.FC = () => {
                             setReviewError(null);
                             setIsReviewOpen(true);
                           } else {
-                            navigate(`/learn/${enrollment.course.id}`);
+                            navigate(`/learn/${enrollment.course?.id}`);
                           }
                         }}
                         className="px-8 py-[10px] bg-primary text-white font-bold rounded-[4px] text-[14px] hover:bg-primary-hover transition-colors shadow-sm w-full sm:w-auto"
@@ -243,7 +245,7 @@ const MyLearning: React.FC = () => {
                     <div className="mt-3 text-[12px] text-text-gray">
                       Completed on{" "}
                       {new Date(
-                        enrollment.completedAt || enrollment.updatedAt,
+                        enrollment.completedAt || enrollment.updatedAt || new Date().toISOString(),
                       ).toLocaleDateString()}
                     </div>
                   )}
@@ -294,7 +296,7 @@ const MyLearning: React.FC = () => {
             </div>
             <div className="px-4 md:px-6 py-5">
               <p className="text-[13px] md:text-[14px] text-gray-dark-3 mb-4 font-medium">
-                {reviewTarget.course.title}
+                {reviewTarget.course?.title}
               </p>
 
               <div className="mb-4">
@@ -361,7 +363,7 @@ const MyLearning: React.FC = () => {
                   setReviewError(null);
                   try {
                     const created = await reviewApi.createReview(
-                      reviewTarget.course.id,
+                      reviewTarget.course?.id || "",
                       {
                         rating: reviewRating,
                         comment: reviewComment.trim() || undefined,
@@ -379,9 +381,10 @@ const MyLearning: React.FC = () => {
                       ),
                     );
                     setIsReviewOpen(false);
-                  } catch (err: any) {
+                  } catch (err: unknown) {
+                    const error = err as { response?: { data?: { message?: string } } };
                     setReviewError(
-                      err?.response?.data?.message ||
+                      error.response?.data?.message ||
                         "Failed to submit review. Please try again.",
                     );
                   } finally {

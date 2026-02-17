@@ -5,53 +5,33 @@ import ModuleList from "../../components/instructor/ModuleList";
 import { courseApi } from "../../services/courseApi";
 import AddLessonModal from "../../components/instructor/AddLessonModal";
 import EditLessonModal from "../../components/instructor/EditLessonModal";
-
-
-interface Lesson {
-  id: string;
-  title: string;
-  type: "VIDEO" | "READING" | "ASSESSMENT";
-  order: number;
-  description?: string;
-  content?: string;
-  videoUrl?: string;
-  updatedAt?: string;
-}
-
-interface Module {
-  id: string;
-  title: string;
-  order: number;
-  lessons: Lesson[];
-}
+import type { Module, Lesson } from "../../types/course";
 
 const CurriculumBuilder: React.FC = () => {
   const { id: courseId } = useParams<{ id: string }>();
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(false);
 
-  
   const [isAddLessonModalOpen, setIsAddLessonModalOpen] = useState(false);
   const [currentModuleId, setCurrentModuleId] = useState<string | null>(null);
 
-  
   const [isEditLessonModalOpen, setIsEditLessonModalOpen] = useState(false);
-  const [editingLesson, setEditingLesson] = useState<any | null>(null);
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
 
   const fetchModules = async () => {
     if (!courseId) return;
     setLoading(true);
     try {
       const data = await courseApi.getModules(courseId);
-      
+
       const sortedModules = data
-        .map((m: any) => ({
+        .map((m: Module) => ({
           ...m,
           lessons: m.lessons
-            ? m.lessons.sort((a: any, b: any) => a.order - b.order)
+            ? m.lessons.sort((a: Lesson, b: Lesson) => a.order - b.order)
             : [],
         }))
-        .sort((a: any, b: any) => a.order - b.order);
+        .sort((a: Module, b: Module) => a.order - b.order);
       setModules(sortedModules);
     } catch (error) {
       toast.error("Failed to load curriculum");
@@ -84,7 +64,7 @@ const CurriculumBuilder: React.FC = () => {
     }
   };
 
-  const handleEditModule = async (module: any) => {
+  const handleEditModule = async (module: Module) => {
     const title = prompt("Edit Module Title:", module.title);
     if (title && title !== module.title) {
       try {
@@ -113,7 +93,6 @@ const CurriculumBuilder: React.FC = () => {
     }
   };
 
-  
   const handleAddLesson = (moduleId: string) => {
     setCurrentModuleId(moduleId);
     setIsAddLessonModalOpen(true);
@@ -128,7 +107,6 @@ const CurriculumBuilder: React.FC = () => {
     if (!currentModuleId) return;
 
     try {
-      
       const module = modules.find((m) => m.id === currentModuleId);
       const order = module ? module.lessons.length : 0;
 
@@ -155,8 +133,7 @@ const CurriculumBuilder: React.FC = () => {
     }
   };
 
-  
-  const handleEditLesson = (lesson: any) => {
+  const handleEditLesson = (lesson: Lesson) => {
     setEditingLesson(lesson);
     setIsEditLessonModalOpen(true);
   };
@@ -198,8 +175,7 @@ const CurriculumBuilder: React.FC = () => {
     }
   };
 
-  const handleReorderLessons = async (moduleId: string, lessons: any[]) => {
-    
+  const handleReorderLessons = async (moduleId: string, lessons: Lesson[]) => {
     setModules((prev) =>
       prev.map((m) => {
         if (m.id === moduleId) {
@@ -214,7 +190,7 @@ const CurriculumBuilder: React.FC = () => {
       await courseApi.reorderLessons(updates);
     } catch (error) {
       toast.error("Failed to reorder lessons");
-      fetchModules(); 
+      fetchModules();
     }
   };
 
@@ -288,52 +264,3 @@ const CurriculumBuilder: React.FC = () => {
 };
 
 export default CurriculumBuilder;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,28 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
+const user_routes_1 = __importDefault(require("./routes/user.routes"));
+const course_routes_1 = __importDefault(require("./routes/course.routes"));
+const enrollment_routes_1 = __importDefault(require("./routes/enrollment.routes"));
+const review_routes_1 = __importDefault(require("./routes/review.routes"));
+const analytics_routes_1 = __importDefault(require("./routes/analytics.routes"));
+const module_routes_1 = __importDefault(require("./routes/module.routes"));
+const lesson_routes_1 = __importDefault(require("./routes/lesson.routes"));
+const certificate_routes_1 = __importDefault(require("./routes/certificate.routes"));
+const notification_routes_1 = __importDefault(require("./routes/notification.routes"));
+const router = (0, express_1.Router)();
+router.use("/api/v1/auth", auth_routes_1.default);
+router.use("/api/v1/users", user_routes_1.default);
+router.use("/api/v1/courses", course_routes_1.default);
+router.use("/api/v1/enrollments", enrollment_routes_1.default);
+router.use("/api/v1/reviews", review_routes_1.default);
+router.use("/api/v1/analytics", analytics_routes_1.default);
+router.use("/api/v1/certificates", certificate_routes_1.default);
+router.use("/api/v1/notifications", notification_routes_1.default);
+router.use("/api/v1", module_routes_1.default);
+router.use("/api/v1", lesson_routes_1.default);
+exports.default = router;

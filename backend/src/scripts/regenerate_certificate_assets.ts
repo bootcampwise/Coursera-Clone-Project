@@ -7,9 +7,8 @@ const run = async () => {
   });
 
   for (const cert of certificates) {
-    try {
+      try {
       await regenerateCertificateAssets(cert.id);
-      console.log(`Regenerated assets for certificate ${cert.id}`);
     } catch (err) {
       console.error(`Failed to regenerate certificate ${cert.id}`, err);
     }

@@ -36,9 +36,10 @@ const UpdatesPage: React.FC = () => {
       const data = await notificationApi.getNotifications();
       setUpdates(data.notifications || []);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Failed to load notifications";
       console.error("Failed to fetch notifications:", err);
-      setError(err.message || "Failed to load notifications");
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

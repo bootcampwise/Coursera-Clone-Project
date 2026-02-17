@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import type { AuthenticatedRequest } from '../types';
 import asyncHandler from "../utils/asyncHandler";
 import * as authService from "../services/auth.service";
 
@@ -15,7 +16,7 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const changePassword = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     const { currentPassword, newPassword } = req.body;
 

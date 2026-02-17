@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import LoggedHeader from "../../components/layout/LoggedHeader";
-import BillingInfo from "./components/BillingInfo";
-import PaymentMethods from "./components/PaymentMethods";
-import OrderSummary from "./components/OrderSummary";
+import BillingInfo from "../../components/checkout/BillingInfo";
+import PaymentMethods from "../../components/checkout/PaymentMethods";
+import OrderSummary from "../../components/checkout/OrderSummary";
 import { courseApi } from "../../services/courseApi";
 import api from "../../services/apiClient";
 import { ENDPOINTS } from "../../services/endpoints";
+import type { Course } from "../../types";
 
 const Checkout: React.FC = () => {
   const { courseId } = useParams<{ courseId: string }>();
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<Course | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [studentName, setStudentName] = useState<string>("");
 

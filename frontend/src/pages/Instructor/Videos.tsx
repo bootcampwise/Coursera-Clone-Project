@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { courseApi } from "../../services/courseApi";
-import api from "../../services/apiClient"; 
+import api from "../../services/apiClient";
+import type { Course, Module, Lesson } from "../../types/course";
 
 interface LessonRow {
   id: string;
   title: string;
   moduleTitle: string;
-  courseTitle: string;
-  duration: number | null;
-  videoUrl: string | null;
-  updatedAt: string;
+  courseTitle?: string;
+  duration?: number | null;
+  videoUrl?: string | null;
+  updatedAt?: string;
 }
 
 const Videos: React.FC = () => {
-  const [searchParams] = useSearchParams();
   const location = useLocation();
   const isAdmin = location.pathname.includes("/admin");
 
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>("");
-  const [modules, setModules] = useState<any[]>([]);
+  const [modules, setModules] = useState<Module[]>([]);
   const [selectedModuleId, setSelectedModuleId] = useState<string>("");
   const [lessons, setLessons] = useState<LessonRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -104,28 +104,26 @@ const Videos: React.FC = () => {
   }, [selectedModuleId]);
 
   const fetchCourses = async () => {
-    console.log(`[Videos] Fetching courses. isAdmin: ${isAdmin}`);
     try {
       const data = isAdmin
         ? await courseApi.getAdminCourses()
         : await courseApi.getInstructorCourses();
-
-      console.log(`[Videos] Received ${data.length} courses`);
+      
       setCourses(data);
 
       const queryParams = new URLSearchParams(location.search);
       const queryCourseId = queryParams.get("courseId");
-      console.log(`[Videos] Query courseId: ${queryCourseId}`);
+      
 
       if (queryCourseId) {
         setSelectedCourseId(queryCourseId);
       } else if (data.length > 0) {
         setSelectedCourseId(data[0].id);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to fetch courses", error);
       toast.error(
-        `Failed to fetch courses: ${error.response?.data?.message || error.message}`,
+        `Failed to fetch courses: ${(error instanceof Error ? error.message : 'Unknown error')}`,
       );
     }
   };
@@ -155,7 +153,7 @@ const Videos: React.FC = () => {
       const nextDurationInputs: { [key: string]: string } = {};
 
       if (module && module.lessons && Array.isArray(module.lessons)) {
-        module.lessons.forEach((lesson: any) => {
+        module.lessons.forEach((lesson: Lesson) => {
           if (lesson.type === "VIDEO") {
             videoLessons.push({
               id: lesson.id,
@@ -205,7 +203,7 @@ const Videos: React.FC = () => {
       const fileUrl = uploadResponse.data.url;
 
       
-      const payload: any = { videoUrl: fileUrl };
+      const payload: { videoUrl: string; duration?: number } = { videoUrl: fileUrl };
       if (durationSec !== null) {
         payload.duration = durationSec;
         setDurationInputs((prev) => ({
@@ -232,7 +230,7 @@ const Videos: React.FC = () => {
     const toastId = toast.loading("Saving embed URL...");
     try {
       const durationSec = parseDurationInput(durationInputs[lessonId] || "");
-      const payload: any = { videoUrl: url };
+      const payload: { videoUrl: string; duration?: number } = { videoUrl: url };
       if (durationSec !== null) payload.duration = durationSec;
       await courseApi.updateLesson(lessonId, payload);
       toast.success("Video URL saved", { id: toastId });

@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
+import type { AuthenticatedRequest } from '../types';
 import asyncHandler from "../utils/asyncHandler";
 import * as reviewService from "../services/review.service";
 
 export const createReview = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { courseId } = req.params;
     const { rating, comment } = req.body;
     const userId = req.user?.id;
@@ -33,7 +34,7 @@ export const getCourseReviews = asyncHandler(
 );
 
 export const deleteReview = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const { id } = req.params;
     const userId = req.user?.id;
     const userRole = req.user?.role || "";
@@ -53,14 +54,14 @@ export const deleteReview = asyncHandler(
 );
 
 export const getAllReviews = asyncHandler(
-  async (_req: Request, res: Response) => {
+  async (_req: AuthenticatedRequest, res: Response) => {
     const reviews = await reviewService.getAllReviews();
     res.json(reviews);
   },
 );
 
 export const getInstructorReviews = asyncHandler(
-  async (req: Request & { user?: any }, res: Response) => {
+  async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });

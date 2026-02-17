@@ -4,21 +4,27 @@ import CourseLearningHeader from "../../components/layout/CourseLearningHeader";
 import { courseApi } from "../../services/courseApi";
 import { IMAGES } from "../../constants/images";
 import { enrollmentApi } from "../../services/enrollmentApi";
+import type {
+  Course,
+  Module,
+  Lesson as CourseLesson,
+} from "../../types/course";
+import type { Progress } from "../../types/index";
 
-interface Lesson {
+interface LessonItem {
   id: string;
   title: string;
   type: string;
-  duration?: number;
+  duration?: number | null;
   status: "completed" | "in-progress" | "not-started";
-  videoUrl?: string;
-  content?: string;
+  videoUrl?: string | null;
+  content?: string | undefined;
 }
 
 interface ModuleSection {
   id: string;
   title: string;
-  lessons: Lesson[];
+  lessons: LessonItem[];
   isExpanded: boolean;
   isComplete: boolean;
 }
@@ -26,7 +32,7 @@ interface ModuleSection {
 const CourseLearning: React.FC = () => {
   const navigate = useNavigate();
   const { courseId } = useParams<{ courseId: string }>();
-  
+
   const [expandedSections, setExpandedSections] = useState<string[]>([
     "observe-crit",
   ]);
@@ -43,9 +49,9 @@ const CourseLearning: React.FC = () => {
     );
   };
 
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
-  const [progressData, setProgressData] = useState<any>(null);
+  const [progressData, setProgressData] = useState<Progress[] | null>(null);
   const [learningObjectives, setLearningObjectives] = useState<string[]>([]);
 
   useEffect(() => {
@@ -58,8 +64,13 @@ const CourseLearning: React.FC = () => {
           enrollmentApi.getCourseProgress(courseId),
         ]);
         setCourse(courseRes);
-        setProgressData(progressRes);
-        
+
+        // Flatten the progress data if it's an object
+        const lessonProgress = progressRes?.lessonProgress || [];
+        const moduleProgress = progressRes?.moduleProgress || [];
+        const flattenedProgress = [...lessonProgress, ...moduleProgress];
+        setProgressData(flattenedProgress);
+
         const rawOutcomes = courseRes?.outcomes;
         if (Array.isArray(rawOutcomes)) {
           setLearningObjectives(rawOutcomes.filter(Boolean));
@@ -73,12 +84,11 @@ const CourseLearning: React.FC = () => {
           setLearningObjectives([]);
         }
 
-        
         if (courseRes?.modules) {
-          const firstUnfinished = courseRes.modules.find((m: any) =>
+          const firstUnfinished = courseRes.modules.find((m: Module) =>
             m.lessons.some(
-              (l: any) =>
-                !progressRes?.lessonProgress.find(
+              (l: CourseLesson) =>
+                !(progressRes?.lessonProgress || []).some(
                   (p: any) => p.lessonId === l.id && p.completed,
                 ),
             ),
@@ -98,19 +108,18 @@ const CourseLearning: React.FC = () => {
   }, [courseId]);
 
   const isLessonCompleted = (lessonId: string) => {
-    return progressData?.lessonProgress?.some(
-      (p: any) => p.lessonId === lessonId && p.completed,
+    return progressData?.some(
+      (p: Progress) => p.lessonId === lessonId && p.completed,
     );
   };
 
   const getLessonStatus = (
     lessonId: string,
     index: number,
-    allLessons: any[],
+    allLessons: CourseLesson[],
   ) => {
     if (isLessonCompleted(lessonId)) return "completed";
 
-    
     const prevLesson = allLessons[index - 1];
     if (!prevLesson || isLessonCompleted(prevLesson.id)) return "in-progress";
 
@@ -153,32 +162,41 @@ const CourseLearning: React.FC = () => {
     );
   }
 
-  const sections: ModuleSection[] = course.modules.map((module: any) => {
-    const moduleLessons = module.lessons.map((lesson: any, index: number) => ({
-      id: lesson.id,
-      title: lesson.title,
-      type: lesson.type.charAt(0) + lesson.type.slice(1).toLowerCase(), 
-      duration: lesson.duration || 0, 
-      status: getLessonStatus(lesson.id, index, module.lessons),
-      videoUrl: lesson.videoUrl,
-      content: lesson.content,
-    }));
+  const sections: ModuleSection[] = (course?.modules || []).map(
+    (module: Module) => {
+      const moduleLessons = module.lessons.map(
+        (lesson: CourseLesson, index: number) =>
+          ({
+            id: lesson.id,
+            title: lesson.title,
+            type: (lesson.type.charAt(0) +
+              lesson.type.slice(1).toLowerCase()) as string,
+            duration: lesson.duration ?? 0,
+            status: getLessonStatus(lesson.id, index, module.lessons) as
+              | "completed"
+              | "in-progress"
+              | "not-started",
+            videoUrl: lesson.videoUrl ?? null,
+            content: lesson.content,
+          }) as LessonItem,
+      );
 
-    const backendModuleProgress = progressData?.moduleProgress?.find(
-      (m: any) => m.moduleId === module.id,
-    );
-    const isComplete = backendModuleProgress
-      ? backendModuleProgress.completed
-      : moduleLessons.every((l: any) => l.status === "completed");
+      const backendModuleProgress = progressData?.find(
+        (p: Progress) => p.moduleId === module.id,
+      );
+      const isComplete = backendModuleProgress
+        ? backendModuleProgress.completed
+        : moduleLessons.every((l) => l.status === "completed");
 
-    return {
-      id: module.id,
-      title: module.title,
-      lessons: moduleLessons,
-      isExpanded: expandedSections.includes(module.id),
-      isComplete,
-    };
-  });
+      return {
+        id: module.id,
+        title: module.title,
+        lessons: moduleLessons,
+        isExpanded: expandedSections.includes(module.id),
+        isComplete,
+      };
+    },
+  );
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-dark-3">
@@ -205,11 +223,11 @@ const CourseLearning: React.FC = () => {
               </div>
               <div className="min-w-0 flex flex-col">
                 <span className="text-[13px] font-medium text-gray-dark-3 leading-snug">
-                  {course.title}
+                  {course?.title}
                 </span>
                 <span className="text-[12px] text-text-gray">Google</span>
                 <span className="text-[12px] text-text-gray">
-                  {course.instructor?.name || "Instructor"}
+                  {course?.instructor?.name || "Instructor"}
                 </span>
               </div>
             </div>
@@ -272,7 +290,9 @@ const CourseLearning: React.FC = () => {
                     </div>
                     <button
                       className={`text-left text-[14px] font-medium w-full truncate pl-2 ${
-                        section.isExpanded ? "text-gray-dark-3" : "text-text-gray"
+                        section.isExpanded
+                          ? "text-gray-dark-3"
+                          : "text-text-gray"
                       }`}
                     >
                       Module {index + 1}
@@ -366,7 +386,7 @@ const CourseLearning: React.FC = () => {
                 </button>
                 <div className="flex-1">
                   <h2 className="text-[20px] font-normal font-serif text-gray-dark-3">
-                    {course.title}
+                    {course?.title}
                   </h2>
                 </div>
               </div>
@@ -403,7 +423,7 @@ const CourseLearning: React.FC = () => {
                   <div className="h-px bg-border-light-3 my-5 -mx-4 md:-mx-8"></div>
 
                   <div className="text-[14px] text-gray-dark-3 leading-loose mb-4">
-                    <p>{course.description}</p>
+                    <p>{course?.description}</p>
                   </div>
 
                   <button
@@ -783,53 +803,3 @@ const CourseLearning: React.FC = () => {
 };
 
 export default CourseLearning;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const certificate_controller_1 = require("../controllers/certificate.controller");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const router = (0, express_1.Router)();
+router.get("/my", auth_middleware_1.authMiddleware, certificate_controller_1.getMyCertificates);
+router.get("/verify/:code", certificate_controller_1.verifyCertificate);
+router.get("/:id/download", auth_middleware_1.authMiddleware, certificate_controller_1.downloadCertificate);
+router.get("/:id/html", auth_middleware_1.authMiddleware, certificate_controller_1.getCertificateHtml);
+router.get("/:id", auth_middleware_1.authMiddleware, certificate_controller_1.getCertificateById);
+exports.default = router;

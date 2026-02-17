@@ -29,9 +29,10 @@ const Instructors: React.FC = () => {
       });
       setInstructors(response.data.users);
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
       setError(
-        err.response?.data?.message || "Failed to load instructor network",
+        error.response?.data?.message || "Failed to load instructor network",
       );
     } finally {
       setLoading(false);
@@ -49,8 +50,9 @@ const Instructors: React.FC = () => {
       await adminApi.delete(ENDPOINTS.USERS_BY_ID(id));
       toast.success("Instructor removed successfully");
       fetchInstructors();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to remove instructor");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || "Failed to remove instructor");
     }
   };
 

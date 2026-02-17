@@ -14,12 +14,14 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode?: "login" | "signup";
+  onSwitchToRegister?: () => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   initialMode = "login",
+  onSwitchToRegister,
 }) => {
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [step, setStep] = useState<"email" | "password" | "signup-form">(
@@ -89,6 +91,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
     setMode("signup");
     setStep("signup-form");
     setPassword("");
+    if (typeof onSwitchToRegister === "function") onSwitchToRegister();
   };
 
   const switchToLogin = () => {

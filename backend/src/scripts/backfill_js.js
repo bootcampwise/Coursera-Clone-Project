@@ -5,13 +5,13 @@ try { require('dotenv').config(); } catch (e) {}
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Starting backfill of createdAt and updatedAt via JS...');
+  
   
   try {
     const collections = ["User", "users"];
     
     for (const collectionName of collections) {
-        console.log(`Attempting update on collection: ${collectionName}`);
+        
         
         
         try {
@@ -30,9 +30,8 @@ async function main() {
                 }
             ]
             });
-            console.log(`Update ${collectionName} (createdAt: null) result:`, result1);
+            
         } catch (e) {
-            console.log(`Skipping ${collectionName} (null check) due to error: ${e.message}`);
         }
 
         
@@ -52,10 +51,9 @@ async function main() {
                 }
                 ]
             });
-            console.log(`Update ${collectionName} (createdAt: missing) result:`, result2);
-        } catch (e) {
-             console.log(`Skipping ${collectionName} (exists check) due to error: ${e.message}`);
-        }
+            
+           } catch (e) {
+           }
     }
 
   } catch (error) {

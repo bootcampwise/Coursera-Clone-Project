@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import type { AuthenticatedRequest } from '../types';
 
 export const requireRole =
   (allowedRoles: string[]) =>
-  (req: Request & { user?: any }, res: Response, next: NextFunction) => {
+  (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const userRole = req.user?.role?.toLowerCase();
 
     
