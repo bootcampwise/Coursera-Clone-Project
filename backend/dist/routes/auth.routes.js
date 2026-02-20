@@ -6,5 +6,6 @@ const auth_middleware_1 = require("../middlewares/auth.middleware");
 const router = (0, express_1.Router)();
 router.post("/login", auth_controller_1.login);
 router.post("/register", auth_controller_1.register);
+router.post("/google", auth_controller_1.googleAuthController);
 router.patch("/change-password", auth_middleware_1.authMiddleware, auth_controller_1.changePassword);
 exports.default = router;

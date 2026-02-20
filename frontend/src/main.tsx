@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import AppRoutes from "./routes/AppRoutes";
-import { store } from "./app/store";
+import { store } from "./redux/store";
 import AuthListener from "./components/auth/AuthListener";
 
 import ErrorBoundary from "./components/common/ErrorBoundary";
@@ -27,54 +27,5 @@ createRoot(document.getElementById("root")!).render(
         <AppRoutes />
       </Provider>
     </ErrorBoundary>
-  </StrictMode>,
+  </StrictMode>
 );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

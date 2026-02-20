@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, useLocation, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 
 interface PortalProtectedRouteProps {
   children?: React.ReactNode;
@@ -32,52 +32,3 @@ const PortalProtectedRoute: React.FC<PortalProtectedRouteProps> = ({
 };
 
 export default PortalProtectedRoute;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

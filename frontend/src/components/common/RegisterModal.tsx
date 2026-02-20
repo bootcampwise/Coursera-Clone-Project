@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import type { AppDispatch, RootState } from "../../app/store";
-import { registerUser, clearError } from "../../features/auth/authSlice";
+import type { AppDispatch, RootState } from "../../redux/store";
+import { registerUser, clearError } from "../../redux/slices/auth/authSlice";
 import Button from "./Button";
 
 interface RegisterModalProps {
@@ -30,7 +30,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     const result = await dispatch(registerUser({ name, email, password }));
     if (registerUser.fulfilled.match(result)) {
       toast.success("Account created successfully!");
-      
+
       onSwitchToLogin();
     } else if (registerUser.rejected.match(result)) {
       toast.error((result.payload as string) || "Registration failed");
@@ -204,52 +204,3 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
 };
 
 export default RegisterModal;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

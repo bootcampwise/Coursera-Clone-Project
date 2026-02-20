@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
-import type { AppDispatch, RootState } from "../../app/store";
+import type { AppDispatch, RootState } from "../../redux/store";
 import {
   loginUser,
   registerUser,
   clearError,
-} from "../../features/auth/authSlice";
+} from "../../redux/slices/auth/authSlice";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import Button from "./Button";
 
@@ -25,7 +25,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
 }) => {
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [step, setStep] = useState<"email" | "password" | "signup-form">(
-    "email",
+    "email"
   );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,7 +35,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
   const { isLoading } = useSelector((state: RootState) => state.auth);
   const { signInWithGoogle } = useGoogleAuth();
 
-  
   useEffect(() => {
     if (isOpen) {
       setMode(initialMode);
@@ -67,7 +66,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
     const result = await dispatch(registerUser({ name, email, password }));
     if (registerUser.fulfilled.match(result)) {
       toast.success("Account created successfully! Please log in.");
-      
+
       setMode("login");
       setStep("email");
       setName("");
@@ -449,52 +448,3 @@ const AuthModal: React.FC<AuthModalProps> = ({
 };
 
 export default AuthModal;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

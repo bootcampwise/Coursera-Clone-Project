@@ -3,9 +3,10 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 import { IMAGES } from "../../constants/images";
 import { notificationApi } from "../../services/notificationApi";
+import AvatarMenu from "./AvatarMenu";
 
 const LoggedHeader: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -22,20 +23,16 @@ const LoggedHeader: React.FC = () => {
   const avatarUrl = user?.avatarUrl;
   const displayName = user?.name || "User";
 
-  
   const fetchUnreadCount = async () => {
     try {
       const data = await notificationApi.getUnreadCount();
       setUnreadCount(data.count || 0);
-    } catch (error) {
-      console.error("Failed to fetch unread count:", error);
-    }
+    } catch (error) {}
   };
 
-  
   useEffect(() => {
     fetchUnreadCount();
-    
+
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -103,9 +100,7 @@ const LoggedHeader: React.FC = () => {
 
             {}
             <Link to="/" className="no-underline shrink-0">
-              <div
-              className="w-8 h-8 md:w-9 md:h-9 rounded-full text-white flex items-center justify-center font-sans text-[16px] md:text-[18px] font-bold bg-google-blue-dark"
-              >
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full text-white flex items-center justify-center font-sans text-[16px] md:text-[18px] font-bold bg-google-blue-dark">
                 P
               </div>
             </Link>
@@ -136,7 +131,7 @@ const LoggedHeader: React.FC = () => {
               </button>
 
               <Link
-                to="/my-learning"
+                to="/my-courses"
                 className="text-text-gray text-[14px] font-normal hover:text-primary no-underline transition-colors"
               >
                 My Learning
@@ -152,9 +147,7 @@ const LoggedHeader: React.FC = () => {
               className="hidden lg:flex w-full max-w-[520px] relative items-center h-[44px] bg-white border border-stroke-light-gray rounded-full overflow-visible"
             >
               {}
-              <div
-              className="ml-[4px] w-[36px] h-[36px] min-w-[36px] rounded-full flex items-center justify-center text-white font-sans font-bold text-[17px] z-10 pointer-events-none bg-google-blue"
-              >
+              <div className="ml-[4px] w-[36px] h-[36px] min-w-[36px] rounded-full flex items-center justify-center text-white font-sans font-bold text-[17px] z-10 pointer-events-none bg-google-blue">
                 C
               </div>
 
@@ -358,30 +351,10 @@ const LoggedHeader: React.FC = () => {
 
               {isUserMenuOpen && (
                 <>
-                  <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[28px] shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-border-light py-6 z-50">
-                    {[
-                      {
-                        label: "My Courses",
-                        action: () => navigate("/my-learning"),
-                      },
-                      { label: "Profile", action: () => navigate("/profile") },
-                      { label: "Setting" },
-                      { label: "Updates" },
-                      { label: "Accomplishments" },
-                      { label: "Log Out", action: handleLogout },
-                    ].map((item) => (
-                      <button
-                        key={item.label}
-                        onClick={() => {
-                          setIsUserMenuOpen(false);
-                          if (item.action) item.action();
-                        }}
-                        className="w-full text-left px-9 py-3.5 text-[16px] text-gray-dark-3 hover:bg-surface transition-colors border-none bg-transparent cursor-pointer font-medium"
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
+                  <AvatarMenu
+                    onLogout={handleLogout}
+                    onClose={() => setIsUserMenuOpen(false)}
+                  />
                   <div
                     className="fixed inset-0 z-40"
                     onClick={() => setIsUserMenuOpen(false)}
@@ -452,7 +425,7 @@ const LoggedHeader: React.FC = () => {
               </button>
 
               <Link
-                to="/my-learning"
+                to="/my-courses"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-3 text-[16px] font-medium text-gray-dark-3 hover:bg-surface rounded-lg no-underline"
               >
@@ -498,52 +471,3 @@ const LoggedHeader: React.FC = () => {
 };
 
 export default LoggedHeader;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
+import AvatarMenu from "./AvatarMenu";
 
 const ProfileHeader: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -75,9 +76,7 @@ const ProfileHeader: React.FC = () => {
             onSubmit={handleSearch}
             className="hidden md:flex items-center h-[44px] bg-white border border-stroke-light-gray rounded-full px-1 hover:border-gray-600 focus-within:border-primary transition-colors overflow-hidden"
           >
-            <div
-              className="ml-[2px] w-[34px] h-[34px] rounded-full flex items-center justify-center text-white font-bold text-[17px] shrink-0 bg-google-blue"
-            >
+            <div className="ml-[2px] w-[34px] h-[34px] rounded-full flex items-center justify-center text-white font-bold text-[17px] shrink-0 bg-google-blue">
               C
             </div>
             <input
@@ -241,43 +240,10 @@ const ProfileHeader: React.FC = () => {
             {}
             {isUserMenuOpen && (
               <>
-                <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[4px] shadow-lg border border-border py-2 z-50">
-                  <div className="px-4 py-3 border-b border-border">
-                    <p className="font-bold text-gray-dark-3 truncate text-[14px]">
-                      {displayName}
-                    </p>
-                    <p className="text-xs text-text-gray truncate">
-                      {user?.email || "user@example.com"}
-                    </p>
-                  </div>
-                  {[
-                    {
-                      label: "My Learning",
-                      action: () => navigate("/my-learning"),
-                    },
-                    { label: "Profile", action: () => navigate("/profile") },
-                    {
-                      label: "Account Settings",
-                      action: () => navigate("/account/settings"),
-                    },
-                    {
-                      label: "Accomplishments",
-                      action: () => navigate("/accomplishments"),
-                    },
-                    { label: "Log Out", action: handleLogout },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        if (item.action) item.action();
-                      }}
-                      className="w-full text-left px-4 py-2 text-[14px] text-gray-dark-3 hover:bg-surface transition-colors border-none bg-transparent cursor-pointer"
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
+                <AvatarMenu
+                  onLogout={handleLogout}
+                  onClose={() => setIsUserMenuOpen(false)}
+                />
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setIsUserMenuOpen(false)}
@@ -292,52 +258,3 @@ const ProfileHeader: React.FC = () => {
 };
 
 export default ProfileHeader;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

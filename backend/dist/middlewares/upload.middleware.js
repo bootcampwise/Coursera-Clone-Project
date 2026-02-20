@@ -13,11 +13,9 @@ const isCloudinaryConfigured = process.env.CLOUDINARY_CLOUD_NAME &&
     process.env.CLOUDINARY_API_SECRET;
 let storage;
 if (isCloudinaryConfigured) {
-    console.log("Using Cloudinary Storage for uploads");
     storage = cloudinary_1.storage;
 }
 else {
-    console.log("Cloudinary credentials missing. Using Local Disk Storage.");
     const uploadDir = path_1.default.join(__dirname, "../../uploads");
     if (!fs_1.default.existsSync(uploadDir)) {
         fs_1.default.mkdirSync(uploadDir, { recursive: true });

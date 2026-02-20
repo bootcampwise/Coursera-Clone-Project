@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, useLocation, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 
 interface InstructorProtectedRouteProps {
   children?: React.ReactNode;
@@ -13,7 +13,7 @@ const InstructorProtectedRoute: React.FC<InstructorProtectedRouteProps> = ({
   loginPath = "/instructor-login",
 }) => {
   const { user, token } = useSelector(
-    (state: RootState) => state.instructorAuth,
+    (state: RootState) => state.instructorAuth
   );
   const location = useLocation();
 
@@ -29,52 +29,3 @@ const InstructorProtectedRoute: React.FC<InstructorProtectedRouteProps> = ({
 };
 
 export default InstructorProtectedRoute;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

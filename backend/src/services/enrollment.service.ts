@@ -3,14 +3,12 @@ import { issueCertificateForEnrollment } from "./certificate.service";
 import { notificationService } from "./notification.service";
 
 export const enrollUser = async (userId: string, courseId: string) => {
-  
   const course = await prisma.course.findUnique({ where: { id: courseId } });
   if (!course) throw new Error("Course not found");
 
   if (course.status !== "Published")
     throw new Error("Course is not available for enrollment");
 
-  
   const existingEnrollment = await prisma.enrollment.findFirst({
     where: { userId, courseId },
   });
@@ -36,7 +34,6 @@ export const enrollUser = async (userId: string, courseId: string) => {
     },
   });
 
-  
   try {
     await notificationService.createNotification(userId, {
       type: "welcome",
@@ -47,11 +44,7 @@ export const enrollUser = async (userId: string, courseId: string) => {
       imageUrl: enrollment.course.thumbnail || undefined,
     });
   } catch (notifError) {
-    console.error(
-      "[enrollment-service] Failed to create welcome notification:",
-      notifError,
-    );
-    
+    // Welcome notification failed silently
   }
 
   return enrollment;
@@ -82,7 +75,7 @@ export const getUserEnrollments = async (userId: string) => {
     select: { courseId: true, rating: true },
   });
   const reviewedByCourseId = new Map(
-    reviews.map((r) => [r.courseId, r.rating]),
+    reviews.map((r) => [r.courseId, r.rating])
   );
 
   return enrollments.map((enrollment) => ({
@@ -96,7 +89,7 @@ export const updateProgress = async (
   enrollmentId: string,
   userId: string,
   progress: number,
-  completed: boolean,
+  completed: boolean
 ) => {
   const enrollment = await prisma.enrollment.findUnique({
     where: { id: enrollmentId },
@@ -122,13 +115,12 @@ export const updateProgress = async (
 export const getCourseEnrollments = async (
   courseId: string,
   instructorId: string,
-  userRole: string,
+  userRole: string
 ) => {
   const course = await prisma.course.findUnique({ where: { id: courseId } });
 
   if (!course) throw new Error("Course not found");
 
-  
   if (
     userRole.toLowerCase() !== "admin" &&
     userRole.toLowerCase() !== "administrator" &&
@@ -164,7 +156,7 @@ export const getEnrollmentStatus = async (userId: string, courseId: string) => {
 
 export const getStudentCourseProgress = async (
   userId: string,
-  courseId: string,
+  courseId: string
 ) => {
   const [enrollment, modules] = await Promise.all([
     prisma.enrollment.findFirst({
@@ -189,13 +181,13 @@ export const getStudentCourseProgress = async (
   if (!enrollment) return null;
 
   const completedLessonIds = new Set(
-    enrollment.lessonProgress.filter((p) => p.completed).map((p) => p.lessonId),
+    enrollment.lessonProgress.filter((p) => p.completed).map((p) => p.lessonId)
   );
 
   const moduleProgress = modules.map((module) => {
     const lessonIds = module.lessons.map((l) => l.id);
     const completedLessons = lessonIds.filter((id) =>
-      completedLessonIds.has(id),
+      completedLessonIds.has(id)
     ).length;
     const completed =
       lessonIds.length > 0 && completedLessons === lessonIds.length;
@@ -227,9 +219,8 @@ export const updateLessonProgress = async (
     forceComplete?: boolean;
     score?: number;
     videoDuration?: number;
-  },
+  }
 ) => {
-  
   const [enrollment, existingProgress] = await Promise.all([
     prisma.enrollment.findUnique({
       where: { id: enrollmentId },
@@ -252,11 +243,9 @@ export const updateLessonProgress = async (
     videoDuration,
   } = data;
 
-  
   const wasAlreadyCompleted = !!existingProgress?.completed;
   let completed = wasAlreadyCompleted || requestedCompleted;
 
-  
   if (completed && !wasAlreadyCompleted) {
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
@@ -277,7 +266,6 @@ export const updateLessonProgress = async (
     }
   }
 
-  
   const progress = await prisma.lessonProgress.upsert({
     where: {
       enrollmentId_lessonId: {
@@ -301,9 +289,6 @@ export const updateLessonProgress = async (
     },
   });
 
-  
-  
-  
   const [totalLessons, completedLessons, modules, completedProgress] =
     await Promise.all([
       prisma.lesson.count({
@@ -350,7 +335,6 @@ export const updateLessonProgress = async (
   });
 
   if (!enrollment.completed && isCompleted) {
-    
     try {
       const courseInfo = await prisma.course.findUnique({
         where: { id: enrollment.courseId },
@@ -367,11 +351,7 @@ export const updateLessonProgress = async (
         });
       }
     } catch (notifError) {
-      console.error(
-        "[enrollment-service] Failed to create completion notification:",
-        notifError,
-      );
-      
+      // Completion notification failed silently
     }
 
     await issueCertificateForEnrollment(enrollmentId);

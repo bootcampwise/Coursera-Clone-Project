@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changePassword = exports.register = exports.login = void 0;
+exports.googleAuthController = exports.changePassword = exports.register = exports.login = void 0;
 const asyncHandler_1 = __importDefault(require("../utils/asyncHandler"));
 const authService = __importStar(require("../services/auth.service"));
 exports.login = (0, asyncHandler_1.default)(async (req, res) => {
@@ -57,9 +57,25 @@ exports.changePassword = (0, asyncHandler_1.default)(async (req, res) => {
         return;
     }
     if (!currentPassword || !newPassword) {
-        res.status(400).json({ message: "Current and new password are required" });
+        res
+            .status(400)
+            .json({ message: "Current and new password are required" });
         return;
     }
     const result = await authService.changePassword(userId, currentPassword, newPassword);
+    res.json(result);
+});
+exports.googleAuthController = (0, asyncHandler_1.default)(async (req, res) => {
+    const { email, name, avatarUrl, providerId } = req.body;
+    if (!email || !providerId) {
+        res.status(400).json({ message: "Email and providerId required" });
+        return;
+    }
+    const result = await authService.googleAuthService({
+        email,
+        name,
+        avatarUrl,
+        providerId,
+    });
     res.json(result);
 });

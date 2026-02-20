@@ -1,43 +1,43 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "../pages/Home";
-import SearchResults from "../pages/SearchResults";
-import CourseDetails from "../pages/CourseDetails";
-import Dashboard from "../pages/Dashboard";
-import InstructorLayout from "../pages/Instructor/InstructorLayout";
-import InstructorOverview from "../pages/Instructor/Overview";
-import InstructorCourses from "../pages/Instructor/Courses";
-import InstructorCreateCourse from "../pages/Instructor/CreateCourse";
-import InstructorVideos from "../pages/Instructor/Videos";
-import InstructorAssessments from "../pages/Instructor/Assessments";
-import InstructorReadings from "../pages/Instructor/Readings";
-import InstructorAnalytics from "../pages/Instructor/Analytics";
-import InstructorReviews from "../pages/Instructor/Reviews";
-import InstructorSettings from "../pages/Instructor/Settings";
-import CurriculumBuilder from "../pages/Instructor/CurriculumBuilder";
-import Login from "../pages/Auth/Login";
-import Register from "../pages/Auth/Register";
-import Checkout from "../pages/Checkout";
-import MyLearning from "../pages/MyLearning";
-import AdminLayout from "../pages/Admin/AdminLayout";
-import Overview from "../pages/Admin/Overview";
-import Users from "../pages/Admin/Users";
-import Courses from "../pages/Admin/Courses";
-import Instructors from "../pages/Admin/Instructors";
-import Settings from "../pages/Admin/Settings";
-import AdminReviews from "../pages/Admin/Reviews";
-import Profile from "../pages/Profile/index";
-import CourseLearning from "../pages/CourseLearning/index";
-import CourseContent from "../pages/CourseContent/index";
-import CourseAssessment from "../pages/CourseAssessment/index";
-import CourseAssessmentResult from "../pages/CourseAssessmentResult/index";
-import AccountSettings from "../pages/AccountSettings/index";
-import CourseCertificate from "../pages/CourseCertificate/index";
-import UpdatesPage from "../pages/Updates/UpdatesPage";
-import Accomplishments from "../pages/Accomplishments/index";
-import CertificateVerify from "../pages/CertificateVerify/index";
+import Home from "../pages/home/Home";
+import SearchResults from "../pages/searchResults/SearchResults";
+import CourseDetails from "../pages/courseDetails/CourseDetails";
+import Dashboard from "../pages/myCourses/MyCourses";
+import InstructorLayout from "../pages/instructor/instructorLayout/InstructorLayout";
+import InstructorOverview from "../pages/instructor/overview/Overview";
+import InstructorCourses from "../pages/instructor/courses/Courses";
+import InstructorCreateCourse from "../pages/instructor/createCourse/CreateCourse";
+import InstructorVideos from "../pages/instructor/videos/Videos";
+import InstructorAssessments from "../pages/instructor/assessments/Assessments";
+import InstructorReadings from "../pages/instructor/readings/Readings";
+import InstructorAnalytics from "../pages/instructor/analytics/Analytics";
+import InstructorReviews from "../pages/instructor/reviews/Reviews";
+import InstructorSettings from "../pages/instructor/settings/Settings";
+import CurriculumBuilder from "../pages/instructor/curriculamBuilder/CurriculumBuilder";
+import Login from "../pages/auth/login/Login";
+import Register from "../pages/auth/register/Register";
+import Checkout from "../pages/checkout/CheckoutPage";
+import MyLearning from "../pages/myLearning/MyLearning";
+import AdminLayout from "../pages/admin/adminLayout/AdminLayout";
+import Overview from "../pages/admin/overview/Overview";
+import Users from "../pages/admin/users/Users";
+import Courses from "../pages/admin/courses/Courses";
+import Instructors from "../pages/admin/instructors/Instructors";
+import Settings from "../pages/admin/settings/Settings";
+import AdminReviews from "../pages/admin/reviews/Reviews";
+import Profile from "../pages/profile/Profile";
+import CourseLearning from "../pages/courseLearning/CourseLearning";
+import CourseContent from "../pages/courseContent/CourseContent";
+import CourseAssessment from "../pages/courseAssessment/CourseAssessment";
+import CourseAssessmentResult from "../pages/courseAssessmentResult/CourseAssessmentResult";
+import AccountSettings from "../pages/accountSettings/AccountSettings";
+import CourseCertificate from "../pages/courseCertificate/CourseCertificate";
+import UpdatesPage from "../pages/updates/UpdatesPage";
+import Accomplishments from "../pages/accomplishments/Accomplishments";
+import CertificateVerify from "../pages/certificateVerify/CertificateVerify";
 
-import AdminInstructorLogin from "../pages/Auth/AdminInstructorLogin";
+import AdminInstructorLogin from "../pages/auth/adminInstructorLogin/AdminInstructorLogin";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import AdminProtectedRoute from "../components/auth/AdminProtectedRoute";
 import InstructorProtectedRoute from "../components/auth/InstructorProtectedRoute";
@@ -63,7 +63,7 @@ const AppRoutes: React.FC = () => (
       />
       <Route path="/accomplishments" element={<Accomplishments />} />
       <Route path="/verify/:code" element={<CertificateVerify />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/my-courses" element={<Dashboard />} />
       <Route path="/profile" element={<Profile />} />
       <Route
         element={
@@ -140,52 +140,3 @@ const AppRoutes: React.FC = () => (
 );
 
 export default AppRoutes;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -52,6 +52,7 @@ import COURSERA_PLUS from "../assets/images/coursera-plus.png";
 import DOT_ICON from "../assets/icons/dot.png";
 import GOOGLE_PLAY_ICON from "../assets/icons/google-play.png";
 import FOOTER_LOGO from "../assets/icons/footer-logo.png";
+import BOT_ICON from "../assets/icons/bot-icon.png";
 
 export const IMAGES = {
   HERO: HERO,
@@ -62,7 +63,9 @@ export const IMAGES = {
   STAR: STAR,
   LEARNER_OUTCOMES: LEARNER_OUTCOMES,
   LOGOS: {
-    APP_STORE_ICON: "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/download_on_the_app_store_badge_en.svg",
+    BOT_ICON: BOT_ICON,
+    APP_STORE_ICON:
+      "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://d3njjcbhbojbot.cloudfront.net/web/images/icons/download_on_the_app_store_badge_en.svg",
     FOOTER_LOGO: FOOTER_LOGO,
     GOOGLE_PLAY_ICON: GOOGLE_PLAY_ICON,
     ILLINOIS: ILLINOIS,
@@ -124,52 +127,3 @@ export const IMAGES = {
     DOT: DOT_ICON,
   },
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

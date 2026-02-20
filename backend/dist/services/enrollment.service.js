@@ -43,7 +43,7 @@ const enrollUser = async (userId, courseId) => {
         });
     }
     catch (notifError) {
-        console.error("[enrollment-service] Failed to create welcome notification:", notifError);
+        // Welcome notification failed silently
     }
     return enrollment;
 };
@@ -284,7 +284,7 @@ const updateLessonProgress = async (userId, enrollmentId, lessonId, data) => {
             }
         }
         catch (notifError) {
-            console.error("[enrollment-service] Failed to create completion notification:", notifError);
+            // Completion notification failed silently
         }
         await (0, certificate_service_1.issueCertificateForEnrollment)(enrollmentId);
     }

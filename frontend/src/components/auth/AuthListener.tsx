@@ -1,18 +1,24 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { supabase } from "../../lib/supabase";
-import { syncGoogleUser } from "../../features/auth/authSlice";
-import type { AppDispatch } from "../../app/store";
+import { syncGoogleUser } from "../../redux/slices/auth/authSlice";
+import type { AppDispatch } from "../../redux/store";
 import toast from "react-hot-toast";
 
 const AuthListener: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  
 
   useEffect(() => {
     let mounted = true;
 
-    const handleSync = async (supabaseUser: { id?: string | null; email?: string | null; user_metadata?: { full_name?: string; avatar_url?: string } }, showToast: boolean) => {
+    const handleSync = async (
+      supabaseUser: {
+        id?: string | null;
+        email?: string | null;
+        user_metadata?: { full_name?: string; avatar_url?: string };
+      },
+      showToast: boolean
+    ) => {
       if (!mounted) return;
 
       const userData = {
@@ -46,7 +52,6 @@ const AuthListener: React.FC = () => {
       }
     };
 
-    
     const checkInitialSession = async () => {
       const {
         data: { session },
@@ -58,14 +63,11 @@ const AuthListener: React.FC = () => {
 
     checkInitialSession();
 
-    
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!mounted) return;
 
         if (event === "SIGNED_IN" && session?.user) {
-          
-          
           const hasStoredUser = !!localStorage.getItem("user");
           handleSync(session.user, !hasStoredUser);
         } else if (event === "USER_UPDATED" && session?.user) {
@@ -84,52 +86,3 @@ const AuthListener: React.FC = () => {
 };
 
 export default AuthListener;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

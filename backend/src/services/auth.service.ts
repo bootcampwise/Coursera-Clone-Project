@@ -1,6 +1,7 @@
 import { prisma } from "../config/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "../config/jwt";
+import { upsertGoogleUser } from "./user.service";
 
 export const loginUser = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({ where: { email } });
@@ -58,7 +59,7 @@ export const registerUser = async ({
 export const changePassword = async (
   userId: string,
   currentPassword: string,
-  newPassword: string,
+  newPassword: string
 ) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
 
@@ -79,4 +80,24 @@ export const changePassword = async (
   });
 
   return { message: "Password updated successfully" };
+};
+export const googleAuthService = async ({
+  email,
+  name,
+  avatarUrl,
+  providerId,
+}: {
+  email: string;
+  name: string;
+  avatarUrl: string;
+  providerId: string;
+}) => {
+  const user = await upsertGoogleUser({ email, name, providerId, avatarUrl });
+
+  const token = signToken({ sub: user.id, role: user.role });
+
+  return {
+    user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    token,
+  };
 };

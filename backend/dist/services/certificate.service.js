@@ -118,6 +118,7 @@ const renderCertificateHtml = async (data) => {
         partnerName: data.partnerName || "Google",
     });
 };
+const cloudinary_1 = require("../config/cloudinary");
 const renderCertificateAssets = async (data) => {
     ensureCertDir();
     const fileBase = `certificate_${data.certificateNumber}`;
@@ -142,10 +143,8 @@ const renderCertificateAssets = async (data) => {
         });
         const page = await browser.newPage();
         await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 2 });
-        console.log(`[certificate-service] Setting content for ${fileBase}...`);
         await page.setContent(html, { waitUntil: "load", timeout: 60000 });
         await new Promise((r) => setTimeout(r, 500));
-        console.log(`[certificate-service] Generating PDF for ${fileBase}...`);
         await page.pdf({
             path: pdfPath,
             printBackground: true,
@@ -153,23 +152,37 @@ const renderCertificateAssets = async (data) => {
             width: "11.7in",
             height: "8.3in",
         });
-        console.log(`[certificate-service] Generating screenshot for ${fileBase}...`);
         await page.screenshot({ path: imagePath, fullPage: true });
-        await browser
-            .close()
-            .catch((e) => console.error("[certificate-service] Error closing browser:", e));
+        await browser.close().catch((e) => { });
+        const [pdfResponse, imageResponse] = await Promise.all([
+            cloudinary_1.cloudinary.uploader.upload(pdfPath, {
+                folder: "coursera-clone/certificates",
+                public_id: `${fileBase}`,
+                resource_type: "auto",
+            }),
+            cloudinary_1.cloudinary.uploader.upload(imagePath, {
+                folder: "coursera-clone/certificates",
+                public_id: `${fileBase}`,
+                resource_type: "image",
+            }),
+        ]);
+        try {
+            if (fs_1.default.existsSync(pdfPath))
+                fs_1.default.unlinkSync(pdfPath);
+            if (fs_1.default.existsSync(imagePath))
+                fs_1.default.unlinkSync(imagePath);
+        }
+        catch (cleanupErr) {
+            // Temporary files cleanup failed
+        }
+        return {
+            pdfUrl: pdfResponse.secure_url,
+            imageUrl: imageResponse.secure_url,
+        };
     }
     catch (err) {
-        const error = err;
-        console.error(`[certificate-service] Puppeteer failure for ${fileBase}:`, error.message);
-        if (error.stack)
-            console.error(error.stack);
         throw err;
     }
-    return {
-        pdfUrl: `/uploads/certificates/${fileBase}.pdf`,
-        imageUrl: `/uploads/certificates/${fileBase}.png`,
-    };
 };
 const regenerateCertificateAssets = async (certificateId) => {
     const cert = await prisma_1.prisma.certificate.findUnique({
@@ -220,17 +233,16 @@ const issueCertificateForEnrollment = async (enrollmentId) => {
         const imageUrl = existing.imageUrl || "";
         const pdfPath = path_1.default.join(__dirname, "../../", pdfUrl.replace(/^\/+/, ""));
         const imagePath = path_1.default.join(__dirname, "../../", imageUrl.replace(/^\/+/, ""));
+        const isCloudinary = pdfUrl.startsWith("http");
         if (pdfUrl &&
             imageUrl &&
-            fs_1.default.existsSync(pdfPath) &&
-            fs_1.default.existsSync(imagePath)) {
+            (isCloudinary || (fs_1.default.existsSync(pdfPath) && fs_1.default.existsSync(imagePath)))) {
             const found = await prisma_1.prisma.certificate.findUnique({
                 where: { id: existing.id },
                 include: { course: { select: CERTIFICATE_COURSE_SELECT } },
             });
             return found;
         }
-        console.log(`[certificate-service] Assets missing for existing certificate ${existing.id}, retrying generation...`);
     }
     ensureCertDir();
     let certificate = existing;
@@ -265,7 +277,7 @@ const issueCertificateForEnrollment = async (enrollmentId) => {
             });
         }
         catch (notifError) {
-            console.error("[certificate-service] Failed to create notification:", notifError);
+            // Notification failed
         }
     }
     try {
@@ -277,7 +289,6 @@ const issueCertificateForEnrollment = async (enrollmentId) => {
             partnerName: certificate.partnerName || undefined,
             issuedAt: certificate.issuedAt,
         });
-        console.log(`[certificate-service] Assets generated for ${certificate.id}`);
         return prisma_1.prisma.certificate.update({
             where: { id: certificate.id },
             data: {
@@ -288,7 +299,6 @@ const issueCertificateForEnrollment = async (enrollmentId) => {
         });
     }
     catch (err) {
-        console.error(`[certificate-service] Failed to render certificate assets for ${certificate.id}:`, err);
         const found = await prisma_1.prisma.certificate.findUnique({
             where: { id: certificate.id },
             include: { course: { select: CERTIFICATE_COURSE_SELECT } },
@@ -313,11 +323,10 @@ const getMyCertificates = async (userId) => {
         const imageUrl = cert.imageUrl || "";
         const pdfPath = path_1.default.join(__dirname, "../../", pdfUrl.replace(/^\/+/, ""));
         const imagePath = path_1.default.join(__dirname, "../../", imageUrl.replace(/^\/+/, ""));
+        const isCloudinary = pdfUrl.startsWith("http");
         if (!pdfUrl ||
             !imageUrl ||
-            !fs_1.default.existsSync(pdfPath) ||
-            !fs_1.default.existsSync(imagePath)) {
-            console.log(`[certificate-service] Self-healing broken certificate ${cert.id}...`);
+            (!isCloudinary && (!fs_1.default.existsSync(pdfPath) || !fs_1.default.existsSync(imagePath)))) {
             try {
                 const enrollment = await prisma_1.prisma.enrollment.findFirst({
                     where: { userId: cert.userId, courseId: cert.courseId },
@@ -327,7 +336,7 @@ const getMyCertificates = async (userId) => {
                 }
             }
             catch (err) {
-                console.error(`[certificate-service] Self-heal failed for ${cert.id}:`, err);
+                // Self-heal failed
             }
         }
         if (typeof cert.grade !== "number") {

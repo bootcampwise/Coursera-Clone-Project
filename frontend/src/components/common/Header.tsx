@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
 import Button from "../common/Button";
@@ -20,8 +20,6 @@ const Header: React.FC = () => {
 
   const { user } = useSelector((state: RootState) => state.auth);
   const { signOut } = useGoogleAuth();
-
-  
 
   const openAuth = (e?: React.MouseEvent) => {
     e?.preventDefault();
@@ -430,52 +428,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

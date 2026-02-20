@@ -68,13 +68,15 @@ export const userApi = {
   updateMyWorkExperience: async (id: string, payload: WorkExperienceInput) => {
     const response = await api.put(
       ENDPOINTS.USERS_WORK_EXPERIENCE_BY_ID(id),
-      payload,
+      payload
     );
     return response.data as WorkExperience;
   },
 
   deleteMyWorkExperience: async (id: string) => {
-    const response = await api.delete(ENDPOINTS.USERS_WORK_EXPERIENCE_BY_ID(id));
+    const response = await api.delete(
+      ENDPOINTS.USERS_WORK_EXPERIENCE_BY_ID(id)
+    );
     return response.data as { id: string; message: string };
   },
 
@@ -89,7 +91,10 @@ export const userApi = {
   },
 
   updateMyEducation: async (id: string, payload: EducationInput) => {
-    const response = await api.put(ENDPOINTS.USERS_EDUCATION_BY_ID(id), payload);
+    const response = await api.put(
+      ENDPOINTS.USERS_EDUCATION_BY_ID(id),
+      payload
+    );
     return response.data as Education;
   },
 
@@ -104,72 +109,37 @@ export const userApi = {
   },
 
   addMyProfileCertificate: async (payload: ProfileCertificateInput) => {
-    const response = await api.post(ENDPOINTS.USERS_PROFILE_CERTIFICATES, payload);
+    const response = await api.post(
+      ENDPOINTS.USERS_PROFILE_CERTIFICATES,
+      payload
+    );
     return response.data as ProfileCertificate;
   },
 
   updateMyProfileCertificate: async (
     id: string,
-    payload: ProfileCertificateInput,
+    payload: ProfileCertificateInput
   ) => {
     const response = await api.put(
       ENDPOINTS.USERS_PROFILE_CERTIFICATE_BY_ID(id),
-      payload,
+      payload
     );
     return response.data as ProfileCertificate;
   },
 
   deleteMyProfileCertificate: async (id: string) => {
     const response = await api.delete(
-      ENDPOINTS.USERS_PROFILE_CERTIFICATE_BY_ID(id),
+      ENDPOINTS.USERS_PROFILE_CERTIFICATE_BY_ID(id)
     );
     return response.data as { id: string; message: string };
   },
+
+  getUsers: async (params?: {
+    page?: number;
+    limit?: number;
+    role?: string;
+  }) => {
+    const response = await api.get(ENDPOINTS.USERS_LIST, { params });
+    return response.data;
+  },
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

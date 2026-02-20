@@ -14,7 +14,7 @@ const CareerSkills: React.FC = () => {
     const fetchCourses = async () => {
       try {
         const response = await courseApi.getCourses({ limit: 6 });
-        
+
         const mappedCourses = response.courses.map((c: Course) => ({
           id: c.id,
           university: c.instructor?.name || "Instructor",
@@ -29,7 +29,6 @@ const CareerSkills: React.FC = () => {
         }));
         setCourses(mappedCourses);
       } catch (error) {
-        console.error("Error fetching courses:", error);
       } finally {
         setIsLoading(false);
       }
@@ -173,52 +172,3 @@ const CareerSkills: React.FC = () => {
 };
 
 export default CareerSkills;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -4,7 +4,7 @@ import crypto from "crypto";
 import puppeteer from "puppeteer";
 import ejs from "ejs";
 import { prisma } from "../config/prisma";
-import type { CertificateWhereInput, ExtractError } from '../types';
+import type { CertificateWhereInput, ExtractError } from "../types";
 import { notificationService } from "./notification.service";
 
 const CERT_DIR = path.join(__dirname, "../../uploads/certificates");
@@ -49,7 +49,7 @@ const randomCode = (length: number) =>
 
 const generateUniqueCode = async (
   field: "certificateNumber" | "verificationCode",
-  length: number,
+  length: number
 ) => {
   let code = randomCode(length);
   let exists = await prisma.certificate.findFirst({
@@ -78,7 +78,7 @@ const computeCourseDuration = async (courseId: string) => {
       const seconds = lesson.duration || 0;
       return sum + Math.round(seconds / 60);
     }
-    
+
     return sum + 5;
   }, 0);
 
@@ -103,7 +103,7 @@ const computeCourseGrade = async (enrollmentId: string) => {
 
 const computeCourseGradeByUserCourse = async (
   userId: string,
-  courseId: string,
+  courseId: string
 ) => {
   const enrollment = await prisma.enrollment.findFirst({
     where: { userId, courseId },
@@ -141,6 +141,8 @@ const renderCertificateHtml = async (data: {
   });
 };
 
+import { cloudinary } from "../config/cloudinary";
+
 const renderCertificateAssets = async (data: {
   certificateNumber: string;
   verificationCode: string;
@@ -173,15 +175,13 @@ const renderCertificateAssets = async (data: {
       timeout: 60000,
     });
     const page = await browser.newPage();
-    
+
     await page.setViewport({ width: 1200, height: 900, deviceScaleFactor: 2 });
 
     await page.setContent(html, { waitUntil: "load", timeout: 60000 });
 
-    
     await new Promise((r) => setTimeout(r, 500));
 
-    
     await page.pdf({
       path: pdfPath,
       printBackground: true,
@@ -190,28 +190,37 @@ const renderCertificateAssets = async (data: {
       height: "8.3in",
     });
 
-    
     await page.screenshot({ path: imagePath, fullPage: true });
 
-    await browser
-      .close()
-      .catch((e) =>
-        console.error("[certificate-service] Error closing browser:", e),
-      );
+    await browser.close().catch((e) => {});
+
+    const [pdfResponse, imageResponse] = await Promise.all([
+      cloudinary.uploader.upload(pdfPath, {
+        folder: "coursera-clone/certificates",
+        public_id: `${fileBase}`,
+        resource_type: "auto",
+      }),
+      cloudinary.uploader.upload(imagePath, {
+        folder: "coursera-clone/certificates",
+        public_id: `${fileBase}`,
+        resource_type: "image",
+      }),
+    ]);
+
+    try {
+      if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
+      if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+    } catch (cleanupErr) {
+      // Temporary files cleanup failed
+    }
+
+    return {
+      pdfUrl: pdfResponse.secure_url,
+      imageUrl: imageResponse.secure_url,
+    };
   } catch (err: unknown) {
-    const error = err as ExtractError;
-    console.error(
-      `[certificate-service] Puppeteer failure for ${fileBase}:`,
-      error.message,
-    );
-    if ((error as { stack?: string }).stack) console.error((error as { stack?: string }).stack);
     throw err;
   }
-
-  return {
-    pdfUrl: `/uploads/certificates/${fileBase}.pdf`,
-    imageUrl: `/uploads/certificates/${fileBase}.png`,
-  };
 };
 
 export const regenerateCertificateAssets = async (certificateId: string) => {
@@ -261,7 +270,6 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
     where: { userId: enrollment.userId, courseId: enrollment.courseId },
   });
 
-  
   if (existing) {
     const pdfUrl = existing.pdfUrl || "";
     const imageUrl = existing.imageUrl || "";
@@ -269,14 +277,15 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
     const imagePath = path.join(
       __dirname,
       "../../",
-      imageUrl.replace(/^\/+/, ""),
+      imageUrl.replace(/^\/+/, "")
     );
+
+    const isCloudinary = pdfUrl.startsWith("http");
 
     if (
       pdfUrl &&
       imageUrl &&
-      fs.existsSync(pdfPath) &&
-      fs.existsSync(imagePath)
+      (isCloudinary || (fs.existsSync(pdfPath) && fs.existsSync(imagePath)))
     ) {
       const found = await prisma.certificate.findUnique({
         where: { id: existing.id },
@@ -284,8 +293,6 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       });
       return found!;
     }
-    
-    
   }
 
   ensureCertDir();
@@ -315,7 +322,6 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       },
     });
 
-    
     try {
       await notificationService.createNotification(enrollment.userId, {
         type: "certificate",
@@ -325,11 +331,7 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
         link: `/accomplishments/certificate/${certificate.id}`,
       });
     } catch (notifError) {
-      console.error(
-        "[certificate-service] Failed to create notification:",
-        notifError,
-      );
-      
+      // Notification failed
     }
   }
 
@@ -343,7 +345,6 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       issuedAt: certificate.issuedAt,
     });
 
-    
     return prisma.certificate.update({
       where: { id: certificate.id },
       data: {
@@ -353,10 +354,6 @@ export const issueCertificateForEnrollment = async (enrollmentId: string) => {
       include: { course: { select: CERTIFICATE_COURSE_SELECT } },
     });
   } catch (err) {
-    console.error(
-      `[certificate-service] Failed to render certificate assets for ${certificate.id}:`,
-      err,
-    );
     const found = await prisma.certificate.findUnique({
       where: { id: certificate.id },
       include: { course: { select: CERTIFICATE_COURSE_SELECT } },
@@ -378,23 +375,22 @@ export const getMyCertificates = async (userId: string) => {
 
   const finalCerts = [];
   for (let cert of certificates) {
-    
     const pdfUrl = cert.pdfUrl || "";
     const imageUrl = cert.imageUrl || "";
     const pdfPath = path.join(__dirname, "../../", pdfUrl.replace(/^\/+/, ""));
     const imagePath = path.join(
       __dirname,
       "../../",
-      imageUrl.replace(/^\/+/, ""),
+      imageUrl.replace(/^\/+/, "")
     );
+
+    const isCloudinary = pdfUrl.startsWith("http");
 
     if (
       !pdfUrl ||
       !imageUrl ||
-      !fs.existsSync(pdfPath) ||
-      !fs.existsSync(imagePath)
+      (!isCloudinary && (!fs.existsSync(pdfPath) || !fs.existsSync(imagePath)))
     ) {
-      
       try {
         const enrollment = await prisma.enrollment.findFirst({
           where: { userId: cert.userId, courseId: cert.courseId },
@@ -403,18 +399,14 @@ export const getMyCertificates = async (userId: string) => {
           cert = await issueCertificateForEnrollment(enrollment.id);
         }
       } catch (err) {
-        console.error(
-          `[certificate-service] Self-heal failed for ${cert.id}:`,
-          err,
-        );
+        // Self-heal failed
       }
     }
 
-    
     if (typeof cert.grade !== "number") {
       const grade = await computeCourseGradeByUserCourse(
         cert.userId,
-        cert.courseId,
+        cert.courseId
       );
       if (typeof grade === "number") {
         cert = await prisma.certificate.update({
@@ -471,7 +463,7 @@ export const getCertificateById = async (id: string, userId: string) => {
   if (typeof cert.grade !== "number") {
     const grade = await computeCourseGradeByUserCourse(
       cert.userId,
-      cert.courseId,
+      cert.courseId
     );
     if (typeof grade === "number") {
       updates.grade = grade;

@@ -21,9 +21,8 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ course }) => {
       navigate("/my-learning");
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      console.error("Enrollment failed:", err);
       setError(
-        error.response?.data?.message || "Enrollment failed. Please try again.",
+        error.response?.data?.message || "Enrollment failed. Please try again."
       );
     } finally {
       setIsSubmitting(false);
@@ -105,52 +104,3 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ course }) => {
 };
 
 export default PaymentMethods;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

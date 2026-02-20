@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUserById = exports.deleteMyProfileCertificateItem = exports.updateMyProfileCertificateItem = exports.addMyProfileCertificateItem = exports.getMyProfileCertificateItems = exports.deleteMyEducationItem = exports.updateMyEducationItem = exports.addMyEducationItem = exports.getMyEducationItems = exports.deleteMyWorkExperienceItem = exports.updateMyWorkExperienceItem = exports.addMyWorkExperienceItem = exports.getMyWorkExperience = exports.createUser = exports.updateProfile = exports.updateRole = exports.getMe = exports.getUser = exports.getUsers = exports.syncGoogleUser = void 0;
+const jwt_1 = require("../config/jwt");
 const user_service_1 = require("../services/user.service");
 const asyncHandler_1 = __importDefault(require("../utils/asyncHandler"));
 exports.syncGoogleUser = (0, asyncHandler_1.default)(async (req, res) => {
@@ -13,6 +14,7 @@ exports.syncGoogleUser = (0, asyncHandler_1.default)(async (req, res) => {
         return;
     }
     const user = await (0, user_service_1.upsertGoogleUser)({ email, name, providerId, avatarUrl });
+    const token = (0, jwt_1.signToken)({ sub: user.id, role: user.role });
     res.status(200).json({
         message: "User synced successfully",
         user: {
@@ -22,6 +24,7 @@ exports.syncGoogleUser = (0, asyncHandler_1.default)(async (req, res) => {
             avatarUrl: user.avatarUrl,
             role: user.role,
         },
+        token,
     });
 });
 exports.getUsers = (0, asyncHandler_1.default)(async (req, res) => {

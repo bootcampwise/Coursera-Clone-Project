@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 import { IMAGES } from "../../constants/images";
+
+import AvatarMenu from "./AvatarMenu";
 
 export interface CourseContentHeaderProps {
   onMobileMenuToggle?: () => void;
@@ -59,8 +61,7 @@ const CourseContentHeader: React.FC<CourseContentHeaderProps> = ({
             />
           </Link>
 
-          {}
-          <div className="h-[20px] md:h-[24px] w-[1px] bg-gray-medium-4 mx-0 md:mx-1"></div>
+          <div className="h-[20px] md:h-[24px] w-px bg-gray-medium-4 mx-0 md:mx-1"></div>
 
           {}
           <div className="flex items-center shrink-0">
@@ -93,7 +94,7 @@ const CourseContentHeader: React.FC<CourseContentHeaderProps> = ({
           </button>
 
           {}
-          <button className="hidden sm:flex w-8 h-8 rounded-full bg-blue-light-9 flex items-center justify-center text-primary border-none cursor-pointer">
+          <button className="hidden sm:flex w-8 h-8 rounded-full bg-blue-light-9 items-center justify-center text-primary border-none cursor-pointer">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -127,39 +128,10 @@ const CourseContentHeader: React.FC<CourseContentHeaderProps> = ({
 
             {isUserMenuOpen && (
               <>
-                <div className="absolute right-0 mt-3 w-[250px] bg-white rounded-[4px] shadow-lg border border-border py-2 z-50">
-                  <div className="px-4 py-3 border-b border-border">
-                    <p className="font-bold text-gray-dark-3 truncate">
-                      {displayName}
-                    </p>
-                    <p className="text-xs text-text-gray truncate">
-                      {user?.email || "user@example.com"}
-                    </p>
-                  </div>
-                  {[
-                    {
-                      label: "My Courses",
-                      action: () => navigate("/my-learning"),
-                    },
-                    { label: "Profile", action: () => navigate("/profile") },
-                    {
-                      label: "Settings",
-                      action: () => navigate("/account/settings"),
-                    },
-                    { label: "Log Out", action: handleLogout },
-                  ].map((item) => (
-                    <button
-                      key={item.label}
-                      onClick={() => {
-                        setIsUserMenuOpen(false);
-                        if (item.action) item.action();
-                      }}
-                      className="w-full text-left px-4 py-2 text-[14px] text-gray-dark-3 hover:bg-surface transition-colors border-none bg-transparent cursor-pointer"
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
+                <AvatarMenu
+                  onLogout={handleLogout}
+                  onClose={() => setIsUserMenuOpen(false)}
+                />
                 <div
                   className="fixed inset-0 z-40"
                   onClick={() => setIsUserMenuOpen(false)}
@@ -174,51 +146,3 @@ const CourseContentHeader: React.FC<CourseContentHeaderProps> = ({
 };
 
 export default CourseContentHeader;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

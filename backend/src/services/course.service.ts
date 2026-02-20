@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma";
-import type { CourseWhereInput } from '../types';
+import type { CourseWhereInput } from "../types";
 
 interface CreateCourseData {
   title: string;
@@ -39,7 +39,7 @@ interface CourseFilters {
 export const getAllCourses = async (
   page: number = 1,
   limit: number = 10,
-  filters: CourseFilters = {},
+  filters: CourseFilters = {}
 ) => {
   const skip = (page - 1) * limit;
 
@@ -161,13 +161,12 @@ export const updateCourse = async (
   id: string,
   userId: string,
   userRole: string,
-  data: UpdateCourseData,
+  data: UpdateCourseData
 ) => {
   const course = await prisma.course.findUnique({ where: { id } });
 
   if (!course) throw new Error("Course not found");
 
-  
   const role = userRole.toLowerCase();
   if (
     role !== "admin" &&
@@ -193,13 +192,12 @@ export const updateCourse = async (
 export const deleteCourse = async (
   id: string,
   userId: string,
-  userRole: string,
+  userRole: string
 ) => {
   const course = await prisma.course.findUnique({ where: { id } });
 
   if (!course) throw new Error("Course not found");
 
-  
   const role = userRole.toLowerCase();
   if (
     role !== "admin" &&
@@ -209,13 +207,9 @@ export const deleteCourse = async (
     throw new Error("Not authorized to delete this course");
   }
 
-  
-  
   try {
     await prisma.$transaction(
       async (tx) => {
-        
-        
         const modules = await tx.module.findMany({
           where: { courseId: id },
           select: { id: true },
@@ -240,10 +234,6 @@ export const deleteCourse = async (
         });
         const assessmentIds = assessments.map((a) => a.id);
 
-        
-
-        
-        
         await tx.lessonProgress.deleteMany({
           where: {
             OR: [
@@ -254,41 +244,36 @@ export const deleteCourse = async (
         });
 
         if (lessonIds.length > 0) {
-          
           await tx.transcriptLine.deleteMany({
             where: { lessonId: { in: lessonIds } },
           });
         }
 
         if (assessmentIds.length > 0) {
-          
           await tx.submission.deleteMany({
             where: { assessmentId: { in: assessmentIds } },
           });
           await tx.question.deleteMany({
             where: { assessmentId: { in: assessmentIds } },
           });
-          
+
           await tx.assessment.deleteMany({
             where: { id: { in: assessmentIds } },
           });
         }
 
         if (lessonIds.length > 0) {
-          
           await tx.lesson.deleteMany({
             where: { id: { in: lessonIds } },
           });
         }
 
         if (moduleIds.length > 0) {
-          
           await tx.module.deleteMany({
             where: { id: { in: moduleIds } },
           });
         }
 
-        
         await tx.enrollment.deleteMany({
           where: { courseId: id },
         });
@@ -297,16 +282,13 @@ export const deleteCourse = async (
           where: { courseId: id },
         });
 
-        
         await tx.course.delete({ where: { id } });
       },
       {
-        timeout: 15000, 
-      },
+        timeout: 15000,
+      }
     );
-    
   } catch (error) {
-    console.error(`Error in deleteCourse transaction for course ${id}:`, error);
     throw error;
   }
 
@@ -343,12 +325,10 @@ export const getAdminCourses = async () => {
   return courses;
 };
 
-
-
 export const createModule = async (
   courseId: string,
   title: string,
-  order: number,
+  order: number
 ) => {
   return await prisma.module.create({
     data: {
@@ -367,7 +347,7 @@ export const createLesson = async (
     videoUrl?: string;
     content?: string;
     duration?: number;
-  },
+  }
 ) => {
   return await prisma.lesson.create({
     data: {
@@ -399,7 +379,7 @@ export const getCourseContent = async (courseId: string) => {
 export const verifyCourseOwnership = async (
   courseId: string,
   userId: string,
-  userRole: string,
+  userRole: string
 ) => {
   const course = await prisma.course.findUnique({
     where: { id: courseId },

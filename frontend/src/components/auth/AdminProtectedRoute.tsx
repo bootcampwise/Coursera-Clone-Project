@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, useLocation, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 
 interface AdminProtectedRouteProps {
   children?: React.ReactNode;
@@ -19,7 +19,6 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
-  
   if (user.role.toLowerCase() !== "admin") {
     return <Navigate to={loginPath} replace />;
   }
@@ -28,52 +27,3 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
 };
 
 export default AdminProtectedRoute;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

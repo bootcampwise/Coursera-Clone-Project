@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { supabase } from "../lib/supabase";
-import { logout } from "../features/auth/authSlice";
-import type { AppDispatch } from "../app/store";
+import { logout } from "../redux/slices/auth/authSlice";
+import type { AppDispatch } from "../redux/store";
 import toast from "react-hot-toast";
 
 export const useGoogleAuth = () => {
@@ -35,52 +35,3 @@ export const useGoogleAuth = () => {
 
   return { signInWithGoogle, signOut };
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

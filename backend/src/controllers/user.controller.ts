@@ -1,5 +1,6 @@
 import { Response } from "express";
-import type { AuthenticatedRequest } from '../types';
+import type { AuthenticatedRequest } from "../types";
+import { signToken } from "../config/jwt";
 import {
   upsertGoogleUser,
   getAllUsers,
@@ -33,6 +34,7 @@ export const syncGoogleUser = asyncHandler(
     }
 
     const user = await upsertGoogleUser({ email, name, providerId, avatarUrl });
+    const token = signToken({ sub: user.id, role: user.role });
 
     res.status(200).json({
       message: "User synced successfully",
@@ -43,24 +45,29 @@ export const syncGoogleUser = asyncHandler(
         avatarUrl: user.avatarUrl,
         role: user.role,
       },
+      token,
     });
-  },
+  }
 );
 
-export const getUsers = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 10;
-  const role = req.query.role as string;
+export const getUsers = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const role = req.query.role as string;
 
-  const result = await getAllUsers(page, limit, role);
-  res.json(result);
-});
+    const result = await getAllUsers(page, limit, role);
+    res.json(result);
+  }
+);
 
-export const getUser = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const { id } = req.params;
-  const user = await getUserById(id as string);
-  res.json(user);
-});
+export const getUser = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { id } = req.params;
+    const user = await getUserById(id as string);
+    res.json(user);
+  }
+);
 
 export const getMe = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
@@ -71,21 +78,23 @@ export const getMe = asyncHandler(
     }
     const user = await getUserById(userId);
     res.json(user);
-  },
+  }
 );
 
-export const updateRole = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const { id } = req.params;
-  const { role } = req.body;
+export const updateRole = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { id } = req.params;
+    const { role } = req.body;
 
-  if (!role) {
-    res.status(400).json({ message: "Role is required" });
-    return;
+    if (!role) {
+      res.status(400).json({ message: "Role is required" });
+      return;
+    }
+
+    const user = await updateUserRole(id as string, role);
+    res.json(user);
   }
-
-  const user = await updateUserRole(id as string, role);
-  res.json(user);
-});
+);
 
 export const updateProfile = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
@@ -99,20 +108,22 @@ export const updateProfile = asyncHandler(
 
     const user = await updateUserProfile(userId, { name, avatarUrl });
     res.json(user);
-  },
+  }
 );
 
-export const createUser = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const { name, email, password, role } = req.body;
+export const createUser = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { name, email, password, role } = req.body;
 
-  if (!name || !email || !role) {
-    res.status(400).json({ message: "Missing required fields" });
-    return;
+    if (!name || !email || !role) {
+      res.status(400).json({ message: "Missing required fields" });
+      return;
+    }
+
+    const user = await adminCreateUser({ name, email, password, role });
+    res.status(201).json(user);
   }
-
-  const user = await adminCreateUser({ name, email, password, role });
-  res.status(201).json(user);
-});
+);
 
 export const getMyWorkExperience = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
@@ -124,7 +135,7 @@ export const getMyWorkExperience = asyncHandler(
 
     const workExperiences = await getMyWorkExperiences(userId);
     res.json(workExperiences);
-  },
+  }
 );
 
 export const addMyWorkExperienceItem = asyncHandler(
@@ -165,7 +176,7 @@ export const addMyWorkExperienceItem = asyncHandler(
     });
 
     res.status(201).json(created);
-  },
+  }
 );
 
 export const updateMyWorkExperienceItem = asyncHandler(
@@ -195,19 +206,23 @@ export const updateMyWorkExperienceItem = asyncHandler(
       return;
     }
 
-    const updated = await updateMyWorkExperience(userId, experienceId as string, {
-      title,
-      company,
-      location,
-      employmentType,
-      startDate,
-      endDate,
-      isCurrent,
-      description,
-    });
+    const updated = await updateMyWorkExperience(
+      userId,
+      experienceId as string,
+      {
+        title,
+        company,
+        location,
+        employmentType,
+        startDate,
+        endDate,
+        isCurrent,
+        description,
+      }
+    );
 
     res.json(updated);
-  },
+  }
 );
 
 export const deleteMyWorkExperienceItem = asyncHandler(
@@ -219,9 +234,12 @@ export const deleteMyWorkExperienceItem = asyncHandler(
       return;
     }
 
-    const deleted = await deleteMyWorkExperience(userId, experienceId as string);
+    const deleted = await deleteMyWorkExperience(
+      userId,
+      experienceId as string
+    );
     res.json({ message: "Work experience deleted", ...deleted });
-  },
+  }
 );
 
 export const getMyEducationItems = asyncHandler(
@@ -234,7 +252,7 @@ export const getMyEducationItems = asyncHandler(
 
     const educations = await getMyEducations(userId);
     res.json(educations);
-  },
+  }
 );
 
 export const addMyEducationItem = asyncHandler(
@@ -263,7 +281,7 @@ export const addMyEducationItem = asyncHandler(
     });
 
     res.status(201).json(created);
-  },
+  }
 );
 
 export const updateMyEducationItem = asyncHandler(
@@ -293,7 +311,7 @@ export const updateMyEducationItem = asyncHandler(
     });
 
     res.json(updated);
-  },
+  }
 );
 
 export const deleteMyEducationItem = asyncHandler(
@@ -307,7 +325,7 @@ export const deleteMyEducationItem = asyncHandler(
 
     const deleted = await deleteMyEducation(userId, educationId as string);
     res.json({ message: "Education deleted", ...deleted });
-  },
+  }
 );
 
 export const getMyProfileCertificateItems = asyncHandler(
@@ -320,7 +338,7 @@ export const getMyProfileCertificateItems = asyncHandler(
 
     const certificates = await getMyProfileCertificates(userId);
     res.json(certificates);
-  },
+  }
 );
 
 export const addMyProfileCertificateItem = asyncHandler(
@@ -346,7 +364,7 @@ export const addMyProfileCertificateItem = asyncHandler(
     });
 
     res.status(201).json(created);
-  },
+  }
 );
 
 export const updateMyProfileCertificateItem = asyncHandler(
@@ -373,11 +391,11 @@ export const updateMyProfileCertificateItem = asyncHandler(
       {
         certificateName,
         completionDate,
-      },
+      }
     );
 
     res.json(updated);
-  },
+  }
 );
 
 export const deleteMyProfileCertificateItem = asyncHandler(
@@ -391,10 +409,10 @@ export const deleteMyProfileCertificateItem = asyncHandler(
 
     const deleted = await deleteMyProfileCertificate(
       userId,
-      certificateId as string,
+      certificateId as string
     );
     res.json({ message: "Profile certificate deleted", ...deleted });
-  },
+  }
 );
 
 export const deleteUserById = asyncHandler(
@@ -402,5 +420,5 @@ export const deleteUserById = asyncHandler(
     const { id } = req.params;
     const user = await deleteUser(id as string);
     res.json({ message: "User deleted successfully", user });
-  },
+  }
 );

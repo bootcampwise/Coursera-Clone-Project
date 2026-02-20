@@ -141,10 +141,8 @@ const deleteCourse = async (id, userId, userRole) => {
         course.instructorId !== userId) {
         throw new Error("Not authorized to delete this course");
     }
-    console.log(`Starting cascade deletion for course: ${id}`);
     try {
         await prisma_1.prisma.$transaction(async (tx) => {
-            console.log("- Fetching related IDs...");
             const modules = await tx.module.findMany({
                 where: { courseId: id },
                 select: { id: true },
@@ -165,8 +163,6 @@ const deleteCourse = async (id, userId, userRole) => {
                 select: { id: true },
             });
             const assessmentIds = assessments.map((a) => a.id);
-            console.log(`- Found: ${moduleIds.length} modules, ${lessonIds.length} lessons, ${enrollmentIds.length} enrollments, ${assessmentIds.length} assessments`);
-            console.log("- Deleting LessonProgress...");
             await tx.lessonProgress.deleteMany({
                 where: {
                     OR: [
@@ -176,52 +172,43 @@ const deleteCourse = async (id, userId, userRole) => {
                 },
             });
             if (lessonIds.length > 0) {
-                console.log("- Deleting TranscriptLines...");
                 await tx.transcriptLine.deleteMany({
                     where: { lessonId: { in: lessonIds } },
                 });
             }
             if (assessmentIds.length > 0) {
-                console.log("- Deleting Submissions and Questions...");
                 await tx.submission.deleteMany({
                     where: { assessmentId: { in: assessmentIds } },
                 });
                 await tx.question.deleteMany({
                     where: { assessmentId: { in: assessmentIds } },
                 });
-                console.log("- Deleting Assessments...");
                 await tx.assessment.deleteMany({
                     where: { id: { in: assessmentIds } },
                 });
             }
             if (lessonIds.length > 0) {
-                console.log("- Deleting Lessons...");
                 await tx.lesson.deleteMany({
                     where: { id: { in: lessonIds } },
                 });
             }
             if (moduleIds.length > 0) {
-                console.log("- Deleting Modules...");
                 await tx.module.deleteMany({
                     where: { id: { in: moduleIds } },
                 });
             }
-            console.log("- Deleting Enrollments and Reviews...");
             await tx.enrollment.deleteMany({
                 where: { courseId: id },
             });
             await tx.review.deleteMany({
                 where: { courseId: id },
             });
-            console.log("- Deleting Course record...");
             await tx.course.delete({ where: { id } });
         }, {
             timeout: 15000,
         });
-        console.log(`Successfully deleted course: ${id}`);
     }
     catch (error) {
-        console.error(`Error in deleteCourse transaction for course ${id}:`, error);
         throw error;
     }
     return { message: "Course deleted successfully" };

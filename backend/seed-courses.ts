@@ -157,25 +157,13 @@ const courses = [
 
 async function seedCourses() {
   try {
-    console.log("🌱 Starting course seeding...\n");
-
     const instructor = await prisma.user.findUnique({
       where: { email: "instructor12@gmail.com" },
     });
 
     if (!instructor) {
-      console.error(
-        "❌ Instructor with email instructor12@gmail.com not found!",
-      );
-      console.log(
-        "Please create the instructor first or provide the correct email.",
-      );
       return;
     }
-
-    console.log(
-      `✅ Found instructor: ${instructor.name} (ID: ${instructor.id})\n`,
-    );
 
     let createdCount = 0;
 
@@ -187,10 +175,7 @@ async function seedCourses() {
         },
       });
       createdCount++;
-      console.log(`✅ Created: ${course.title} (${course.difficulty})`);
     }
-
-    console.log(`\n🎉 Successfully created ${createdCount} courses!`);
   } catch (error) {
     console.error("❌ Error seeding courses:", error);
   } finally {

@@ -23,7 +23,6 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
         const status = await courseApi.getEnrollmentStatus(course.id);
         setIsEnrolled(status.isEnrolled);
       } catch (error) {
-        console.error("Error checking enrollment status:", error);
       } finally {
         setIsCheckingEnrollment(false);
       }
@@ -73,7 +72,9 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
           </h1>
 
           <p className="text-[14px] sm:text-[15px] md:text-[16px] text-gray-700 leading-relaxed mb-5 sm:mb-6 max-w-[600px]">
-            {(course.subtitle || course.description?.substring(0, 150)) || "No description available"}
+            {course.subtitle ||
+              course.description?.substring(0, 150) ||
+              "No description available"}
           </p>
 
           <div className="flex items-center gap-2 text-[13px] sm:text-[14px] text-gray-700 mb-6 sm:mb-8">
@@ -141,53 +142,3 @@ const CourseHero: React.FC<CourseHeroProps> = ({ course }) => {
 };
 
 export default CourseHero;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

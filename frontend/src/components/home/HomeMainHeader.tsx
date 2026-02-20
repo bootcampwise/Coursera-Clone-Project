@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import type { RootState } from "../../app/store";
+import type { RootState } from "../../redux/store";
 import { useGoogleAuth } from "../../hooks/useGoogleAuth";
 import { getAvatarColor, getInitials } from "../../utils/avatarUtils";
 import Button from "../common/Button";
@@ -55,7 +55,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
       setResults([]);
-      
+
       return;
     }
 
@@ -63,7 +63,7 @@ const Header: React.FC = () => {
       setIsLoading(true);
       try {
         const response = await courseApi.searchCourses(searchQuery);
-        
+
         const publishedResults = (response.courses || [])
           .filter((c: Course) => c.status === "Published")
           .slice(0, 6);
@@ -71,7 +71,6 @@ const Header: React.FC = () => {
         setShowOverlay(true);
         setSelectedIndex(-1);
       } catch (error) {
-        console.error("Live search failed:", error);
       } finally {
         setIsLoading(false);
       }
@@ -89,7 +88,7 @@ const Header: React.FC = () => {
     e?.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setIsMenuOpen(false); 
+      setIsMenuOpen(false);
       setShowOverlay(false);
     }
   };
@@ -275,7 +274,7 @@ const Header: React.FC = () => {
                           onClick={() => {
                             setSearchQuery(suggestion);
                             navigate(
-                              `/search?q=${encodeURIComponent(suggestion)}`,
+                              `/search?q=${encodeURIComponent(suggestion)}`
                             );
                             setShowOverlay(false);
                           }}
@@ -650,52 +649,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
