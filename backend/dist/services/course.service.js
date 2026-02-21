@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRecentlyViewedCourses = exports.updateCourseThumbnail = exports.verifyCourseOwnership = exports.getCourseContent = exports.createLesson = exports.createModule = exports.getAdminCourses = exports.getInstructorCourses = exports.deleteCourse = exports.updateCourse = exports.createCourse = exports.getCourseById = exports.getAllCourses = void 0;
 const prisma_1 = require("../config/prisma");
 const getAllCourses = async (page = 1, limit = 10, filters = {}) => {
+    console.log("[Info ] Get all  courses service recieved");
     const skip = (page - 1) * limit;
     const where = {};
     if (filters.status) {

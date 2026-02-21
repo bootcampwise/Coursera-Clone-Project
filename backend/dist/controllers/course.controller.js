@@ -40,6 +40,7 @@ exports.getRecentlyViewed = exports.uploadCourseThumbnail = exports.getAdminCour
 const asyncHandler_1 = __importDefault(require("../utils/asyncHandler"));
 const courseService = __importStar(require("../services/course.service"));
 exports.getAllCourses = (0, asyncHandler_1.default)(async (req, res) => {
+    console.log("INFO get all courses request recieved");
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const { category, difficulty, search, q, status, language } = req.query;

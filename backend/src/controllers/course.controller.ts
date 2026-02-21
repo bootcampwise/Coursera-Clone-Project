@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import type { AuthenticatedRequest } from '../types';
+import type { AuthenticatedRequest } from "../types";
 import asyncHandler from "../utils/asyncHandler";
 import * as courseService from "../services/course.service";
 
@@ -19,7 +19,7 @@ export const getAllCourses = asyncHandler(
 
     const result = await courseService.getAllCourses(page, limit, filters);
     res.json(result);
-  },
+  }
 );
 
 export const getCourseById = asyncHandler(
@@ -27,7 +27,7 @@ export const getCourseById = asyncHandler(
     const { id } = req.params;
     const course = await courseService.getCourseById(id as string);
     res.json(course);
-  },
+  }
 );
 
 export const createCourse = asyncHandler(
@@ -49,16 +49,13 @@ export const createCourse = asyncHandler(
     const userRole = req.user?.role?.toLowerCase();
     let instructorId: string;
 
-    
     if (userRole === "admin") {
-      
       if (!bodyInstructorId) {
         res.status(400).json({ message: "instructorId is required for admin" });
         return;
       }
       instructorId = bodyInstructorId;
     } else {
-      
       instructorId = req.user?.id || "";
     }
 
@@ -82,7 +79,7 @@ export const createCourse = asyncHandler(
     });
 
     res.status(201).json(course);
-  },
+  }
 );
 
 export const updateCourse = asyncHandler(
@@ -100,10 +97,10 @@ export const updateCourse = asyncHandler(
       id as string,
       userId,
       userRole,
-      req.body,
+      req.body
     );
     res.json(course);
-  },
+  }
 );
 
 export const deleteCourse = asyncHandler(
@@ -120,10 +117,10 @@ export const deleteCourse = asyncHandler(
     const result = await courseService.deleteCourse(
       id as string,
       userId,
-      userRole,
+      userRole
     );
     res.json(result);
-  },
+  }
 );
 
 export const getInstructorCourses = asyncHandler(
@@ -137,14 +134,14 @@ export const getInstructorCourses = asyncHandler(
 
     const courses = await courseService.getInstructorCourses(instructorId);
     res.json(courses);
-  },
+  }
 );
 
 export const getAdminCourseCatalog = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const courses = await courseService.getAdminCourses();
     res.json(courses);
-  },
+  }
 );
 
 export const uploadCourseThumbnail = asyncHandler(
@@ -170,11 +167,11 @@ export const uploadCourseThumbnail = asyncHandler(
 
     const updated = await courseService.updateCourseThumbnail(
       id as string,
-      dataUrl,
+      dataUrl
     );
 
     res.json(updated);
-  },
+  }
 );
 
 export const getRecentlyViewed = asyncHandler(
@@ -186,5 +183,5 @@ export const getRecentlyViewed = asyncHandler(
     }
     const courses = await courseService.getRecentlyViewedCourses(userId);
     res.json(courses);
-  },
+  }
 );

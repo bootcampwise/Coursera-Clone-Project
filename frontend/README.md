@@ -71,3 +71,22 @@ export default defineConfig([
   },
 ])
 ```
+
+## Deployment
+
+### Vercel
+
+This frontend is configured for deployment on Vercel.
+
+1.  **Environment Variables**: Ensure the following environment variables are set in your Vercel project settings:
+    - `VITE_API_BASE_URL`
+    - `VITE_SUPABASE_URL`
+    - `VITE_SUPABASE_ANON_KEY`
+
+2.  **Build Settings**:
+    - Build Command: `npm run build`
+    - Output Directory: `dist`
+    - Install Command: `npm install`
+
+3.  **SPA Routing**:
+    - The included `vercel.json` ensures that all routes are redirected to `index.html`, which is required for React Router to work correctly on Vercel.
